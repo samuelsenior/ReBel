@@ -1,0 +1,4 @@
+numberOfBells:4
+numberOfRingableBells:2
+ringableBells:1,2
+keys:j,f
