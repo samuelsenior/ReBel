@@ -22,7 +22,7 @@ class Server:
 
         self.messageEnd = bytes("/", "utf-8")
 
-        self.frameRate = 30
+        self.frameRate = 100
 
     def bellRinging(self, s, bell):
         try:
@@ -190,6 +190,12 @@ class Server:
 
 if __name__ == "__main__":
     serverIP = input("Server IP: ")
-    serverPort = int(input("Server port: "))
+    if not serverIP:
+        serverIP = "localhost"
+    serverPort = input("Server port: ")
+    if not serverPort:
+        serverPort = 35555
+    else:
+        serverPort = int(serverPort)
     server = Server(serverIP, serverPort)
     server.start()
