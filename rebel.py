@@ -158,7 +158,7 @@ class Rebel(Font, KeyPress):
             for box in self.input_boxes:
                 box.draw(self.win)
 
-            pygame.display.flip()
+            pygame.display.update()
             clock.tick(self.frameRate)
 
     def connect(self, userName, serverIP, serverPort):
