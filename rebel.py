@@ -14,6 +14,7 @@ from button import Button
 from keyPress import KeyPress
 from bell import Bell
 from config import Config
+from audio import Audio
 
         
 class Rebel(Font, KeyPress):
@@ -29,7 +30,11 @@ class Rebel(Font, KeyPress):
 
         self.configFile = configFile
 
+        # initialize
         pygame.init()
+        pygame.mixer.pre_init()
+        pygame.mixer.init()
+
         self.win = pygame.display.set_mode((self.menuWidth, self.menuHeight))
         pygame.display.set_caption("ReBel")
 
@@ -49,6 +54,9 @@ class Rebel(Font, KeyPress):
         self.frameRate = 25
 
         self.network = Network(frameRate=self.frameRate)
+
+        pygame.mixer.set_num_channels(self.config.config['numberOfBells'])
+        self.audio = Audio(self.config.config['numberOfBells'], pygame.mixer)
 
     def start(self):
         self.menuScreen()
@@ -181,7 +189,6 @@ class Rebel(Font, KeyPress):
                 if event.type == pygame.KEYDOWN:
                     for bell in self.bells.values():
                         bell.handle_event(event.key, self.network.send)
-
             try:
                 bellNumber = int(self.network.getBellRung())
             except:
@@ -189,6 +196,7 @@ class Rebel(Font, KeyPress):
             else:
                 self.bells[bellNumber].bellRung()
                 self.bells[bellNumber].draw(self.win)
+                pygame.mixer.Channel(bellNumber-1).play(self.audio.bells[bellNumber])
                 pygame.display.update()
 
             pygame.display.update()

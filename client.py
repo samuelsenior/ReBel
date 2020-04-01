@@ -8,7 +8,7 @@ import select, queue
 class Network:
     def __init__(self, frameRate=30):
         self.frameRate = frameRate
-        self.dataSize = 1024
+        self.dataSize = 128
         self.ringing = False
         self.bellsRung = []
 

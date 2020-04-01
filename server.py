@@ -7,7 +7,7 @@ import select, queue
 
 class Server:
     def __init__(self, serverIP, serverPort):
-        self.ReBelServerVersion = "v0.1.0"
+        self.ReBelServerVersion = "v0.2.0"
 
         self.serverIP = serverIP
         self.serverPort = serverPort
@@ -15,7 +15,7 @@ class Server:
         self.connections = 0
         self.maxConnections = 6
 
-        self.dataSize = 1024
+        self.dataSize = 128
 
         self.clients = {}
         self.allReadyToRing = False
