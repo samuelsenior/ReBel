@@ -1,5 +1,5 @@
 """
-ReBel v0.0.2
+ReBel v0.2.1
 author: S. M. Senior
 """
 
@@ -52,9 +52,9 @@ class Rebel(Font, KeyPress):
 
         self.config = Config(fileName=self.configFile)
 
-        self.frameRate = 25
+        self.frameRate = 30
 
-        self.network = Network(frameRate=self.frameRate)
+        self.network = Network(frameRate=50)#self.frameRate)
 
         pygame.mixer.set_num_channels(self.config.config['numberOfBells'])
         self.audio = Audio(self.config.config['numberOfBells'], pygame.mixer, self.config)
@@ -175,9 +175,10 @@ class Rebel(Font, KeyPress):
             self.bells[self.config.config['ringableBells'][i]].setKey(self.keyPress(key))
 
         clock = pygame.time.Clock()
+        self.win.blit(self.mainBackground, (0, 0))
         run_main = True
         while run_main:
-            self.win.blit(self.mainBackground, (0, 0))
+            #self.win.blit(self.mainBackground, (0, 0))
             for bell in self.bells.values():
                 bell.draw(self.win)
 
