@@ -14,5 +14,5 @@ scale:major
 octaveShift:0
 pitchShift:0
 sourceBellFileLocation:
-yesAbelHanbellSoundIfPresent:
+abelHandbellSoundIfPresent:
 abelLocation:
