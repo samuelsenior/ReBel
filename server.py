@@ -7,7 +7,7 @@ import select, queue
 
 class Server:
     def __init__(self, serverIP, serverPort):
-        self.ReBelServerVersion = "v0.2.0"
+        self.ReBelServerVersion = "v0.2.1"
 
         self.serverIP = serverIP
         self.serverPort = serverPort

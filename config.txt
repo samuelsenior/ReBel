@@ -1,4 +1,18 @@
-numberOfBells:4
-numberOfRingableBells:4
-ringableBells:1,2,3,4
-keys:j,f,u,r
+# numberOfBells = total number of bells everyone is ringing, as a positive integer
+# ringabelBells = the bells you can ring, as positive integers seperated by commas
+# keys = the keyboard mapping to the bells (same order as the bells that can be rung), as positive integers seperated by commas
+[Ringing Options]
+numberOfBells:8
+ringableBells:1,2,3,4,5,6,7,8
+keys:j,f,u,r,h,d,y,e
+
+# Scales currently include 'major' and 'harmonicMinor'
+# octaveShift by an integer number of octaves (either positive, negative, or zero)
+# pitchShift the key of the scale by an integer number of semitones (positive, negative, or zero)
+[Sound Options]
+scale:major
+octaveShift:0
+pitchShift:0
+sourceBellFileLocation:
+yesAbelHanbellSoundIfPresent:
+abelLocation:

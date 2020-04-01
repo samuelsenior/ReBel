@@ -32,7 +32,8 @@ class Rebel(Font, KeyPress):
 
         # initialize
         pygame.init()
-        pygame.mixer.pre_init()
+        pygame.mixer.pre_init(frequency=11000, size=16, channels=1)
+        #pygame.mixer.pre_init()
         pygame.mixer.init()
 
         self.win = pygame.display.set_mode((self.menuWidth, self.menuHeight))
@@ -56,7 +57,7 @@ class Rebel(Font, KeyPress):
         self.network = Network(frameRate=self.frameRate)
 
         pygame.mixer.set_num_channels(self.config.config['numberOfBells'])
-        self.audio = Audio(self.config.config['numberOfBells'], pygame.mixer)
+        self.audio = Audio(self.config.config['numberOfBells'], pygame.mixer, self.config)
 
     def start(self):
         self.menuScreen()
