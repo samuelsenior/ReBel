@@ -7,7 +7,7 @@ import select, queue
 
 class Server:
     def __init__(self, serverIP, serverPort):
-        self.ReBelServerVersion = "v0.2.3"
+        self.ReBelServerVersion = "v0.2.4"
 
         self.serverIP = serverIP
         self.serverPort = serverPort
@@ -40,6 +40,10 @@ class Server:
     def clientDisconnect(self, s, message):
         print("[CLIENT] Client {} disconnecting with message: {}".format(self.clients[s]['name'], (message.split(":"))[1]))
 
+    def ping(self, s):
+        self.clientOutgoingMessageQueue.put([s, bytes("0" ,"utf-8")])
+        print("[SERVER] Being pinged by {} ({}:{})".format(self.clients[s]['name'], self.clients[s]['addr'][0], self.clients[s]['addr'][1]))
+
     def startRinging(self, s, message):
         print("[COMMAND] StartRinging command recieved")
         self.startRinging_bool = True
@@ -68,6 +72,8 @@ class Server:
             self.setClientName(s, message)
         elif (message.split(":"))[0] == "clientDisconnect":
             self.clientDisconnect(s, message)
+        elif (message.split(":"))[0] == "ping":
+            self.ping(s)
         elif self.allReadyToRing == True:
             self.bellRinging(s, message)
         elif (message.split(":"))[0] == "":
@@ -193,10 +199,10 @@ class Server:
 
 
 if __name__ == "__main__":
-    serverIP = input("Server IP: ")
+    serverIP = input("Server IP (leave blank for default): ")
     if not serverIP:
-        serverIP = "localhost"
-    serverPort = input("Server port: ")
+        serverIP = "0.0.0.0"
+    serverPort = input("Server port (leave blank for default of 35555): ")
     if not serverPort:
         serverPort = 35555
     else:

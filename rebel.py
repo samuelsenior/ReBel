@@ -1,10 +1,13 @@
 """
-ReBel v0.2.3
+ReBel v0.2.4
 author: S. M. Senior
 """
 
-import pygame
 import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+import pygame
+
+import sys
 
 from client import Network
 
@@ -111,6 +114,7 @@ class Rebel(Font, KeyPress):
                     if self.offline == False:
                         self.network.send("clientDisconnect:Disconnecting")
                     pygame.quit()
+                    sys.exit(0)
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.button_serverConnect.rect.collidepoint(event.pos) and self.connectionActive == False:
@@ -121,34 +125,25 @@ class Rebel(Font, KeyPress):
                                 pygame.display.update(self.win.blit(self.connectingMessage, (self.button_serverConnect.width+25, 557)))
 
                             self.sanatiseServerInfo()
-                            print("offline1:", self.offline)
                             self.offline = not self.connect(self.userName, self.serverIP, self.serverPort)
                             while self.network.connected is None:
                                 time.sleep(0.1)
                             self.offline = not self.network.connected
-                            print("offline2:", self.offline)
                             if self.offline == False:
                                 self.connection = "connected"
                                 self.connectionActive = True
                                 self.button_startRinging.active = True
                                 pygame.display.update(self.win.blit(self.connectedMessage, (self.button_serverConnect.width+25, 557)))
+                                if self.config.config['testConnectionLatency'][0] == True:
+                                    self.testConnectionLatency(numberOfPings=self.config.config['testConnectionLatency'][1],
+                                                               outputRate=self.config.config['testConnectionLatency'][2])
                             else:
-                                #self.offline = True
                                 self.connection = "offline"
                                 pygame.display.update(self.win.blit(self.offlineMessage, (self.button_serverConnect.width+25, 557)))
-                                print("or here")
-
-                            #self.connectionActive = True
-                            #self.button_startRinging.active = True
                         except:
-                            print("here?")
                             pygame.display.update(self.win.blit(self.offlineMessage, (self.button_serverConnect.width+25, 557)))
                             print("Server offline: {}:{}".format(self.inputBox_serverIP.text, self.inputBox_serverPort.text))
                             self.offline = True
-
-                        #if self.connection == "connected":
-                        #    self.connectionActive = True
-                        #    self.button_startRinging.active = True
 
                     if self.button_startRinging.rect.collidepoint(event.pos) and self.button_startRinging.active == True:
                         run_menu = False
@@ -161,6 +156,7 @@ class Rebel(Font, KeyPress):
                         if self.offline == False:
                             self.network.send("clientDisconnect:Disconnecting")
                         pygame.quit()
+                        sys.exit(0)
 
                 for box in self.input_boxes:
                     pygame.display.update(box.handle_event(event, self.win))
@@ -178,12 +174,37 @@ class Rebel(Font, KeyPress):
     def connect(self, userName, serverIP, serverPort):
         self.network.connect(userName, serverIP, serverPort)
 
+    def testConnectionLatency(self, numberOfPings, outputRate):
+        print("Performing ping test to measure latency...")
+
+        time_start = None
+        time_end = None
+        average = [0, 0]
+
+        self.network.ringing = True
+        for i in range(numberOfPings):
+            time_start = time.time()
+            self.network.send("ping")
+            recvd = False
+            while recvd == False:
+                try:
+                    bellNumber = int(self.network.getBellRung())
+                except:
+                    pass
+                else:
+                    if i % outputRate == 0:
+                        print("Ping {}/{}".format(i, numberOfPings))
+                    i += 1
+
+                    time_end = time.time()
+                    average[0] += (time_end - time_start)
+                    average[1] += 1
+                    #print("Time between send and recieve: {}".format(time_end - time_start))#self.time_end = time.time()
+                    recvd = True
+        self.network.ringing = False
+        print("{} pings, average latency of: {} ms".format(average[1], int(1000*average[0]/average[1])))
+
     def main(self):
-        self.time_start = None#time.time()
-        self.time_end = None#time.time()
-        self.average = [0, 0]
-
-
         self.win = pygame.display.set_mode((self.mainWidth, self.mainHeight))
         self.bells = {}
         for i in range(self.config.config['numberOfBells']):
@@ -204,6 +225,7 @@ class Rebel(Font, KeyPress):
                     run_main = False
                     self.network.send("clientDisconnect:Disconnecting")
                     pygame.quit()
+                    sys.exit(0)
 
                 if event.type == pygame.KEYDOWN:
                     for bell in self.bells.values():
@@ -217,15 +239,6 @@ class Rebel(Font, KeyPress):
 
             try:
                 bellNumber = int(self.network.getBellRung())
-
-                self.time_end = time.time()
-                self.average[0] += (self.time_end - self.time_start)
-                self.average[1] += 1
-                print("Time between send and recieve: {}".format(self.time_end - self.time_start))#self.time_end = time.time()
-                print("Average of {}: {}".format(self.average[1], self.average[0]/self.average[1]))
-
-
-
             except:
                 pass
             else:

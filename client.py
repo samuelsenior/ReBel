@@ -25,7 +25,7 @@ class Network:
     def send(self, message):
         try:
             self.outgoingMessageQueue.put(bytes(message ,"utf-8"))
-            print("[CLIENT] {}".format(message))
+            #print("[CLIENT] {}".format(message))
         except:
             print("[ERROR] Could not send message to server: {}".format(message))
 

@@ -42,7 +42,19 @@ class Audio:
                 self.bellSemitones.append(self.scale[i+1]+(j)*12)
 
         sound = AudioSegment.from_file(self.inputFileName, format="wav")
-        sound = sound.fade_out(int(len(sound)*0.95))
+
+        if self.config.config['handbellSource'] == 'abel':
+            sound = sound.high_pass_filter(cutoff=500)
+            sound = sound.high_pass_filter(cutoff=500)
+            sound = sound.high_pass_filter(cutoff=500)
+        elif self.config.config['handbellSource'] == 'rebel':
+            sound = sound.high_pass_filter(cutoff=400)
+            sound = sound.high_pass_filter(cutoff=400)
+            sound = sound.high_pass_filter(cutoff=400)
+
+            sound = sound.low_pass_filter(cutoff=7750)
+            sound = sound.low_pass_filter(cutoff=7750)
+            sound = sound.low_pass_filter(cutoff=7750)
 
         for i, semitone in enumerate(self.bellSemitones):
             octave = 12
@@ -50,14 +62,18 @@ class Audio:
             pitchShifted_sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
 
             pitchShifted_sound = pitchShifted_sound.set_frame_rate(44100)
-            
-            fadeTime = int(len(pitchShifted_sound)*0.95)
-            pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
-            pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
-            pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
-            pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
 
-            #pitchShifted_sound = pitchShifted_sound.set_frame_rate(44100)
+            if self.config.config['handbellSource'] == 'abel':
+                fadeTime = int(len(pitchShifted_sound)*0.95)
+                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+            elif self.config.config['handbellSource'] == 'rebel':
+                fadeTime = int(len(pitchShifted_sound)*0.95)
+                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
 
             pitchShifted_sound.export('audio/{}.wav'.format(self.numberOfBells - i), format='wav')
 

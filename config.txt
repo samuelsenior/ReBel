@@ -14,5 +14,8 @@ scale:major
 octaveShift:0
 pitchShift:0
 sourceBellFileLocation:
-abelHandbellSoundIfPresent:
+handbellSource:rebel
 abelLocation:
+
+[Other]
+testConnectionLatency:True,100,10

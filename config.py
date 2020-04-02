@@ -4,7 +4,8 @@ class Config:
     def __init__(self, fileName='config.txt'):
         self.fileName = fileName
         self.config = {'numberOfBells':None, 'ringableBells':None,
-                       'scale':None, 'octaveShift':None, 'pitchShift':None}
+                       'scale':None, 'octaveShift':None, 'pitchShift':None,
+                       'testConnectionLatency':[False, 0,100]}
         self.read()
         self.format()
 
@@ -51,3 +52,8 @@ class Config:
             self.config['pitchShift'] = 0
         else:
             self.config['pitchShift'] = int(self.config['pitchShift'])
+
+        if self.config['testConnectionLatency'][0] == 'True':
+            self.config['testConnectionLatency'][0] = True
+            self.config['testConnectionLatency'][1] = int(self.config['testConnectionLatency'][1])
+            self.config['testConnectionLatency'][2] = int(self.config['testConnectionLatency'][2])
