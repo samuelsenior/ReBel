@@ -24,11 +24,10 @@ class Bell:
         self.key = key
 
     def draw(self, win):
-        pygame.draw.rect(win, self.colour, self.rect, 0)
+        return pygame.draw.rect(win, self.colour, self.rect, 0)
 
     def handle_event(self, event, send):
         if event == self.key:
-            # Toggle the active variable on
             send(str(self.bellNumber))
 
     def bellRung(self):

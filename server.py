@@ -7,7 +7,7 @@ import select, queue
 
 class Server:
     def __init__(self, serverIP, serverPort):
-        self.ReBelServerVersion = "v0.2.1"
+        self.ReBelServerVersion = "v0.2.3"
 
         self.serverIP = serverIP
         self.serverPort = serverPort
@@ -130,6 +130,8 @@ class Server:
 
         while self.inputs:
 
+            start = time.time()
+
             self.readable, self.writable, self.exceptional = select.select(self.inputs, self.outputs, self.inputs)
 
             for s in self.readable:
@@ -163,6 +165,8 @@ class Server:
                             s.close()
                             self.connections -= 1
                             print("[CLIENT] Client {} disconnected".format(name_tmp))
+
+            time.sleep(max(1./self.frameRate - (time.time() - start), 0))
  
         for client in self.clients.values():
             client['socket'].close()

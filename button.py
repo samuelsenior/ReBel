@@ -21,8 +21,7 @@ class Button(Font):
     def draw(self, win):
         self.set_rend()
 
-        pygame.draw.rect(win, (200, 200, 200), self.rect)
-        win.blit(self.rend, (self.rect.x, self.rect.y+2))
+        return pygame.draw.rect(win, (200, 200, 200), self.rect), win.blit(self.rend, (self.rect.x, self.rect.y+2))
         
     def set_rend(self):
         self.rend = self.menu_font.render(self.text, True, self.get_color())

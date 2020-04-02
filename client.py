@@ -2,17 +2,25 @@ import socket
 import pickle
 import time
 
-from _thread import *
+import threading
 import select, queue
 
 class Network:
     def __init__(self, frameRate=30):
         self.frameRate = frameRate
+
+        self._lock = threading.Lock()
+        self.clientThread = threading.Thread(target=self.start, args=(), daemon=True)
+        self.incommingMessagesThread = threading.Thread(target=self.incommingMessages, args=(), daemon=True)
+        self.outgoingMessagesThread = threading.Thread(target=self.outgoingMessages, args=(), daemon=True)
+
         self.dataSize = 128
         self.ringing = False
         self.bellsRung = []
 
         self.messageEnd = bytes("/", "utf-8")
+
+        self.connected = False
 
     def send(self, message):
         try:
@@ -96,17 +104,23 @@ class Network:
         outputs = []
 
         self.incommingMessageQueue = queue.Queue()
-        start_new_thread(self.incommingMessages, ())
+        self.incommingMessagesThread.start()
         self.outgoingMessageQueue = queue.Queue()
-        start_new_thread(self.outgoingMessages, ())
+        self.outgoingMessagesThread.start()
 
         print("[INFO] Connecting to server...")
         print("[INFO] Server IP: {}, server port: {}".format(self.serverIP, self.serverPort))
+        self._lock.acquire()
         try:
             self.server.connect(self.addr)
         except socket.error as e:
             print("Client.start.connect(): {}".format(str(e)))
-        self.server.setblocking(0)
+            inputs = None
+            self.connected = False
+        else:
+            self.server.setblocking(0)
+            self.connected = True
+        self._lock.release()
 
         while inputs:
             start = time.time()
@@ -134,7 +148,15 @@ class Network:
         self.serverPort = serverPort
         self.addr = (self.serverIP, self.serverPort)
 
-        start_new_thread(self.start, ())
+        self.clientThread.start()
+        time.sleep(0.5)
+        self._lock.acquire()
+        #self._lock.release()
+        if self.connected == False:
+            self.clientThread.stop()
+        print("connected:", self.connected)
+        self._lock.release()
+        return self.connected
 
     def disconnect(self):
         self.client.close()

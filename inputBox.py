@@ -20,7 +20,7 @@ class InputBox(Font):
         self.txt_surface = self.FONT.render(text, True, self.color)
         self.active = False
 
-    def handle_event(self, event):
+    def handle_event(self, event, screen):
         if event.type == pygame.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
@@ -41,6 +41,8 @@ class InputBox(Font):
                     self.text += event.unicode
                 # Re-render the text.
                 self.txt_surface = self.FONT.render(self.text, True, self.color)
+            self.update()
+            return [screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5)), pygame.draw.rect(screen, self.color, self.rect, 2)]
 
     def update(self):
         # Resize the box if the text is too long.
@@ -48,8 +50,5 @@ class InputBox(Font):
         self.rect.w = width
 
     def draw(self, screen):
-        # Blit the text.
-        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
-        # Blit the rect.
-        pygame.draw.rect(screen, self.color, self.rect, 2)
+        return [screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5)), pygame.draw.rect(screen, self.color, self.rect, 2)]
         

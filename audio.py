@@ -42,17 +42,22 @@ class Audio:
                 self.bellSemitones.append(self.scale[i+1]+(j)*12)
 
         sound = AudioSegment.from_file(self.inputFileName, format="wav")
-        sound = sound.fade_out(int(len(sound)*0.5))
+        sound = sound.fade_out(int(len(sound)*0.95))
 
         for i, semitone in enumerate(self.bellSemitones):
             octave = 12
             new_sample_rate = int(sound.frame_rate * (2.0 ** (self.config.config['octaveShift'] + (self.config.config['pitchShift']+semitone)/octave)))
             pitchShifted_sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
 
-            fadeTime = int(len(pitchShifted_sound)*0.5)
+            pitchShifted_sound = pitchShifted_sound.set_frame_rate(44100)
+            
+            fadeTime = int(len(pitchShifted_sound)*0.95)
+            pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+            pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+            pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
             pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
 
-            pitchShifted_sound = pitchShifted_sound.set_frame_rate(11000)
+            #pitchShifted_sound = pitchShifted_sound.set_frame_rate(44100)
 
             pitchShifted_sound.export('audio/{}.wav'.format(self.numberOfBells - i), format='wav')
 
