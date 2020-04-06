@@ -201,7 +201,6 @@ class Rebel(Font, KeyPress):
                     time_end = time.time()
                     average[0] += (time_end - time_start)
                     average[1] += 1
-                    #print("Time between send and recieve: {}".format(time_end - time_start))#self.time_end = time.time()
                     recvd = True
         self.network.ringing = False
         print("{} pings, average latency of: {} ms".format(average[1], int(1000*average[0]/average[1])))
@@ -241,19 +240,15 @@ class Rebel(Font, KeyPress):
                 if event.type == pygame.KEYDOWN:
                     for bell in self.bells.values():
                         if event.key == bell.key:
-
-
-                            self.time_start = time.time()
-
-
-                            self.network.send(str(bell.bellNumber))
+                            bell.handle_event(self.network.send)
 
             try:
-                bellNumber = int(self.network.getBellRung())
+                stroke, bellNumber = self.network.getBellRung()
+                bellNumber = int(bellNumber[0])
             except:
                 pass
             else:
-                self.bells[bellNumber].bellRung()
+                self.bells[bellNumber].bellRung(stroke)
                 pygame.display.update(self.bells[bellNumber].draw(self.win))
                 pygame.mixer.Channel(bellNumber-1).play(self.audio.bells[bellNumber])
                 pygame.display.update()

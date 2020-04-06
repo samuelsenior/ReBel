@@ -5,16 +5,13 @@ import os
 class Bell:
     def __init__(self, bellNumber, x, y, bellImageFile, key=None):
 
-        self.COLOR_INACTIVE = pygame.Color('lightskyblue3')
-        self.COLOR_ACTIVE = pygame.Color('dodgerblue2')
+        self.stroke = 'H'
 
-        self.stroke = "handstroke"
-
-        # Read in bell
-        # transform bell to smaller size and rotate to make handstroke bell and backstroke bell
-        # Want the bell png to have the same width and height surely, so position doesn't change in rotation?
+        # Read in bell image and create handstroke and backstroke images from it
+        self.width = 50
+        self.height = 50
         bell = pygame.image.load(bellImageFile)
-        self.handstrokeBell = pygame.transform.scale(bell, (140, 140))
+        self.handstrokeBell = pygame.transform.scale(bell, (self.width, self.height))
         self.handstrokeBellBlank = self.handstrokeBell.copy()
         self.fill(self.handstrokeBellBlank, pygame.Color(255, 255, 255))
         self.backstrokeBell = pygame.transform.scale(bell, (135, 135))
@@ -27,15 +24,8 @@ class Bell:
 
         self.x = x
         self.y = y
-        self.width = 50
-        self.height = 50
 
         self.key = key
-
-        self.colour = self.COLOR_INACTIVE
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-
-        self.active = False
 
     def fill(self, surface, colour):
         w, h = surface.get_size()
@@ -48,23 +38,17 @@ class Bell:
         self.key = key
 
     def draw(self, win):
-        if self.stroke == "handstroke":
-            win.blit(self.backstrokeBellBlank, self.rect)
-            #pygame.draw.rect(win, (255, 255, 255), (self.x, self.y, 135, 135), 0)
-            return win.blit(self.handstrokeBell, self.rect)
+        if self.stroke == 'H':
+            win.blit(self.backstrokeBellBlank, (self.x, self.y))
+            return win.blit(self.handstrokeBell, (self.x, self.y))
         else:
-            win.blit(self.handstrokeBellBlank, self.rect)
-            #pygame.draw.rect(win, (255, 255, 255), (self.x, self.y, 135, 135), 0)
-            return win.blit(self.backstrokeBell, self.rect)
-        #return pygame.draw.rect(win, self.colour, self.rect, 0)
+            win.blit(self.handstrokeBellBlank, (self.x, self.y))
+            return win.blit(self.backstrokeBell, (self.x, self.y))
 
-    def handle_event(self, event, send):
-        if event == self.key:
-            send(str(self.bellNumber))
+    def handle_event(self, send):
+        send("R:" + self.stroke + str(self.bellNumber))
 
-    def bellRung(self):
-        # Change the current colour of the bell
-        self.active = not self.active
-        self.stroke = "backstroke" if self.active else "handstroke"
-        self.colour = self.COLOR_ACTIVE if self.active else self.COLOR_INACTIVE
+    def bellRung(self, stroke):
+        # Change the bell stroke 
+        self.stroke = 'B' if stroke == 'H' else 'H'
         

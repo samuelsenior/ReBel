@@ -161,4 +161,6 @@ class Network:
     def getBellRung(self):
         if len(self.bellsRung) > 0:
             return self.bellsRung.pop(0)
+        else:
+            raise
 

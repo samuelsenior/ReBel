@@ -18,7 +18,7 @@ class Server:
         self.dataSize = 128
 
         self.clients = {}
-        self.allReadyToRing = False
+        #self.allReadyToRing = False
 
         self.messageEnd = bytes("/", "utf-8")
 
@@ -46,23 +46,25 @@ class Server:
 
     def startRinging(self, s, message):
         print("[COMMAND] StartRinging command recieved")
-        self.startRinging_bool = True
+        #self.startRinging_bool = True
         self.clients[s]['ready'] = True
         self.clientOutgoingMessageQueue.put([s, bytes('serverMessage:"{}" command recieved'.format((message.split(":"))[1]), "utf-8")])
 
+        self.clientOutgoingMessageQueue.put(['all', bytes('ringingCommand:Begin', "utf-8")])
+
         notReadyCounter = 0
-        readyCounter = 0
+        #readyCounter = 0
 
         for client in self.clients.values():
             if client['ready'] == False:
                 notReadyCounter += 1
         if notReadyCounter == 0:
-            self.clientOutgoingMessageQueue.put(['all', bytes('ringingCommand:Begin', "utf-8")])
-            self.allReadyToRing = True
+            #self.clientOutgoingMessageQueue.put(['all', bytes('ringingCommand:Begin', "utf-8")])
+            #self.allReadyToRing = True
             #self.dataSize = 3
-            print("[RINGING] All users ready to ring, starting...")
+            print("[RINGING] All connected users ringing")
         else:
-            print("[RINGING] {}/{} users ready to ring".format(len(self.clients) - notReadyCounter, len(self.clients)))
+            print("[RINGING] {}/{} connected users ringing".format(len(self.clients) - notReadyCounter, len(self.clients)))
 
     def recieveCommand(self, s, message):
 
@@ -74,8 +76,9 @@ class Server:
             self.clientDisconnect(s, message)
         elif (message.split(":"))[0] == "ping":
             self.ping(s)
-        elif self.allReadyToRing == True:
-            self.bellRinging(s, message)
+        elif (message.split(":"))[0] == "R":
+        #elif self.allReadyToRing == True:
+            self.bellRinging(s, (message.split(":"))[1])
         elif (message.split(":"))[0] == "":
             print("[WARNING] Blank client command, possible deconnection by {} ({}:{})".format(self.clientName, self.addr[0], self.addr[1]))
             self.clientOutgoingMessageQueue.put([s, bytes("serverMessage:[WARNING] Blank client command, are you still there?" ,"utf-8")])
