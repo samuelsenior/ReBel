@@ -8,8 +8,8 @@ class Bell:
         self.stroke = 'H'
 
         # Read in bell image and create handstroke and backstroke images from it
-        self.width = 50
-        self.height = 50
+        self.width = 140
+        self.height = 140
         bell = pygame.image.load(bellImageFile)
         self.handstrokeBell = pygame.transform.scale(bell, (self.width, self.height))
         self.handstrokeBellBlank = self.handstrokeBell.copy()
