@@ -14,7 +14,7 @@ class Bell:
         self.handstrokeBell = pygame.transform.scale(bell, (self.width, self.height))
         self.handstrokeBellBlank = self.handstrokeBell.copy()
         self.fill(self.handstrokeBellBlank, pygame.Color(255, 255, 255))
-        self.backstrokeBell = pygame.transform.scale(bell, (135, 135))
+        self.backstrokeBell = pygame.transform.scale(bell, (self.width, self.height))
         self.backstrokeBell = pygame.transform.rotate(self.backstrokeBell, -90.0)
         self.backstrokeBell = pygame.transform.flip(self.backstrokeBell, True, False)
         self.backstrokeBellBlank = self.backstrokeBell.copy()
