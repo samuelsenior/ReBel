@@ -1,6 +1,6 @@
 """
 ReBel v0.2.6
-author: S. M. Senior
+author: Samuel M Senior
 """
 
 import os
