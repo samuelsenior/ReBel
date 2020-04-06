@@ -1,5 +1,5 @@
 """
-ReBel v0.2.5
+ReBel v0.2.6
 author: S. M. Senior
 """
 
@@ -66,7 +66,7 @@ class Rebel(Font, KeyPress):
         self.network = Network(frameRate=self.frameRate)
 
         pygame.mixer.set_num_channels(self.config.config['numberOfBells'])
-        self.audio = Audio(self.config.config['numberOfBells'], pygame.mixer, self.config)
+        self.audio = Audio(self.config.config['numberOfBells'], pygame.mixer, self.config, os.path.join('audio', 'handbell.wav'))
 
     def start(self):
         self.menuScreen()
@@ -217,7 +217,9 @@ class Rebel(Font, KeyPress):
         self.radius = 200+5*(self.config.config['numberOfBells']//2)
 
         for i in range(self.config.config['numberOfBells']):
-            self.bells[i+1] = Bell(i+1, (self.mainWidth / 2.0 + self.radius*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) - 75, (self.mainHeight*3.0/5.0 + self.radius*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - 75)#550))
+            self.bells[i+1] = Bell(i+1, (self.mainWidth / 2.0 + self.radius*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) - 75,
+                                        (self.mainHeight*3.0/5.0 + self.radius*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - 75,
+                                        bellImageFile=os.path.join("img", "handbell.png"))
 
         for i, _ in enumerate(self.config.config['ringableBells']):
             key = self.config.config['keys'][i]

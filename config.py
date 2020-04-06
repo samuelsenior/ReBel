@@ -14,9 +14,6 @@ class Config:
             config_tmp = csv.reader(configFile, delimiter=":")
             for config_entry in config_tmp:
                 if len(config_entry) > 1:
-
-                    #df[['position','company']] = df['position'].str.rsplit('-', n=1, expand=True)
-
                     if len(config_entry[1].split(",")) == 1:
                         self.config[config_entry[0]] = config_entry[1]
                     else:

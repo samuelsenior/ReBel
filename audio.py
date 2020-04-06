@@ -1,13 +1,11 @@
 import wave
-
 from pydub import AudioSegment
-
 import pygame
-
 import numpy as np
+import os
 
 class Audio:
-    def __init__(self, numberOfBells, mixer, config, inputFileName="audio/handbell.wav"):
+    def __init__(self, numberOfBells, mixer, config, inputFileName):
         self.inputFileName = inputFileName
 
         self.numberOfBells = numberOfBells
@@ -75,12 +73,10 @@ class Audio:
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
 
-            pitchShifted_sound.export('audio/{}.wav'.format(self.numberOfBells - i), format='wav')
+            pitchShifted_sound.export(os.path.join('audio', '{}.wav'.format(self.numberOfBells - i)), format='wav')
 
     def loadBells(self):
         import os
-        cwd = os.getcwd()
-        print(cwd)
         for i in range(self.numberOfBells):
-            tmp = pygame.mixer.Sound('audio/{}.wav'.format(i+1))
+            tmp = pygame.mixer.Sound(os.path.join('audio', '{}.wav'.format(i+1)))
             self.bells[i+1] = tmp

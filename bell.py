@@ -3,7 +3,7 @@ import pygame
 import os
 
 class Bell:
-    def __init__(self, bellNumber, x, y, key=None):
+    def __init__(self, bellNumber, x, y, bellImageFile, key=None):
 
         self.COLOR_INACTIVE = pygame.Color('lightskyblue3')
         self.COLOR_ACTIVE = pygame.Color('dodgerblue2')
@@ -13,7 +13,7 @@ class Bell:
         # Read in bell
         # transform bell to smaller size and rotate to make handstroke bell and backstroke bell
         # Want the bell png to have the same width and height surely, so position doesn't change in rotation?
-        bell = pygame.image.load(os.path.join("img", "handbell.png"))
+        bell = pygame.image.load(bellImageFile)
         self.handstrokeBell = pygame.transform.scale(bell, (140, 140))
         self.handstrokeBellBlank = self.handstrokeBell.copy()
         self.fill(self.handstrokeBellBlank, pygame.Color(255, 255, 255))

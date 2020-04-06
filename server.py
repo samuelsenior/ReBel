@@ -7,7 +7,7 @@ import select, queue
 
 class Server:
     def __init__(self, serverIP, serverPort):
-        self.ReBelServerVersion = "v0.2.5"
+        self.ReBelServerVersion = "v0.2.6"
 
         self.serverIP = serverIP
         self.serverPort = serverPort
@@ -48,7 +48,7 @@ class Server:
         print("[COMMAND] StartRinging command recieved")
         self.startRinging_bool = True
         self.clients[s]['ready'] = True
-        self.clientOutgoingMessageQueue.put([s, bytes('serverMessage:[SERVER] "{}" command recieved'.format((message.split(":"))[1]), "utf-8")])
+        self.clientOutgoingMessageQueue.put([s, bytes('serverMessage:"{}" command recieved'.format((message.split(":"))[1]), "utf-8")])
 
         notReadyCounter = 0
         readyCounter = 0
@@ -147,7 +147,7 @@ class Server:
                     self.clients[connection] = {'socket':s, 'connection':connection, 'addr':addr, 'name':None, 'userLevel':'user',
                                                 'ready':False}
 
-                    self.clientOutgoingMessageQueue.put([connection, bytes("connectionStatus:Success:Connected to ReBel server: {}".format(self.ReBelServerVersion), "utf-8")])
+                    self.clientOutgoingMessageQueue.put([connection, bytes("connectionStatus:Success:Connected to ReBel server:{}".format(self.ReBelServerVersion), "utf-8")])
                     print("[SERVER] Incoming connection from {}:{}".format(addr[0], addr[1]))
                     self.connections += 1
 

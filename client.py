@@ -37,7 +37,6 @@ class Network:
             if message.split(":")[1] == "Success":
                 self.serverVersion = message.split(":")[3]
                 print("[SERVER] {} {} on {}:{}".format(message.split(":")[2], self.serverVersion, self.addr[0], self.addr[1]))
-
                 self.setName()
             else:
                 print("[SERVER] Could not connect to server, error: {}".format(message.split(":")[1]))
@@ -151,10 +150,8 @@ class Network:
         self.clientThread.start()
         time.sleep(0.5)
         self._lock.acquire()
-        #self._lock.release()
         if self.connected == False:
             self.clientThread.stop()
-        print("connected:", self.connected)
         self._lock.release()
         return self.connected
 
