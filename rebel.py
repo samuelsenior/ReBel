@@ -1,5 +1,5 @@
 """
-ReBel v0.2.4
+ReBel v0.2.5
 author: S. M. Senior
 """
 
@@ -8,6 +8,8 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 
 import sys
+
+import numpy as np
 
 from client import Network
 
@@ -207,8 +209,15 @@ class Rebel(Font, KeyPress):
     def main(self):
         self.win = pygame.display.set_mode((self.mainWidth, self.mainHeight))
         self.bells = {}
+        seperationAngle = 2.0*np.pi / self.config.config['numberOfBells']
+
+        self.a = 1.5#*10/8.0
+        self.b = 1.0
+
+        self.radius = 200+5*(self.config.config['numberOfBells']//2)
+
         for i in range(self.config.config['numberOfBells']):
-            self.bells[i+1] = Bell(i+1, (self.mainWidth/2 - 100 * self.config.config['numberOfBells']/2 + 25) + i * 100, 550)
+            self.bells[i+1] = Bell(i+1, (self.mainWidth / 2.0 + self.radius*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) - 75, (self.mainHeight*3.0/5.0 + self.radius*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - 75)#550))
 
         for i, _ in enumerate(self.config.config['ringableBells']):
             key = self.config.config['keys'][i]

@@ -2,7 +2,7 @@
 # ringabelBells = the bells you can ring, as positive integers seperated by commas
 # keys = the keyboard mapping to the bells (same order as the bells that can be rung), as positive integers seperated by commas
 [Ringing Options]
-numberOfBells:8
+numberOfBells:12
 ringableBells:1,2,3,4,5,6,7,8
 keys:j,f,u,r,h,d,y,e
 
@@ -18,4 +18,4 @@ handbellSource:rebel
 abelLocation:
 
 [Other]
-testConnectionLatency:True,100,10
+testConnectionLatency:False,100,10
