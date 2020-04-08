@@ -14,14 +14,22 @@ class Audio:
 
         self.bellSemitones = []
         self.bells = {}
-        # Major scale formula: W W H W W W H
+        # Major scale formula: t t s t t t s
         self.majorScale = [0, 2, 4, 5, 7, 9, 11, 12]
-        # Harmonic minor scale: tstts1.5s
+        # Natural minor scale: t s t t s t t
+        self.naturalMinorScale = [0, 2, 3, 5, 7, 8, 10, 12]
+        # Harmonic minor scale: t s t t 1.5t s
         self.harmonicMinorScale = [0, 2, 3, 5, 7, 8, 11, 12]
+        # Melodic minor scale: t s t t t t s
+        self.melodicMinorScale = [0, 2, 3, 5, 7, 9, 11, 12]
         if self.config.config['scale'] == "major":
             self.scale = self.majorScale
+        elif self.config.config['scale'] == "naturalMinor":
+            self.scale = self.naturalMinorScale
         elif self.config.config['scale'] == "harmonicMinor":
             self.scale = self.harmonicMinorScale
+        elif self.config.config['scale'] == "melodicMinor":
+            self.scale = self.melodicMinorScale
         self.generateBells()
 
         self.loadBells()

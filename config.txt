@@ -2,11 +2,11 @@
 # ringabelBells = the bells you can ring, as positive integers seperated by commas
 # keys = the keyboard mapping to the bells (same order as the bells that can be rung), as positive integers seperated by commas
 [Ringing Options]
-numberOfBells:12
+numberOfBells:8
 ringableBells:1,2,3,4,5,6,7,8
 keys:j,f,u,r,h,d,y,e
 
-# Scales currently include 'major' and 'harmonicMinor'
+# Scales currently include 'major', 'naturalMinor', harmonicMinor', and 'melodicMinor'
 # octaveShift by an integer number of octaves (either positive, negative, or zero)
 # pitchShift the key of the scale by an integer number of semitones (positive, negative, or zero)
 [Sound Options]
@@ -18,4 +18,4 @@ handbellSource:rebel
 abelLocation:
 
 [Other]
-testConnectionLatency:False,100,10
+testConnectionLatency:True,100,10
