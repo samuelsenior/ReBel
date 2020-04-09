@@ -5,7 +5,8 @@ class Config:
         self.fileName = fileName
         self.config = {'numberOfBells':None, 'ringableBells':None,
                        'scale':None, 'octaveShift':None, 'pitchShift':None,
-                       'testConnectionLatency':[False, 0,100]}
+                       'testConnectionLatency':[False, 0,100],
+                       'regenerateBells':False}
         self.read()
         self.format()
 
@@ -54,3 +55,8 @@ class Config:
             self.config['testConnectionLatency'][0] = True
             self.config['testConnectionLatency'][1] = int(self.config['testConnectionLatency'][1])
             self.config['testConnectionLatency'][2] = int(self.config['testConnectionLatency'][2])
+
+        if self.config['regenerateBells'] == 'True':
+            self.config['regenerateBells'] = True
+        else:
+            self.config['regenerateBells'] = False

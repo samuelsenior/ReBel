@@ -18,4 +18,4 @@ handbellSource:rebel
 abelLocation:
 
 [Other]
-testConnectionLatency:True,100,10
+testConnectionLatency:False,100,10

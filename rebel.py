@@ -1,5 +1,5 @@
 """
-ReBel v0.2.6
+ReBel v0.2.8
 author: Samuel M Senior
 """
 

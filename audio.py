@@ -1,8 +1,8 @@
-import wave
 from pydub import AudioSegment
 import pygame
 import numpy as np
 import os
+import csv
 
 class Audio:
     def __init__(self, numberOfBells, mixer, config, inputFileName):
@@ -30,11 +30,68 @@ class Audio:
             self.scale = self.harmonicMinorScale
         elif self.config.config['scale'] == "melodicMinor":
             self.scale = self.melodicMinorScale
-        self.generateBells()
+
+        self.regenerateBells = True
+        self.checkGeneratedBells()
+        if self.regenerateBells == True:
+            self.generateBells()
+        if self.config.config['regenerateBells'] == True:
+            print("[INFO] Config regenerate bells option is True")
+            self.generateBells()
 
         self.loadBells()
 
+    def checkGeneratedBells(self):
+        self.regenerateBells = True
+        self.bellSpecFileLocation = os.path.join('audio', 'bsf')
+        # Check BSF exists
+        if os.path.isfile(self.bellSpecFileLocation):
+            # If it doesn't the regenerate bells
+            #   self.regenerateBells = True
+            bellSpec = {}
+
+            # If it does then read it in
+            with open(self.bellSpecFileLocation, 'r') as bellSpecFile:
+                bellSpecFile_reader = csv.reader(bellSpecFile, delimiter=":")
+                for bellSpecLine in bellSpecFile_reader:
+                    bellSpec[bellSpecLine[0]] = bellSpecLine[1]
+        
+            bellSpec['scale'] = bellSpec['scale'].split(",")
+            bellSpec['scale'] = [int(b) for b in bellSpec['scale']]
+            bellSpec['numberOfBells'] = int(bellSpec['numberOfBells'])
+            bellSpec['octaveShift'] = int(bellSpec['octaveShift'])
+            bellSpec['pitchShift'] = int(bellSpec['pitchShift'])
+
+            if bellSpec['scaleName'] == self.config.config['scale'] \
+               and bellSpec['scale'] == self.scale \
+               and bellSpec['numberOfBells'] == self.config.config['numberOfBells'] \
+               and bellSpec['octaveShift'] == self.config.config['octaveShift'] \
+               and bellSpec['pitchShift'] == self.config.config['pitchShift'] \
+               and bellSpec['handbellSource'] == self.config.config['handbellSource']:
+                self.regenerateBells = False
+                print("[INFO] Config file bell options match bell spec file")
+            else:
+                print("[INFO] Config file bell options do not match bell spec file, regenerating bells")
+
+    def writeBellSpecFile(self):
+        print("[INFO] Writing bell spec file")
+        self.bellSpecFileLocation = os.path.join('audio', 'bsf')
+        with open(self.bellSpecFileLocation, 'w') as bellSpecFile:
+            bellSpecFile.write("{}:{}\n".format("scaleName", self.config.config['scale']))
+            bellSpecFile.write("{}:".format("scale"))
+            for i, _ in enumerate(self.scale):
+                if i > 0:
+                    bellSpecFile.write(",")
+                bellSpecFile.write("{}".format(self.scale[i]))
+            bellSpecFile.write("\n")
+            bellSpecFile.write("{}:{}\n".format("numberOfBells", self.config.config['numberOfBells']))
+            bellSpecFile.write("{}:{}\n".format("octaveShift", self.config.config['octaveShift']))
+            bellSpecFile.write("{}:{}\n".format("pitchShift", self.config.config['pitchShift']))
+            bellSpecFile.write("{}:{}\n".format("handbellSource", self.config.config['handbellSource']))
+
     def generateBells(self):
+
+        print("[INFO] Generating bells")
 
         self.bellSemitones = [0]
         j = 0
@@ -83,8 +140,11 @@ class Audio:
 
             pitchShifted_sound.export(os.path.join('audio', '{}.wav'.format(self.numberOfBells - i)), format='wav')
 
+        self.writeBellSpecFile()
+
     def loadBells(self):
         import os
+        print("[INFO] Loading in bells")
         for i in range(self.numberOfBells):
             tmp = pygame.mixer.Sound(os.path.join('audio', '{}.wav'.format(i+1)))
             self.bells[i+1] = tmp
