@@ -17,7 +17,7 @@ pitchShift:0
 # Source location of the handbell sound, currently either ReBel or Abel
 handbellSource:rebel
 rebelBellFileLocation:audio/hbell.wav
-abelBellFileLocation:C:Program Files (x86)\Abel 3\Bells\hbell.wav
+abelBellFileLocation:C:\Program Files (x86)\Abel 3\Bells\hbell.wav
 
 [Other]
 testConnectionLatency:False,100,10
