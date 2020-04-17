@@ -232,15 +232,15 @@ class Rebel(Font, KeyPress):
             width = 140
             height = 140
 
-            x = (self.mainWidth / 2.0 + self.radius*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) - width/2.0
-            y = (self.mainHeight*3.0/5.0 + self.radius*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - width/2.0
+            x = (self.mainWidth / 2.0 + self.radius*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+            y = (self.mainHeight*3.0/5.0 + self.radius*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
 
-            if (seperationAngle*i + seperationAngle/2.0) <= np.pi/2.0 or (seperationAngle*i + seperationAngle/2.0) >= 3.0*np.pi/2.0:
-                textX = (self.mainWidth / 2.0 + (self.radius-0)*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) + width/2.0 - width/14.0
-                textY = (self.mainHeight*3.0/5.0 + (self.radius+0)*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - width/2.0
+            if (seperationAngle*i + seperationAngle/2.0) <= np.pi/2.0 or (seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0) >= 3.0*np.pi/2.0:
+                textX = (self.mainWidth / 2.0 + (self.radius-0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) + width/2.0 - width/14.0
+                textY = (self.mainHeight*3.0/5.0 + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
             else:
-                textX = (self.mainWidth / 2.0 + (self.radius+0)*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) - width/2.0
-                textY = (self.mainHeight*3.0/5.0 + (self.radius+0)*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - width/2.0
+                textX = (self.mainWidth / 2.0 + (self.radius+0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+                textY = (self.mainHeight*3.0/5.0 + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
 
             self.bells[i+1] = Bell(i+1, location=(x, y), width=width, height=height,
                                    textLocation=(textX, textY),

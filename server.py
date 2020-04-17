@@ -30,11 +30,13 @@ class Server:
         self.backgroundTasksThread = threading.Thread(target=self.backgroundTasks, args=(), daemon=True)
 
         self.numberOfBells = 8
+        self.bellStrokeList = ['B'] * self.numberOfBells
 
-    def bellRinging(self, s, bell):
+    def bellRinging(self, s, stroke, bell):
         try:
-            self.clientOutgoingMessageQueue.put(['all', bytes("R:"+bell ,"utf-8")])
-            print("[RINGING] Bell {} rung by {}".format(bell, self.clients[s]['name']))
+            self.bellStrokeList[int(bell)-1]  = 'B' if self.bellStrokeList[int(bell)-1] == 'H' else 'H'
+            self.clientOutgoingMessageQueue.put(['all', bytes("R:"+self.bellStrokeList[int(bell)-1]+bell ,"utf-8")])
+            print("[RINGING] Bell {} rung by {}".format(self.bellStrokeList[int(bell)-1]+bell, self.clients[s]['name']))
         except:
             print("[ERROR] Connection to {} ({}:{}) lost".format(self.clients[s]['name'], self.clients[s]['addr'][0], self.clients[s]['addr'][1]))
 
@@ -84,7 +86,7 @@ class Server:
             elif (message.split(":"))[1] == "set":
                 pass
         elif (message.split(":"))[0] == "R":
-            self.bellRinging(s, (message.split(":"))[1])
+            self.bellRinging(s, (message.split(":"))[1][0], (message.split(":"))[1][1:])
         elif (message.split(":"))[0] == "":
             print("[WARNING] Blank client command, possible deconnection by {} ({}:{})".format(self.clientName, self.addr[0], self.addr[1]))
             self.clientOutgoingMessageQueue.put([s, bytes("serverMessage:[WARNING] Blank client command, are you still there?" ,"utf-8")])
@@ -204,6 +206,7 @@ class Server:
             elif (serverCommand.split(" "))[0] == "setnumberofbells":
                 self.numberOfBells = int((serverCommand.split(" "))[1])
                 self.clientOutgoingMessageQueue.put(['all', bytes("setNumberOfBells:{}".format(self.numberOfBells) ,"utf-8")])
+                self.bellStrokeList = ['B'] * self.numberOfBells
                 print("Set number of bells to {}".format(self.numberOfBells))
 
             time.sleep(max(1./self.frameRate - (time.time() - start), 0))
