@@ -83,10 +83,9 @@ class Config:
             print("here?")
         else:
             tmp = self.config['abelBellFileLocation'].split('/|\\')
-            self.config['abelBellFileLocation'] = ""#'"
+            self.config['abelBellFileLocation'] = ""
             for t in tmp:
                 self.config['abelBellFileLocation'] = os.path.join(self.config['abelBellFileLocation'], t)
-            #self.config['abelBellFileLocation']+"'"
             print("Abel Loc:", self.config['abelBellFileLocation'])
 
     def get(self, dictKey):
