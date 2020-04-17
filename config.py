@@ -60,3 +60,9 @@ class Config:
             self.config['regenerateBells'] = True
         else:
             self.config['regenerateBells'] = False
+
+    def get(self, dictKey):
+        return self.config[dictKey]
+
+    def set(self, dictKey, value):
+        self.config[dictKey] = value

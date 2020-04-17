@@ -11,7 +11,7 @@ class Network:
 
         self._lock = threading.Lock()
         self.clientThread = threading.Thread(target=self.start, args=(), daemon=True)
-        self.incommingMessagesThread = threading.Thread(target=self.incommingMessages, args=(), daemon=True)
+        self.incomingMessagesThread = threading.Thread(target=self.incomingMessages, args=(), daemon=True)
         self.outgoingMessagesThread = threading.Thread(target=self.outgoingMessages, args=(), daemon=True)
 
         self.dataSize = 128
@@ -21,6 +21,8 @@ class Network:
         self.messageEnd = bytes("/", "utf-8")
 
         self.connected = False
+        self.gotNumberOfBells = False
+        self.numberOfBells = []
 
     def send(self, message):
         try:
@@ -52,35 +54,31 @@ class Network:
                 print("[SERVER] Could not set name, error: {}".format((message.split(":"))[1]))
                 self.clientName = "Default"
                 print("[SERVER] Using name 'None'")  
+        elif (message.split(":"))[0] == "setNumberOfBells":
+            self.numberOfBells.append(int(message.split(":")[1]))
+            self.gotNumberOfBells = True
         elif message.split(":")[0] == "ringingCommand":
             if message.split(":")[1] == "Begin":
                 print("[RINGING] Ringing beginning")
                 self.ringing = True 
             else:
                 print("[ERROR] Unrecognised ringing command: {}".format((message.split(":"))[1]))
+        elif (message.split(":"))[0] == "R":
+            self.bellsRung.append(((message.split(":"))[1][0], (message.split(":"))[1][1:]))
         elif (message.split(":"))[0] == "":
             print("[WARNING] Empty server message, possible deconnection")
         else:
             print('[ERROR] Unrecognised command from server "{}"'.format((message.split(":"))[0]))
 
-    def processRecvdMessage(self, message):
-        if self.ringing == True:
-            if message[0] != "-":
-                self.bellsRung.append(message)
-            else:
-                pass
-        elif self.ringing == False:
-            self.recieveCommand(message)
-
-    def incommingMessages(self):
+    def incomingMessages(self):
         while True:
             start = time.time()
             try:
-                message = self.incommingMessageQueue.get_nowait()
+                message = self.incomingMessageQueue.get_nowait()
             except:
                 pass
             else:
-                self.processRecvdMessage(message)
+                self.recieveCommand(message)
             time.sleep(max(1./self.frameRate - (time.time() - start), 0))
 
     def outgoingMessages(self):
@@ -102,8 +100,8 @@ class Network:
         inputs = [self.server]
         outputs = []
 
-        self.incommingMessageQueue = queue.Queue()
-        self.incommingMessagesThread.start()
+        self.incomingMessageQueue = queue.Queue()
+        self.incomingMessagesThread.start()
         self.outgoingMessageQueue = queue.Queue()
         self.outgoingMessagesThread.start()
 
@@ -129,7 +127,7 @@ class Network:
                 if data:
                     data = data.decode("utf-8")
                     for message in data.split("/")[:-1]:
-                        self.incommingMessageQueue.put(message)
+                        self.incomingMessageQueue.put(message)
                     if s not in outputs:
                         outputs.append(s)
                 else:
@@ -157,6 +155,12 @@ class Network:
 
     def disconnect(self):
         self.client.close()
+
+    def getNumberOfBells(self):
+        if self.gotNumberOfBells == True:
+            return self.numberOfBells.pop(0)
+        else:
+            raise
 
     def getBellRung(self):
         if len(self.bellsRung) > 0:

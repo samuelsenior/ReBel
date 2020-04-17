@@ -60,5 +60,31 @@ class KeyPress:
         elif key.lower() == 'm':
             return pygame.K_m
 
+        elif key == '0':
+            return pygame.K_0
+        elif key == '1':
+            return pygame.K_1
+        elif key == '2':
+            return pygame.K_2
+        elif key == '3':
+            return pygame.K_3
+        elif key == '4':
+            return pygame.K_4
+        elif key == '5':
+            return pygame.K_5
+        elif key == '6':
+            return pygame.K_6
+        elif key == '7':
+            return pygame.K_7
+        elif key == '8':
+            return pygame.K_8
+        elif key == '9':
+            return pygame.K_9
+
+        elif key == '-':
+            return pygame.K_MINUS
+        elif key == '=':
+            return pygame.K_EQUALS
+
         elif key == "-1":
             pass

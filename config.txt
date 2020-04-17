@@ -3,8 +3,8 @@
 # keys = the keyboard mapping to the bells (same order as the bells that can be rung), as positive integers seperated by commas
 [Ringing Options]
 numberOfBells:8
-ringableBells:1,2,3,4,5,6,7,8
-keys:j,f,u,r,h,d,y,e
+ringableBells:1,2,3,4,5,6,7,8,9,10,11,12
+keys:j,f,u,r,h,d,y,e,g,s,t,w
 
 # Scales currently include 'major', 'naturalMinor', harmonicMinor', and 'melodicMinor'
 # octaveShift by an integer number of octaves (either positive, negative, or zero)

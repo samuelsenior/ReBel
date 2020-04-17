@@ -100,9 +100,14 @@ class Audio:
             for i in range(2, 8):
                 if j*8 + i < self.numberOfBells:
                     self.bellSemitones.append(self.scale[i]+j*12)
-        for i in range(8):
-            if len(self.bellSemitones) < self.numberOfBells:
-                self.bellSemitones.append(self.scale[i+1]+(j+1)*12)
+        if self.numberOfBells < 8:
+            for i in range(self.numberOfBells):
+                if len(self.bellSemitones) < self.numberOfBells:
+                    self.bellSemitones.append(self.scale[i+1])
+        else:
+            for i in range(8):
+                if len(self.bellSemitones) < self.numberOfBells:
+                    self.bellSemitones.append(self.scale[i+1]+(j+1)*12)
 
         sound = AudioSegment.from_file(self.inputFileName, format="wav")
 

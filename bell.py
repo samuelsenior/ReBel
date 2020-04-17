@@ -1,15 +1,16 @@
 import pygame
+from font import Font
 
 import os
 
-class Bell:
-    def __init__(self, bellNumber, x, y, bellImageFile, key=None):
-
+class Bell(Font):
+    def __init__(self, bellNumber, location, bellImageFile, width, height, textLocation, key=None):
+        super().__init__()
         self.stroke = 'H'
 
         # Read in bell image and create handstroke and backstroke images from it
-        self.width = 140
-        self.height = 140
+        self.width = width
+        self.height = height
         bell = pygame.image.load(bellImageFile)
         self.handstrokeBell = pygame.transform.scale(bell, (self.width, self.height))
         self.handstrokeBellBlank = self.handstrokeBell.copy()
@@ -21,9 +22,13 @@ class Bell:
         self.fill(self.backstrokeBellBlank, pygame.Color(255, 255, 255))
 
         self.bellNumber = bellNumber
+        self.bellNumberText = self.FONT.render(str(self.bellNumber), True, (0, 0, 0))
 
-        self.x = x
-        self.y = y
+        self.x = location[0]
+        self.y = location[1]
+
+        self.textX = textLocation[0]
+        self.textY = textLocation[1]
 
         self.key = key
 
@@ -38,6 +43,7 @@ class Bell:
         self.key = key
 
     def draw(self, win):
+        win.blit(self.bellNumberText, (self.textX, self.textY))
         if self.stroke == 'H':
             win.blit(self.backstrokeBellBlank, (self.x, self.y))
             return win.blit(self.handstrokeBell, (self.x, self.y))

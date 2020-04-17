@@ -1,5 +1,5 @@
 """
-ReBel v0.2.8
+ReBel v0.2.9
 author: Samuel M Senior
 """
 
@@ -65,8 +65,8 @@ class Rebel(Font, KeyPress):
 
         self.network = Network(frameRate=self.frameRate)
 
-        pygame.mixer.set_num_channels(self.config.config['numberOfBells'])
-        self.audio = Audio(self.config.config['numberOfBells'], pygame.mixer, self.config, os.path.join('audio', 'handbell.wav'))
+        #pygame.mixer.set_num_channels(self.config.get('numberOfBells'))
+        #self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config, os.path.join('audio', 'handbell.wav'))
 
     def start(self):
         self.menuScreen()
@@ -136,9 +136,9 @@ class Rebel(Font, KeyPress):
                                 self.connectionActive = True
                                 self.button_startRinging.active = True
                                 pygame.display.update(self.win.blit(self.connectedMessage, (self.button_serverConnect.width+25, 557)))
-                                if self.config.config['testConnectionLatency'][0] == True:
-                                    self.testConnectionLatency(numberOfPings=self.config.config['testConnectionLatency'][1],
-                                                               outputRate=self.config.config['testConnectionLatency'][2])
+                                if self.config.get('testConnectionLatency')[0] == True:
+                                    self.testConnectionLatency(numberOfPings=self.config.get('testConnectionLatency')[1],
+                                                               outputRate=self.config.get('testConnectionLatency')[2])
                             else:
                                 self.connection = "offline"
                                 pygame.display.update(self.win.blit(self.offlineMessage, (self.button_serverConnect.width+25, 557)))
@@ -207,22 +207,51 @@ class Rebel(Font, KeyPress):
 
     def main(self):
         self.win = pygame.display.set_mode((self.mainWidth, self.mainHeight))
+        self.network.send("numberOfBells:get")
+
+        waitingForNumberOFBells = True
+        while waitingForNumberOFBells:
+            try:
+                self.config.set('numberOfBells', self.network.getNumberOfBells())
+            except:
+                pass
+            else:
+                waitingForNumberOFBells = False
+                print("Number of bells set to {}".format(self.config.get('numberOfBells')))
+
         self.bells = {}
-        seperationAngle = 2.0*np.pi / self.config.config['numberOfBells']
+        seperationAngle = 2.0*np.pi / self.config.get('numberOfBells')
 
         self.a = 1.5#*10/8.0
         self.b = 1.0
 
-        self.radius = 200+5*(self.config.config['numberOfBells']//2)
+        self.radius = 200+5*(self.config.get('numberOfBells')//2)
 
-        for i in range(self.config.config['numberOfBells']):
-            self.bells[i+1] = Bell(i+1, (self.mainWidth / 2.0 + self.radius*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) - 75,
-                                        (self.mainHeight*3.0/5.0 + self.radius*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - 75,
-                                        bellImageFile=os.path.join("img", "handbell.png"))
+        for i in range(self.config.get('numberOfBells')):
 
-        for i, _ in enumerate(self.config.config['ringableBells']):
-            key = self.config.config['keys'][i]
-            self.bells[self.config.config['ringableBells'][i]].setKey(self.keyPress(key))
+            width = 140
+            height = 140
+
+            x = (self.mainWidth / 2.0 + self.radius*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) - width/2.0
+            y = (self.mainHeight*3.0/5.0 + self.radius*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - width/2.0
+
+            if (seperationAngle*i + seperationAngle/2.0) <= np.pi/2.0 or (seperationAngle*i + seperationAngle/2.0) >= 3.0*np.pi/2.0:
+                textX = (self.mainWidth / 2.0 + (self.radius-0)*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) + width/2.0 - width/14.0
+                textY = (self.mainHeight*3.0/5.0 + (self.radius+0)*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - width/2.0
+            else:
+                textX = (self.mainWidth / 2.0 + (self.radius+0)*self.a*np.cos(seperationAngle*i + seperationAngle/2.0)) - width/2.0
+                textY = (self.mainHeight*3.0/5.0 + (self.radius+0)*self.b*np.sin(seperationAngle*i + seperationAngle/2.0)) - width/2.0
+
+            self.bells[i+1] = Bell(i+1, location=(x, y), width=width, height=height,
+                                   textLocation=(textX, textY),
+                                   bellImageFile=os.path.join("img", "handbell.png"))
+
+        for i, _ in enumerate(self.config.get('ringableBells')) if len(self.config.get('ringableBells')) < self.config.get('numberOfBells') else enumerate(range(self.config.get('numberOfBells'))):
+            key = self.config.get('keys')[i]
+            self.bells[self.config.get('ringableBells')[i]].setKey(self.keyPress(key))
+
+        pygame.mixer.set_num_channels(self.config.get('numberOfBells'))
+        self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config, os.path.join('audio', 'handbell.wav'))
 
         clock = pygame.time.Clock()
         pygame.display.update(self.win.blit(self.mainBackground, (0, 0)))
@@ -241,10 +270,9 @@ class Rebel(Font, KeyPress):
                     for bell in self.bells.values():
                         if event.key == bell.key:
                             bell.handle_event(self.network.send)
-
             try:
                 stroke, bellNumber = self.network.getBellRung()
-                bellNumber = int(bellNumber[0])
+                bellNumber = int(bellNumber)
             except:
                 pass
             else:
