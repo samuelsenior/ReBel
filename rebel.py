@@ -251,7 +251,7 @@ class Rebel(Font, KeyPress):
             self.bells[self.config.get('ringableBells')[i]].setKey(self.keyPress(key))
 
         pygame.mixer.set_num_channels(self.config.get('numberOfBells'))
-        self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config, os.path.join('audio', 'handbell.wav'))
+        self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config)
 
         clock = pygame.time.Clock()
         pygame.display.update(self.win.blit(self.mainBackground, (0, 0)))

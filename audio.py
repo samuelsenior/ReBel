@@ -5,9 +5,7 @@ import os
 import csv
 
 class Audio:
-    def __init__(self, numberOfBells, mixer, config, inputFileName):
-        self.inputFileName = inputFileName
-
+    def __init__(self, numberOfBells, mixer, config):
         self.numberOfBells = numberOfBells
         self.config = config
         self.mixer = mixer
@@ -22,20 +20,20 @@ class Audio:
         self.harmonicMinorScale = [0, 2, 3, 5, 7, 8, 11, 12]
         # Melodic minor scale: t s t t t t s
         self.melodicMinorScale = [0, 2, 3, 5, 7, 9, 11, 12]
-        if self.config.config['scale'] == "major":
+        if self.config.get('scale') == "major":
             self.scale = self.majorScale
-        elif self.config.config['scale'] == "naturalMinor":
+        elif self.config.get('scale') == "naturalMinor":
             self.scale = self.naturalMinorScale
-        elif self.config.config['scale'] == "harmonicMinor":
+        elif self.config.get('scale') == "harmonicMinor":
             self.scale = self.harmonicMinorScale
-        elif self.config.config['scale'] == "melodicMinor":
+        elif self.config.get('scale') == "melodicMinor":
             self.scale = self.melodicMinorScale
 
         self.regenerateBells = True
         self.checkGeneratedBells()
         if self.regenerateBells == True:
             self.generateBells()
-        if self.config.config['regenerateBells'] == True:
+        if self.config.get('regenerateBells') == True:
             print("[INFO] Config regenerate bells option is True")
             self.generateBells()
 
@@ -62,12 +60,12 @@ class Audio:
             bellSpec['octaveShift'] = int(bellSpec['octaveShift'])
             bellSpec['pitchShift'] = int(bellSpec['pitchShift'])
 
-            if bellSpec['scaleName'] == self.config.config['scale'] \
+            if bellSpec['scaleName'] == self.config.get('scale') \
                and bellSpec['scale'] == self.scale \
-               and bellSpec['numberOfBells'] == self.config.config['numberOfBells'] \
-               and bellSpec['octaveShift'] == self.config.config['octaveShift'] \
-               and bellSpec['pitchShift'] == self.config.config['pitchShift'] \
-               and bellSpec['handbellSource'] == self.config.config['handbellSource']:
+               and bellSpec['numberOfBells'] == self.config.get('numberOfBells') \
+               and bellSpec['octaveShift'] == self.config.get('octaveShift') \
+               and bellSpec['pitchShift'] == self.config.get('pitchShift') \
+               and bellSpec['handbellSource'] == self.config.get('handbellSource'):
                 self.regenerateBells = False
                 print("[INFO] Config file bell options match bell spec file")
             else:
@@ -77,17 +75,17 @@ class Audio:
         print("[INFO] Writing bell spec file")
         self.bellSpecFileLocation = os.path.join('audio', 'bsf')
         with open(self.bellSpecFileLocation, 'w') as bellSpecFile:
-            bellSpecFile.write("{}:{}\n".format("scaleName", self.config.config['scale']))
+            bellSpecFile.write("{}:{}\n".format("scaleName", self.config.get('scale')))
             bellSpecFile.write("{}:".format("scale"))
             for i, _ in enumerate(self.scale):
                 if i > 0:
                     bellSpecFile.write(",")
                 bellSpecFile.write("{}".format(self.scale[i]))
             bellSpecFile.write("\n")
-            bellSpecFile.write("{}:{}\n".format("numberOfBells", self.config.config['numberOfBells']))
-            bellSpecFile.write("{}:{}\n".format("octaveShift", self.config.config['octaveShift']))
-            bellSpecFile.write("{}:{}\n".format("pitchShift", self.config.config['pitchShift']))
-            bellSpecFile.write("{}:{}\n".format("handbellSource", self.config.config['handbellSource']))
+            bellSpecFile.write("{}:{}\n".format("numberOfBells", self.config.get('numberOfBells')))
+            bellSpecFile.write("{}:{}\n".format("octaveShift", self.config.get('octaveShift')))
+            bellSpecFile.write("{}:{}\n".format("pitchShift", self.config.get('pitchShift')))
+            bellSpecFile.write("{}:{}\n".format("handbellSource", self.config.get('handbellSource')))
 
     def generateBells(self):
 
@@ -109,13 +107,19 @@ class Audio:
                 if len(self.bellSemitones) < self.numberOfBells:
                     self.bellSemitones.append(self.scale[i+1]+(j+1)*12)
 
-        sound = AudioSegment.from_file(self.inputFileName, format="wav")
+        if self.config.get('handbellSource') == 'abel':
+            sound = AudioSegment.from_file(self.config.get('abelBellFileLocation'), format="wav")
+        elif self.config.get('handbellSource') == 'rebel':
+            sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
+        else:
+            print("[WARNING] Handbell source not set, defaulting to ReBel handbell source")
+            sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
 
-        if self.config.config['handbellSource'] == 'abel':
+        if self.config.get('handbellSource') == 'abel':
             sound = sound.high_pass_filter(cutoff=500)
             sound = sound.high_pass_filter(cutoff=500)
             sound = sound.high_pass_filter(cutoff=500)
-        elif self.config.config['handbellSource'] == 'rebel':
+        elif self.config.get('handbellSource') == 'rebel':
             sound = sound.high_pass_filter(cutoff=400)
             sound = sound.high_pass_filter(cutoff=400)
             sound = sound.high_pass_filter(cutoff=400)
@@ -126,18 +130,18 @@ class Audio:
 
         for i, semitone in enumerate(self.bellSemitones):
             octave = 12
-            new_sample_rate = int(sound.frame_rate * (2.0 ** (self.config.config['octaveShift'] + (self.config.config['pitchShift']+semitone)/octave)))
+            new_sample_rate = int(sound.frame_rate * (2.0 ** (self.config.get('octaveShift') + (self.config.get('pitchShift')+semitone)/octave)))
             pitchShifted_sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
 
             pitchShifted_sound = pitchShifted_sound.set_frame_rate(44100)
 
-            if self.config.config['handbellSource'] == 'abel':
+            if self.config.get('handbellSource') == 'abel':
                 fadeTime = int(len(pitchShifted_sound)*0.95)
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
-            elif self.config.config['handbellSource'] == 'rebel':
+            elif self.config.get('handbellSource') == 'rebel':
                 fadeTime = int(len(pitchShifted_sound)*0.95)
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
