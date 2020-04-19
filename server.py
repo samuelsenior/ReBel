@@ -8,7 +8,7 @@ import select, queue
 
 class Server:
     def __init__(self, serverIP, serverPort):
-        self.ReBelServerVersion = "v0.2.10"
+        self.ReBelServerVersion = "v0.2.11"
 
         self.serverIP = serverIP
         self.serverPort = serverPort
@@ -54,9 +54,9 @@ class Server:
         print("[SERVER] Being pinged by {} ({}:{})".format(self.clients[s]['name'], self.clients[s]['addr'][0], self.clients[s]['addr'][1]))
 
     def startRinging(self, s, message):
-        print("[COMMAND] StartRinging command recieved")
+        print("[COMMAND] StartRinging command received")
         self.clients[s]['ready'] = True
-        self.clientOutgoingMessageQueue.put([s, bytes('serverMessage:"{}" command recieved'.format((message.split(":"))[1]), "utf-8")])
+        self.clientOutgoingMessageQueue.put([s, bytes('serverMessage:"{}" command received'.format((message.split(":"))[1]), "utf-8")])
 
         self.clientOutgoingMessageQueue.put(['all', bytes('ringingCommand:Begin', "utf-8")])
 
@@ -70,7 +70,7 @@ class Server:
         else:
             print("[RINGING] {}/{} connected users ringing".format(len(self.clients) - notReadyCounter, len(self.clients)))
 
-    def recieveCommand(self, s, message):
+    def receiveCommand(self, s, message):
 
         if message == "clientCommand:startRinging":
             self.startRinging(s, message)
@@ -102,7 +102,7 @@ class Server:
             except:
                 pass
             else:
-                self.recieveCommand(s, message)
+                self.receiveCommand(s, message)
             time.sleep(max(1./self.frameRate - (time.time() - start), 0))
 
     def outgoingMessages(self):

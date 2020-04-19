@@ -2,10 +2,17 @@ from pydub import AudioSegment
 import pygame
 import numpy as np
 import os
+import sys
 import csv
 
-class Audio:
+from log import Log
+from error import Error
+
+class Audio(Log, Error):
     def __init__(self, numberOfBells, mixer, config):
+
+        super().__init__()
+
         self.numberOfBells = numberOfBells
         self.config = config
         self.mixer = mixer
@@ -34,7 +41,7 @@ class Audio:
         if self.regenerateBells == True:
             self.generateBells()
         if self.config.get('regenerateBells') == True:
-            print("[INFO] Config regenerate bells option is True")
+            self.log("[INFO] Config regenerate bells option is True")
             self.generateBells()
 
         self.loadBells()
@@ -67,12 +74,12 @@ class Audio:
                and bellSpec['pitchShift'] == self.config.get('pitchShift') \
                and bellSpec['handbellSource'] == self.config.get('handbellSource'):
                 self.regenerateBells = False
-                print("[INFO] Config file bell options match bell spec file")
+                self.log("[INFO] Config file bell options match bell spec file")
             else:
-                print("[INFO] Config file bell options do not match bell spec file, regenerating bells")
+                self.log("[INFO] Config file bell options do not match bell spec file, regenerating bells")
 
     def writeBellSpecFile(self):
-        print("[INFO] Writing bell spec file")
+        self.log("[INFO] Writing bell spec file")
         self.bellSpecFileLocation = os.path.join('audio', 'bsf')
         with open(self.bellSpecFileLocation, 'w') as bellSpecFile:
             bellSpecFile.write("{}:{}\n".format("scaleName", self.config.get('scale')))
@@ -89,7 +96,7 @@ class Audio:
 
     def generateBells(self):
 
-        print("[INFO] Generating bells")
+        self.log("[INFO] Generating bells")
 
         self.bellSemitones = [0]
         j = 0
@@ -108,12 +115,28 @@ class Audio:
                     self.bellSemitones.append(self.scale[i+1]+(j+1)*12)
 
         if self.config.get('handbellSource') == 'abel':
-            sound = AudioSegment.from_file(self.config.get('abelBellFileLocation'), format="wav")
+            try:
+                sound = AudioSegment.from_file(self.config.get('abelBellFileLocation'), format="wav")
+            except:
+                self.log("[WARNING] Abel handbell source file not found, defaulting to ReBel handbell source file")
+                try:
+                    sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
+                except:
+                    self.log("ReBel handbell source file not found, terminating program...", printMessage=False)
+                    self.error("ReBel handbell source file not found, terminating program...", 1)
         elif self.config.get('handbellSource') == 'rebel':
-            sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
+            try:
+                sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
+            except:
+                self.log("ReBel handbell source file not found, terminating program...", printMessage=False)
+                self.error("ReBel handbell source file not found, terminating program...", 1)
         else:
-            print("[WARNING] Handbell source not set, defaulting to ReBel handbell source")
-            sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
+            self.log("[WARNING] Handbell source not set, defaulting to ReBel handbell source file")
+            try:
+                sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
+            except:
+                self.log("ReBel handbell source file not found, terminating program...", printMessage=False)
+                self.error("ReBel handbell source file not found, terminating program...", 1)
 
         if self.config.get('handbellSource') == 'abel':
             sound = sound.high_pass_filter(cutoff=500)
@@ -153,7 +176,7 @@ class Audio:
 
     def loadBells(self):
         import os
-        print("[INFO] Loading in bells")
+        self.log("[INFO] Loading in bells")
         for i in range(self.numberOfBells):
             tmp = pygame.mixer.Sound(os.path.join('audio', '{}.wav'.format(i+1)))
             self.bells[i+1] = tmp

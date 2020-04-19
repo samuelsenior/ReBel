@@ -20,7 +20,6 @@ class Config:
                     for i in range(len(config_entry) - 2):
                         config_entry[1] += ":" + config_entry[2]
                         config_entry.pop(2)
-                        print(config_entry)
                 if len(config_entry) > 1:
                     if len(config_entry[1].split(",")) == 1:
                         self.config[config_entry[0]] = config_entry[1]
@@ -70,6 +69,7 @@ class Config:
 
         if self.config['handbellSource'] == None:
             self.config['handbellSource'] = 'rebel'
+
         if self.config['rebelBellFileLocation'] == None:
             self.config['rebelBellFileLocation'] = os.path.join('audio', 'handbell.wav')
         else:
@@ -77,16 +77,14 @@ class Config:
             self.config['rebelBellFileLocation'] = ""
             for t in tmp:
                 self.config['rebelBellFileLocation'] = os.path.join(self.config['rebelBellFileLocation'], t)
-            print("ReBel Loc:", self.config['rebelBellFileLocation'])
 
         if self.config['abelBellFileLocation'] == None:
-            print("here?")
+            pass
         else:
             tmp = self.config['abelBellFileLocation'].split('/|\\')
             self.config['abelBellFileLocation'] = ""
             for t in tmp:
                 self.config['abelBellFileLocation'] = os.path.join(self.config['abelBellFileLocation'], t)
-            print("Abel Loc:", self.config['abelBellFileLocation'])
 
     def get(self, dictKey):
         return self.config[dictKey]

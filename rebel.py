@@ -1,5 +1,5 @@
 """
-ReBel v0.2.10
+ReBel v0.2.11
 author: Samuel M Senior
 """
 
@@ -10,6 +10,8 @@ import pygame
 import sys
 
 import numpy as np
+
+from log import Log
 
 from client import Network
 
@@ -24,10 +26,14 @@ from audio import Audio
 import time
 
         
-class Rebel(Font, KeyPress):
+class Rebel(Font, KeyPress, Log):
     def __init__(self, menuWidth, menuHeight, mainWidth, mainHeight, configFile='config.txt'):
 
-        super().__init__()
+        Font.__init__(self)
+        KeyPress.__init__(self)
+        Log.__init__(self)
+
+        self.clearLog()
 
         self.menuWidth = menuWidth
         self.menuHeight = menuHeight
@@ -144,7 +150,7 @@ class Rebel(Font, KeyPress):
                                 pygame.display.update(self.win.blit(self.offlineMessage, (self.button_serverConnect.width+25, 557)))
                         except:
                             pygame.display.update(self.win.blit(self.offlineMessage, (self.button_serverConnect.width+25, 557)))
-                            print("Server offline: {}:{}".format(self.inputBox_serverIP.text, self.inputBox_serverPort.text))
+                            self.log("Server offline: {}:{}".format(self.inputBox_serverIP.text, self.inputBox_serverPort.text))
                             self.offline = True
 
                     if self.button_startRinging.rect.collidepoint(event.pos) and self.button_startRinging.active == True:
@@ -177,7 +183,7 @@ class Rebel(Font, KeyPress):
         self.network.connect(userName, serverIP, serverPort)
 
     def testConnectionLatency(self, numberOfPings, outputRate):
-        print("Performing ping test to measure latency...")
+        self.log("Performing ping test to measure latency...")
 
         time_start = None
         time_end = None
@@ -195,7 +201,7 @@ class Rebel(Font, KeyPress):
                     pass
                 else:
                     if i % outputRate == 0:
-                        print("Ping {}/{}".format(i, numberOfPings))
+                        self.log("Ping {}/{}".format(i, numberOfPings))
                     i += 1
 
                     time_end = time.time()
@@ -203,7 +209,7 @@ class Rebel(Font, KeyPress):
                     average[1] += 1
                     recvd = True
         self.network.ringing = False
-        print("{} pings, average latency of: {} ms".format(average[1], int(1000*average[0]/average[1])))
+        self.log("{} pings, average latency of: {} ms".format(average[1], int(1000*average[0]/average[1])))
 
     def main(self):
         self.win = pygame.display.set_mode((self.mainWidth, self.mainHeight))
@@ -217,7 +223,7 @@ class Rebel(Font, KeyPress):
                 pass
             else:
                 waitingForNumberOFBells = False
-                print("Number of bells set to {}".format(self.config.get('numberOfBells')))
+                self.log("[Client] Number of bells set to {}".format(self.config.get('numberOfBells')))
 
         self.bells = {}
         seperationAngle = 2.0*np.pi / self.config.get('numberOfBells')

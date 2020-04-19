@@ -5,8 +5,13 @@ import time
 import threading
 import select, queue
 
-class Network:
+from log import Log
+
+class Network(Log):
     def __init__(self, frameRate=30):
+
+        super().__init__()
+
         self.frameRate = frameRate
 
         self._lock = threading.Lock()
@@ -27,48 +32,49 @@ class Network:
     def send(self, message):
         try:
             self.outgoingMessageQueue.put(bytes(message ,"utf-8"))
-            #print("[CLIENT] {}".format(message))
+            #self.log("[CLIENT] {}".format(message))
         except:
-            print("[ERROR] Could not send message to server: {}".format(message))
+            self.log("[ERROR] Could not send message to server: {}".format(message))
 
     def setName(self):
         self.send("setClientName:" + self.userName)
 
-    def recieveCommand(self, message):
+    def receiveCommand(self, message):
         if message.split(":")[0] == "connectionStatus":
             if message.split(":")[1] == "Success":
                 self.serverVersion = message.split(":")[3]
-                print("[SERVER] {} {} on {}:{}".format(message.split(":")[2], self.serverVersion, self.addr[0], self.addr[1]))
+                self.log("[SERVER] {} {} on {}:{}".format(message.split(":")[2], self.serverVersion, self.addr[0], self.addr[1]))
                 self.setName()
             else:
-                print("[SERVER] Could not connect to server, error: {}".format(message.split(":")[1]))
+                self.log("[SERVER] Could not connect to server, error: {}".format(message.split(":")[1]))
                 self.server.close()
                 raise
         elif message.split(":")[0] == "serverMessage":
-            print("[SERVER] {}".format(message.split(":")[1]))
+            self.log("[SERVER] {}".format(message.split(":")[1]))
         elif (message.split(":"))[0] == "setClientName":
             if (message.split(":"))[1] == "Success":
                 self.clientName = (message.split(":"))[2]
-                print("[SERVER] Name set to {}".format(self.clientName))
+                self.log("[SERVER] Name set to {}".format(self.clientName))
             else:
-                print("[SERVER] Could not set name, error: {}".format((message.split(":"))[1]))
+                self.log("[SERVER] Could not set name, error: {}".format((message.split(":"))[1]))
                 self.clientName = "Default"
-                print("[SERVER] Using name 'None'")  
+                self.log("[SERVER] Using name 'None'")  
         elif (message.split(":"))[0] == "setNumberOfBells":
             self.numberOfBells.append(int(message.split(":")[1]))
             self.gotNumberOfBells = True
+            self.log("[SERVER] Number of ringing bells is {}".format(message.split(":")[1]))
         elif message.split(":")[0] == "ringingCommand":
             if message.split(":")[1] == "Begin":
-                print("[RINGING] Ringing beginning")
+                self.log("[RINGING] Ringing beginning")
                 self.ringing = True 
             else:
-                print("[ERROR] Unrecognised ringing command: {}".format((message.split(":"))[1]))
+                self.log("[ERROR] Unrecognised ringing command: {}".format((message.split(":"))[1]))
         elif (message.split(":"))[0] == "R":
             self.bellsRung.append(((message.split(":"))[1][0], (message.split(":"))[1][1:]))
         elif (message.split(":"))[0] == "":
-            print("[WARNING] Empty server message, possible deconnection")
+            self.log("[WARNING] Empty server message, possible deconnection")
         else:
-            print('[ERROR] Unrecognised command from server "{}"'.format((message.split(":"))[0]))
+            self.log('[ERROR] Unrecognised command from server "{}"'.format((message.split(":"))[0]))
 
     def incomingMessages(self):
         while True:
@@ -78,7 +84,7 @@ class Network:
             except:
                 pass
             else:
-                self.recieveCommand(message)
+                self.receiveCommand(message)
             time.sleep(max(1./self.frameRate - (time.time() - start), 0))
 
     def outgoingMessages(self):
@@ -105,13 +111,13 @@ class Network:
         self.outgoingMessageQueue = queue.Queue()
         self.outgoingMessagesThread.start()
 
-        print("[INFO] Connecting to server...")
-        print("[INFO] Server IP: {}, server port: {}".format(self.serverIP, self.serverPort))
+        self.log("[INFO] Connecting to server...")
+        self.log("[INFO] Server IP: {}, server port: {}".format(self.serverIP, self.serverPort))
         self._lock.acquire()
         try:
             self.server.connect(self.addr)
         except socket.error as e:
-            print("Client.start.connect(): {}".format(str(e)))
+            self.log("Client.start.connect(): {}".format(str(e)))
             inputs = None
             self.connected = False
         else:
