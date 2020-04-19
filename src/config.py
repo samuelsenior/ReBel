@@ -2,7 +2,7 @@ import csv
 import os
 
 class Config:
-    def __init__(self, fileName='config.txt'):
+    def __init__(self, fileName):
         self.fileName = fileName
         self.config = {'numberOfBells':None, 'ringableBells':None,
                        'scale':None, 'octaveShift':None, 'pitchShift':None,

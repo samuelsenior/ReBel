@@ -1,7 +1,7 @@
 import sys
 
 class Log:
-    def __init__(self, logFile="log.txt"):
+    def __init__(self, logFile):
         self.logFile = logFile
 
     def clearLog(self):

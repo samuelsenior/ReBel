@@ -8,9 +8,9 @@ import select, queue
 from log import Log
 
 class Network(Log):
-    def __init__(self, frameRate=30):
+    def __init__(self, logFile, frameRate=30):
 
-        super().__init__()
+        Log.__init__(self, logFile=logFile)
 
         self.frameRate = frameRate
 

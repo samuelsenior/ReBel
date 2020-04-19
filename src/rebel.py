@@ -1,5 +1,5 @@
 """
-ReBel v0.2.11
+ReBel v0.2.12
 author: Samuel M Senior
 """
 
@@ -27,12 +27,13 @@ import time
 
         
 class Rebel(Font, KeyPress, Log):
-    def __init__(self, menuWidth, menuHeight, mainWidth, mainHeight, configFile='config.txt'):
+    def __init__(self, menuWidth, menuHeight, mainWidth, mainHeight, configFile=os.path.join("..", "config", "config.txt")):
 
         Font.__init__(self)
         KeyPress.__init__(self)
-        Log.__init__(self)
 
+        self.logFile = os.path.join("..", "log", "log.txt")
+        Log.__init__(self, logFile=self.logFile)
         self.clearLog()
 
         self.menuWidth = menuWidth
@@ -51,8 +52,8 @@ class Rebel(Font, KeyPress, Log):
         self.win = pygame.display.set_mode((self.menuWidth, self.menuHeight))
         pygame.display.set_caption("ReBel")
 
-        self.menuBackground = pygame.image.load(os.path.join("img", "menuBackground.png"))
-        self.mainBackground = pygame.image.load(os.path.join("img", "mainBackground.png"))
+        self.menuBackground = pygame.image.load(os.path.join("..", "img", "menuBackground.png"))
+        self.mainBackground = pygame.image.load(os.path.join("..", "img", "mainBackground.png"))
 
         self.offlineMessage = self.smallFont.render("Server offline...", 1, (255, 0, 0))
         self.connectingMessage = self.smallFont.render("Connecting to server...", 1, (50, 50, 50))
@@ -69,10 +70,17 @@ class Rebel(Font, KeyPress, Log):
 
         self.frameRate = 100
 
-        self.network = Network(frameRate=self.frameRate)
+        self.network = Network(self.logFile, frameRate=self.frameRate)
 
         #pygame.mixer.set_num_channels(self.config.get('numberOfBells'))
         #self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config, os.path.join('audio', 'handbell.wav'))
+
+    def quit(self):
+        if self.offline == False:
+            self.network.send("clientDisconnect:Disconnecting")
+        self.log("[INFO] Quitting...")
+        pygame.quit()
+        sys.exit(0)
 
     def start(self):
         self.menuScreen()
@@ -119,10 +127,7 @@ class Rebel(Font, KeyPress, Log):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run_menu = False
-                    if self.offline == False:
-                        self.network.send("clientDisconnect:Disconnecting")
-                    pygame.quit()
-                    sys.exit(0)
+                    self.quit()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.button_serverConnect.rect.collidepoint(event.pos) and self.connectionActive == False:
@@ -161,10 +166,7 @@ class Rebel(Font, KeyPress, Log):
     
                     if self.button_quit.rect.collidepoint(event.pos):
                         run_menu = False
-                        if self.offline == False:
-                            self.network.send("clientDisconnect:Disconnecting")
-                        pygame.quit()
-                        sys.exit(0)
+                        self.quit()
 
                 for box in self.input_boxes:
                     pygame.display.update(box.handle_event(event, self.win))
@@ -250,14 +252,14 @@ class Rebel(Font, KeyPress, Log):
 
             self.bells[i+1] = Bell(i+1, location=(x, y), width=width, height=height,
                                    textLocation=(textX, textY),
-                                   bellImageFile=os.path.join("img", "handbell.png"))
+                                   bellImageFile=os.path.join("..", "img", "handbell.png"))
 
         for i, _ in enumerate(self.config.get('ringableBells')) if len(self.config.get('ringableBells')) < self.config.get('numberOfBells') else enumerate(range(self.config.get('numberOfBells'))):
             key = self.config.get('keys')[i]
             self.bells[self.config.get('ringableBells')[i]].setKey(self.keyPress(key))
 
         pygame.mixer.set_num_channels(self.config.get('numberOfBells'))
-        self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config)
+        self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config, self.logFile)
 
         clock = pygame.time.Clock()
         pygame.display.update(self.win.blit(self.mainBackground, (0, 0)))
@@ -268,9 +270,7 @@ class Rebel(Font, KeyPress, Log):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run_main = False
-                    self.network.send("clientDisconnect:Disconnecting")
-                    pygame.quit()
-                    sys.exit(0)
+                    self.quit()
 
                 if event.type == pygame.KEYDOWN:
                     for bell in self.bells.values():

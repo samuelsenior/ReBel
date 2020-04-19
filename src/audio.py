@@ -9,9 +9,10 @@ from log import Log
 from error import Error
 
 class Audio(Log, Error):
-    def __init__(self, numberOfBells, mixer, config):
+    def __init__(self, numberOfBells, mixer, config, logFile):
 
-        super().__init__()
+        Log.__init__(self, logFile=logFile)
+        Error.__init__(self)
 
         self.numberOfBells = numberOfBells
         self.config = config
@@ -48,7 +49,7 @@ class Audio(Log, Error):
 
     def checkGeneratedBells(self):
         self.regenerateBells = True
-        self.bellSpecFileLocation = os.path.join('audio', 'bsf')
+        self.bellSpecFileLocation = os.path.join("..", "audio", "bsf")
         # Check BSF exists
         if os.path.isfile(self.bellSpecFileLocation):
             # If it doesn't the regenerate bells
@@ -80,7 +81,7 @@ class Audio(Log, Error):
 
     def writeBellSpecFile(self):
         self.log("[INFO] Writing bell spec file")
-        self.bellSpecFileLocation = os.path.join('audio', 'bsf')
+        self.bellSpecFileLocation = os.path.join("..", "audio", "bsf")
         with open(self.bellSpecFileLocation, 'w') as bellSpecFile:
             bellSpecFile.write("{}:{}\n".format("scaleName", self.config.get('scale')))
             bellSpecFile.write("{}:".format("scale"))
@@ -170,7 +171,7 @@ class Audio(Log, Error):
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
 
-            pitchShifted_sound.export(os.path.join('audio', '{}.wav'.format(self.numberOfBells - i)), format='wav')
+            pitchShifted_sound.export(os.path.join("..", "audio", "{}.wav".format(self.numberOfBells - i)), format='wav')
 
         self.writeBellSpecFile()
 
@@ -178,5 +179,5 @@ class Audio(Log, Error):
         import os
         self.log("[INFO] Loading in bells")
         for i in range(self.numberOfBells):
-            tmp = pygame.mixer.Sound(os.path.join('audio', '{}.wav'.format(i+1)))
+            tmp = pygame.mixer.Sound(os.path.join("..", "audio", "{}.wav".format(i+1)))
             self.bells[i+1] = tmp
