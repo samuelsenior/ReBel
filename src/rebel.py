@@ -96,7 +96,7 @@ class Rebel(Font, KeyPress, Log):
     def updateConnectionStatusMessage(self):
         pygame.draw.rect(self.win, (255, 255, 255), self.connectionRectWhite, 0)
         if self.connection:
-            pygame.display.update(self.win.blit(self.connectionStatusMessage(), (self.button_serverConnect.width+25, 557)))
+            self.win.blit(self.connectionStatusMessage(), (self.button_serverConnect.width+25, 557))
 
     def sanatiseServerInfo(self):
         self.userName = self.inputBox_userName.text.replace(":", "-")
@@ -125,24 +125,24 @@ class Rebel(Font, KeyPress, Log):
 
         self.connectionActive = False
 
-        pygame.display.update(self.win.blit(self.menuBackground, (0, 0)))
+        self.win.blit(self.menuBackground, (0, 0))
 
         for box in self.input_boxes:
             if box.updated:
-                pygame.display.update(box.draw(self.win))
+                box.draw(self.win)
                 box.updated = False
         for button in buttons:
             if button.updated:
-                pygame.display.update(button.draw(self.win))
+                button.draw(self.win)
 
         while run_menu:
             for box in self.input_boxes:
                 if box.updated:
-                    pygame.display.update(box.draw(self.win, redrawTitle=False))
+                    box.draw(self.win, redrawTitle=False)
                     box.updated = False
             for button in buttons:
                 if button.updated:
-                    pygame.display.update(button.draw(self.win))
+                    button.draw(self.win)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -195,7 +195,7 @@ class Rebel(Font, KeyPress, Log):
 
                 if event.type == pygame.KEYDOWN:
                     if self.activeBox.active:
-                        pygame.display.update(self.activeBox.keyDownEvent(event, self.win))
+                        self.activeBox.keyDownEvent(event, self.win)
 
                 for button in buttons:
                     if button.rect.collidepoint(pygame.mouse.get_pos()):
@@ -204,8 +204,9 @@ class Rebel(Font, KeyPress, Log):
                     elif button.active == True:
                         button.hovered = False
                         button.updated = True
-                        pygame.display.update(button.draw(self.win))
+                        button.draw(self.win)
 
+            pygame.display.flip()
             clock.tick(self.frameRate)
 
     def connect(self, userName, serverIP, serverPort):

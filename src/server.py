@@ -18,7 +18,7 @@ class Server(Log):
         Log.__init__(self, logFile=os.path.join("..", "log", "serverLog.txt"))
         self.clearLog()
 
-        self.ReBelServerVersion = "v0.2.12"
+        self.ReBelServerVersion = "v0.2.13"
 
         self.serverLocalIP = serverLocalIP
         self.serverPublicIP = None
