@@ -101,6 +101,7 @@ class Rebel(Font, KeyPress, Log):
         self.inputBox_serverIP = TitledInputBox("Server IP:", 150, 400, 200, 32)
         self.inputBox_serverPort = TitledInputBox("Server Port:", 150, 450, 200, 32, text='35555')
         self.input_boxes = [self.inputBox_userName, self.inputBox_serverIP, self.inputBox_serverPort]
+        self.activeBox = None
 
         self.button_serverConnect = Button("Connect to server", (20, 550))
         self.button_startRinging = Button("Start ringing", (20, 600), active=False)
@@ -109,8 +110,20 @@ class Rebel(Font, KeyPress, Log):
 
         self.connectionActive = False
 
+
+
+        pygame.display.update(self.win.blit(self.menuBackground, (0, 0)))
+
+        for box in self.input_boxes:
+            if box.updated:
+                pygame.display.update(box.draw(self.win))
+                box.updated = False
+
+
+
+
         while run_menu:
-            pygame.display.update(self.win.blit(self.menuBackground, (0, 0)))
+            #pygame.display.update(self.win.blit(self.menuBackground, (0, 0)))
 
             if self.offline:
                 pygame.display.update(self.win.blit(self.offlineMessage, (self.button_serverConnect.width+25, 557)))
@@ -120,7 +133,9 @@ class Rebel(Font, KeyPress, Log):
                 pygame.display.update(self.win.blit(self.connectedMessage, (self.button_serverConnect.width+25, 557)))
 
             for box in self.input_boxes:
-                pygame.display.update(box.draw(self.win))
+                if box.updated:
+                    pygame.display.update(box.draw(self.win, redrawText=False))
+                    box.updated = False
             for button in buttons:
                 pygame.display.update(button.draw(self.win))
 
@@ -168,15 +183,25 @@ class Rebel(Font, KeyPress, Log):
                         run_menu = False
                         self.quit()
 
-                for box in self.input_boxes:
-                    pygame.display.update(box.handle_event(event, self.win))
+                    for box in self.input_boxes:
+                        box.mouseDownEvent(event, self.win)
+                        if box.active == True:
+                            self.activeBox = box
+
+                if event.type == pygame.KEYDOWN:
+                    if self.activeBox:
+                        pygame.display.update(self.activeBox.keyDownEvent(event, self.win))
+
+                #for box in self.input_boxes:
+                #    pygame.display.update(box.handle_event(event, self.win))
 
                 for button in buttons:
                     if button.rect.collidepoint(pygame.mouse.get_pos()):
                         button.hovered = True
+                        pygame.display.update(button.draw(self.win))
                     elif button.active == True:
                         button.hovered = False
-                    pygame.display.update(button.draw(self.win))
+                        pygame.display.update(button.draw(self.win))
 
             pygame.display.update()
             clock.tick(self.frameRate)
