@@ -85,6 +85,19 @@ class Rebel(Font, KeyPress, Log):
     def start(self):
         self.menuScreen()
 
+    def connectionStatusMessage(self):
+        if self.connection == "offline":
+            return self.offlineMessage
+        elif self.connection == "connecting":
+            return self.connectingMessage
+        elif self.connection == "connected":
+            return self.connectedMessage
+
+    def updateConnectionStatusMessage(self):
+        pygame.draw.rect(self.win, (255, 255, 255), self.connectionRectWhite, 0)
+        if self.connection:
+            pygame.display.update(self.win.blit(self.connectionStatusMessage(), (self.button_serverConnect.width+25, 557)))
+
     def sanatiseServerInfo(self):
         self.userName = self.inputBox_userName.text.replace(":", "-")
         self.userName = self.inputBox_userName.text.replace("/", "-")
@@ -108,9 +121,9 @@ class Rebel(Font, KeyPress, Log):
         self.button_quit = Button("Quit", (20, 650))
         buttons = [self.button_serverConnect, self.button_startRinging, self.button_quit]
 
+        self.connectionRectWhite = pygame.Rect(self.button_serverConnect.width+25, 557, self.connectingMessage.get_width(), self.connectingMessage.get_height())
+
         self.connectionActive = False
-
-
 
         pygame.display.update(self.win.blit(self.menuBackground, (0, 0)))
 
@@ -118,26 +131,18 @@ class Rebel(Font, KeyPress, Log):
             if box.updated:
                 pygame.display.update(box.draw(self.win))
                 box.updated = False
-
-
-
+        for button in buttons:
+            if button.updated:
+                pygame.display.update(button.draw(self.win))
 
         while run_menu:
-            #pygame.display.update(self.win.blit(self.menuBackground, (0, 0)))
-
-            if self.offline:
-                pygame.display.update(self.win.blit(self.offlineMessage, (self.button_serverConnect.width+25, 557)))
-            elif self.connection == "connecting":
-                pygame.display.update(self.win.blit(self.connectingMessage, (self.button_serverConnect.width+25, 557)))
-            elif self.connection == "connected":
-                pygame.display.update(self.win.blit(self.connectedMessage, (self.button_serverConnect.width+25, 557)))
-
             for box in self.input_boxes:
                 if box.updated:
-                    pygame.display.update(box.draw(self.win, redrawText=False))
+                    pygame.display.update(box.draw(self.win, redrawTitle=False))
                     box.updated = False
             for button in buttons:
-                pygame.display.update(button.draw(self.win))
+                if button.updated:
+                    pygame.display.update(button.draw(self.win))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -149,8 +154,7 @@ class Rebel(Font, KeyPress, Log):
                         self.offline = False
                         try:
                             self.connection = "connecting"
-                            if self.connection == "connecting":
-                                pygame.display.update(self.win.blit(self.connectingMessage, (self.button_serverConnect.width+25, 557)))
+                            self.updateConnectionStatusMessage()
 
                             self.sanatiseServerInfo()
                             self.offline = not self.connect(self.userName, self.serverIP, self.serverPort)
@@ -161,15 +165,16 @@ class Rebel(Font, KeyPress, Log):
                                 self.connection = "connected"
                                 self.connectionActive = True
                                 self.button_startRinging.active = True
-                                pygame.display.update(self.win.blit(self.connectedMessage, (self.button_serverConnect.width+25, 557)))
+                                self.updateConnectionStatusMessage()
                                 if self.config.get('testConnectionLatency')[0] == True:
                                     self.testConnectionLatency(numberOfPings=self.config.get('testConnectionLatency')[1],
                                                                outputRate=self.config.get('testConnectionLatency')[2])
                             else:
                                 self.connection = "offline"
-                                pygame.display.update(self.win.blit(self.offlineMessage, (self.button_serverConnect.width+25, 557)))
+                                self.updateConnectionStatusMessage()
                         except:
-                            pygame.display.update(self.win.blit(self.offlineMessage, (self.button_serverConnect.width+25, 557)))
+                            self.connection = "offline"
+                            self.updateConnectionStatusMessage()
                             self.log("Server offline: {}:{}".format(self.inputBox_serverIP.text, self.inputBox_serverPort.text))
                             self.offline = True
 
@@ -189,21 +194,18 @@ class Rebel(Font, KeyPress, Log):
                             self.activeBox = box
 
                 if event.type == pygame.KEYDOWN:
-                    if self.activeBox:
+                    if self.activeBox.active:
                         pygame.display.update(self.activeBox.keyDownEvent(event, self.win))
-
-                #for box in self.input_boxes:
-                #    pygame.display.update(box.handle_event(event, self.win))
 
                 for button in buttons:
                     if button.rect.collidepoint(pygame.mouse.get_pos()):
                         button.hovered = True
-                        pygame.display.update(button.draw(self.win))
+                        button.updated = True
                     elif button.active == True:
                         button.hovered = False
+                        button.updated = True
                         pygame.display.update(button.draw(self.win))
 
-            pygame.display.update()
             clock.tick(self.frameRate)
 
     def connect(self, userName, serverIP, serverPort):

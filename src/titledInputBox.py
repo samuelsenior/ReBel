@@ -5,8 +5,8 @@ class TitledInputBox(InputBox):
         super().__init__(x, y, w, h, text=text)
         self.title = self.FONT.render(title, True, (0, 0, 0))
 
-    def draw(self, win, redrawText=True):
-        if redrawText:
+    def draw(self, win, redrawTitle=True):
+        if redrawTitle:
             return super().draw(win).append(win.blit(self.title, (self.x - self.title.get_width() - 5, self.y + self.title.get_height() / 2 - 7)))
         else:
             return super().draw(win)

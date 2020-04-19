@@ -14,6 +14,8 @@ class Button(Font):
         self.set_rect()
         self.width = self.rect.width
 
+        self.updated = True
+
     def set_inactive(self):
         self.active = False
         self.hovered = True
