@@ -18,7 +18,8 @@ class Server(Log):
         Log.__init__(self, logFile=os.path.join("..", "log", "serverLog.txt"))
         self.clearLog()
 
-        self.ReBelServerVersion = "v0.2.13"
+        self.reBelServerVersion = "v0.2.13"
+        self.log("[INFO] Running ReBel server {}".format(self.reBelServerVersion))
 
         self.serverLocalIP = serverLocalIP
         self.serverPublicIP = None
@@ -174,7 +175,7 @@ class Server(Log):
                     self.clients[connection] = {'socket':s, 'connection':connection, 'addr':addr, 'name':None, 'userLevel':'user',
                                                 'ready':False}
 
-                    self.clientOutgoingMessageQueue.put([connection, bytes("connectionStatus:Success:Connected to ReBel server:{}".format(self.ReBelServerVersion), "utf-8")])
+                    self.clientOutgoingMessageQueue.put([connection, bytes("connectionStatus:Success:Connected to ReBel server:{}".format(self.reBelServerVersion), "utf-8")])
                     self.log("[SERVER] Incoming connection from {}:{}".format(addr[0], addr[1]))
                     self.connections += 1
 

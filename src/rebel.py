@@ -1,5 +1,5 @@
 """
-ReBel v0.2.12
+ReBel
 author: Samuel M Senior
 """
 
@@ -29,12 +29,21 @@ import time
 class Rebel(Font, KeyPress, Log):
     def __init__(self, menuWidth, menuHeight, mainWidth, mainHeight, configFile=os.path.join("..", "config", "config.txt")):
 
+        # initialize
+        pygame.init()
+        pygame.mixer.pre_init(frequency=44100, size=16, channels=1)
+        pygame.mixer.init()
+        pygame.font.init()
+
         Font.__init__(self)
         KeyPress.__init__(self)
 
         self.logFile = os.path.join("..", "log", "log.txt")
         Log.__init__(self, logFile=self.logFile)
         self.clearLog()
+
+        self.reBelClientVersion = "v0.2.13"
+        self.log("[INFO] Running ReBel client {}".format(self.reBelClientVersion))
 
         self.menuWidth = menuWidth
         self.menuHeight = menuHeight
@@ -43,11 +52,6 @@ class Rebel(Font, KeyPress, Log):
         self.mainHeight = mainHeight
 
         self.configFile = configFile
-
-        # initialize
-        pygame.init()
-        pygame.mixer.pre_init(frequency=44100, size=16, channels=1)
-        pygame.mixer.init()
 
         self.win = pygame.display.set_mode((self.menuWidth, self.menuHeight))
         pygame.display.set_caption("ReBel")
@@ -72,9 +76,6 @@ class Rebel(Font, KeyPress, Log):
 
         self.network = Network(self.logFile, frameRate=self.frameRate)
 
-        #pygame.mixer.set_num_channels(self.config.get('numberOfBells'))
-        #self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config, os.path.join('audio', 'handbell.wav'))
-
     def quit(self):
         if self.offline == False:
             self.network.send("clientDisconnect:Disconnecting")
@@ -96,7 +97,7 @@ class Rebel(Font, KeyPress, Log):
     def updateConnectionStatusMessage(self):
         pygame.draw.rect(self.win, (255, 255, 255), self.connectionRectWhite, 0)
         if self.connection:
-            self.win.blit(self.connectionStatusMessage(), (self.button_serverConnect.width+25, 557))
+            self.win.blit(self.connectionStatusMessage(), (self.button_serverConnect.width+25, self.button_serverConnect.rect.y+5))
 
     def sanatiseServerInfo(self):
         self.userName = self.inputBox_userName.text.replace(":", "-")
@@ -107,21 +108,34 @@ class Rebel(Font, KeyPress, Log):
         self.serverPort = int(self.inputBox_serverPort.text.replace("/", "-"))
 
     def menuScreen(self):
+
+        self.width = self.win.get_width()
+        self.height = self.win.get_height()
+
         run_menu = True
 
         clock = pygame.time.Clock()
-        self.inputBox_userName = TitledInputBox("Your Name:", 150, 350, 200, 32)
-        self.inputBox_serverIP = TitledInputBox("Server IP:", 150, 400, 200, 32)
-        self.inputBox_serverPort = TitledInputBox("Server Port:", 150, 450, 200, 32, text='35555')
+        self.inputBox_userName = TitledInputBox("Your Name:", 150, 300, 200, 32)
+        self.inputBox_serverIP = TitledInputBox("Server IP:", 150, 350, 200, 32)
+        self.inputBox_serverPort = TitledInputBox("Server Port:", 150, 400, 200, 32, text='35555')
         self.input_boxes = [self.inputBox_userName, self.inputBox_serverIP, self.inputBox_serverPort]
         self.activeBox = None
 
-        self.button_serverConnect = Button("Connect to server", (20, 550))
-        self.button_startRinging = Button("Start ringing", (20, 600), active=False)
-        self.button_quit = Button("Quit", (20, 650))
-        buttons = [self.button_serverConnect, self.button_startRinging, self.button_quit]
+        self.button_quit = Button("Quit", (20, self.height-20))
+        self.button_quit.rect.y -= self.button_quit.rect.h
+        #
+        self.button_help = Button("Help", (20, self.button_quit.rect.y-10), active=False)
+        self.button_help.rect.y -= self.button_help.rect.h
+        #
+        self.button_startRinging = Button("Start ringing", (20, self.button_help.rect.y-10), active=False)
+        self.button_startRinging.rect.y -= self.button_startRinging.rect.h
+        #
+        self.button_serverConnect = Button("Connect to server", (20, self.button_startRinging.rect.y-10))
+        self.button_serverConnect.rect.y -= self.button_serverConnect.rect.h
+        #
+        buttons = [self.button_serverConnect, self.button_startRinging, self.button_help, self.button_quit]
 
-        self.connectionRectWhite = pygame.Rect(self.button_serverConnect.width+25, 557, self.connectingMessage.get_width(), self.connectingMessage.get_height())
+        self.connectionRectWhite = pygame.Rect(self.button_serverConnect.width+25, self.button_serverConnect.rect.y+5, self.connectingMessage.get_width(), self.connectingMessage.get_height())
 
         self.connectionActive = False
 
@@ -194,7 +208,7 @@ class Rebel(Font, KeyPress, Log):
                             self.activeBox = box
 
                 if event.type == pygame.KEYDOWN:
-                    if self.activeBox.active:
+                    if self.activeBox and self.activeBox.active:
                         self.activeBox.keyDownEvent(event, self.win)
 
                 for button in buttons:
@@ -292,7 +306,7 @@ class Rebel(Font, KeyPress, Log):
         clock = pygame.time.Clock()
         pygame.display.update(self.win.blit(self.mainBackground, (0, 0)))
         for bell in self.bells.values():
-                pygame.display.update(bell.draw(self.win))
+                pygame.display.update(bell.draw(self.win, renderNumber=True))
         run_main = True
         while run_main:
             for event in pygame.event.get():
@@ -311,9 +325,9 @@ class Rebel(Font, KeyPress, Log):
                 pass
             else:
                 self.bells[bellNumber].bellRung(stroke)
-                pygame.display.update(self.bells[bellNumber].draw(self.win))
+                self.bells[bellNumber].draw(self.win)
                 pygame.mixer.Channel(bellNumber-1).play(self.audio.bells[bellNumber])
-                pygame.display.update()
+                pygame.display.flip()
 
             clock.tick(self.frameRate)
    

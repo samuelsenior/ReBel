@@ -23,7 +23,7 @@ class Button(Font):
     def draw(self, win):
         self.set_rend()
 
-        return pygame.draw.rect(win, (200, 200, 200), self.rect), win.blit(self.rend, (self.rect.x, self.rect.y+2))
+        return pygame.draw.rect(win, (200, 200, 200), (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), win.blit(self.rend, (self.rect.x+5, self.rect.y))
         
     def set_rend(self):
         self.rend = self.menu_font.render(self.text, True, self.get_color())
@@ -38,5 +38,5 @@ class Button(Font):
         
     def set_rect(self):
         self.set_rend()
-        self.rect = self.rend.get_rect()
+        self.rect = pygame.Rect(self.rend.get_rect().x, self.rend.get_rect().y, self.rend.get_rect().w+10, self.rend.get_rect().h)
         self.rect.topleft = self.pos

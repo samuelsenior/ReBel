@@ -47,8 +47,8 @@ class InputBox(Font):
 
         self.updated = True
 
-        return [screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5)), pygame.draw.rect(screen, self.color, self.rect, 2)]
-        
+        return [screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+2)), pygame.draw.rect(screen, self.color, self.rect, 2)]
+
     def update(self):
         # Resize the box if the text is too long.
         self.rectOld = self.rect.copy()
@@ -58,5 +58,5 @@ class InputBox(Font):
         self.rect.w = width
 
     def draw(self, screen):
-        return [pygame.draw.rect(screen, (255, 255, 255), self.rectOld, 0), screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5)), pygame.draw.rect(screen, self.color, self.rect, 2)]
+        return [pygame.draw.rect(screen, (255, 255, 255), self.rectOld, 0), screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+2)), pygame.draw.rect(screen, self.color, self.rect, 2)]
         

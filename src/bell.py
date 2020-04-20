@@ -42,8 +42,9 @@ class Bell(Font):
     def setKey(self, key):
         self.key = key
 
-    def draw(self, win):
-        win.blit(self.bellNumberText, (self.textX, self.textY))
+    def draw(self, win, renderNumber=False):
+        if renderNumber:
+            win.blit(self.bellNumberText, (self.textX, self.textY))
         if self.stroke == 'H':
             win.blit(self.backstrokeBellBlank, (self.x, self.y))
             return win.blit(self.handstrokeBell, (self.x, self.y))

@@ -1,8 +1,10 @@
 import pygame
 
+import os
+
 class Font(object):
     def __init__(self):
         pygame.font.init()
-        self.FONT = pygame.font.Font(None, 32)
-        self.smallFont = pygame.font.SysFont("comicsans", 32)
-        self.menu_font = pygame.font.Font(None, 40)
+        self.FONT = pygame.font.Font(os.path.join("..", "fonts", "freesansbold.ttf"), 24)
+        self.smallFont = pygame.font.Font(os.path.join("..", "fonts", "freesansbold.ttf"), 24)
+        self.menu_font = pygame.font.Font(os.path.join("..", "fonts", "freesansbold.ttf"), 28)
