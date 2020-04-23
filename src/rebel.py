@@ -240,7 +240,8 @@ class Rebel(Font, KeyPress, Log):
             recvd = False
             while recvd == False:
                 try:
-                    bellNumber = int(self.network.getBellRung())
+                    stroke, bellNumber = self.network.getBellRung()
+                    bellNumber = int(bellNumber)
                 except:
                     pass
                 else:

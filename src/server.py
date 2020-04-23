@@ -61,7 +61,7 @@ class Server(Log):
         self.log("[CLIENT] Client {} disconnecting with message: {}".format(self.clients[s]['name'], (message.split(":"))[1]))
 
     def ping(self, s):
-        self.clientOutgoingMessageQueue.put([s, bytes("0" ,"utf-8")])
+        self.clientOutgoingMessageQueue.put([s, bytes("R:B0" ,"utf-8")])
         self.log("[SERVER] Being pinged by {} ({}:{})".format(self.clients[s]['name'], self.clients[s]['addr'][0], self.clients[s]['addr'][1]))
 
     def startRinging(self, s, message):
