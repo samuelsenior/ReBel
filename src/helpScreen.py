@@ -49,7 +49,7 @@ class HelpScreen:
 
         self.serverTitleText = TextBox('Server Help:', (self.x+20, self.y+button_serverPage.rect.h+20), backgroundColour=(150, 150, 150), font='large')
         self.serverSubTitleText = TextBox('Connecting to a server:', (self.x+20, self.serverTitleText.y+self.serverTitleText.h), font='small')
-        self.serverText_1 = TextBox("In 'Name' enter your name.", (self.x+20, self.serverSubTitleText.y+self.serverSubTitleText.h*1.25), font='tiny')
+        self.serverText_1 = TextBox("In 'Your Name' enter your name.", (self.x+20, self.serverSubTitleText.y+self.serverSubTitleText.h*1.25), font='tiny')
         self.serverText_2 = TextBox("In 'Server IP' enter the public IP of the server as told by the person running", (self.x+20, self.serverText_1.y+self.serverText_1.h*1.5), font='tiny')
         self.serverText_3 = TextBox("the server, or the local IP of the server if on the same network, or leave it", (self.x+20, self.serverText_2.y+self.serverText_2.h), font='tiny')
         self.serverText_4 = TextBox("blank if you are on the same machine as the one runnning the server.", (self.x+20, self.serverText_3.y+self.serverText_3.h), font='tiny')
