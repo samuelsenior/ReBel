@@ -8,6 +8,9 @@ class Button(Font):
         self.text = text
         self.pos = pos
 
+        self.x = self.pos[0]
+        self.y = self.pos[0]
+
         self.hovered = False
         self.active = active
 
