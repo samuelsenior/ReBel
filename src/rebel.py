@@ -23,6 +23,8 @@ from bell import Bell
 from config import Config
 from audio import Audio
 
+from helpScreen import HelpScreen
+
 import time
 
         
@@ -76,15 +78,17 @@ class Rebel(Font, KeyPress, Log):
 
         self.network = Network(self.logFile, frameRate=self.frameRate)
 
+        self.helpScreen = HelpScreen(self.win, frameRate=self.frameRate)
+
+        self.screen = 'menuScreen'
+
     def quit(self):
+        self.running = False
         if self.offline == False:
             self.network.send("clientDisconnect:Disconnecting")
         self.log("[INFO] Quitting...")
         pygame.quit()
         sys.exit(0)
-
-    def start(self):
-        self.menuScreen()
 
     def connectionStatusMessage(self):
         if self.connection == "offline":
@@ -124,7 +128,7 @@ class Rebel(Font, KeyPress, Log):
         self.button_quit = Button("Quit", (20, self.height-20))
         self.button_quit.rect.y -= self.button_quit.rect.h
         #
-        self.button_help = Button("Help", (20, self.button_quit.rect.y-10), active=False)
+        self.button_help = Button("Help", (20, self.button_quit.rect.y-10), active=True)
         self.button_help.rect.y -= self.button_help.rect.h
         #
         self.button_startRinging = Button("Start ringing", (20, self.button_help.rect.y-10), active=False)
@@ -195,9 +199,16 @@ class Rebel(Font, KeyPress, Log):
                     if self.button_startRinging.rect.collidepoint(event.pos) and self.button_startRinging.active == True:
                         run_menu = False
                         self.network.send("clientCommand:startRinging")
-                        self.main()
+                        self.screen = 'ringingScreen'
+                        #self.ringingScreen()
                         break
-    
+
+                    if self.button_help.rect.collidepoint(event.pos):
+                        run_menu = False
+                        self.screen = 'helpScreen'
+                        #self.helpScreen()
+                        break
+
                     if self.button_quit.rect.collidepoint(event.pos):
                         run_menu = False
                         self.quit()
@@ -256,7 +267,7 @@ class Rebel(Font, KeyPress, Log):
         self.network.ringing = False
         self.log("{} pings, average latency of: {} ms".format(average[1], int(1000*average[0]/average[1])))
 
-    def main(self):
+    def ringingScreen(self):
         self.win = pygame.display.set_mode((self.mainWidth, self.mainHeight))
         self.network.send("numberOfBells:get")
 
@@ -308,11 +319,11 @@ class Rebel(Font, KeyPress, Log):
         pygame.display.update(self.win.blit(self.mainBackground, (0, 0)))
         for bell in self.bells.values():
                 pygame.display.update(bell.draw(self.win, renderNumber=True))
-        run_main = True
-        while run_main:
+        run_ringing = True
+        while run_ringing:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run_main = False
+                    run_ringing = False
                     self.quit()
 
                 if event.type == pygame.KEYDOWN:
@@ -331,8 +342,24 @@ class Rebel(Font, KeyPress, Log):
                 pygame.display.flip()
 
             clock.tick(self.frameRate)
+
+    def run(self):
+        self.running = True
+        while self.running:
+            if self.screen == 'menuScreen':
+                self.previousScreen = 'menuScreen'
+                rtn = self.menuScreen()
+            elif self.screen == 'helpScreen':
+                rtn = self.helpScreen.display(source=self.previousScreen)
+                if rtn == 'quit':
+                    self.quit()
+                else:
+                    self.screen = self.previousScreen
+            elif self.screen == 'ringingScreen':
+                self.previousScreen = 'menuScreen'
+                rtn = self.ringingScreen()
    
 
 if __name__ == "__main__":
     rebel = Rebel(750, 700, 1000, 700)
-    rebel.start()
+    rebel.run()
