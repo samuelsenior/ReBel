@@ -18,7 +18,7 @@ class Server(Log):
         Log.__init__(self, logFile=os.path.join("..", "log", "serverLog.txt"))
         self.clearLog()
 
-        self.reBelServerVersion = "v0.2.13"
+        self.reBelServerVersion = "v0.2.14"
         self.log("[INFO] Running ReBel server {}".format(self.reBelServerVersion))
 
         self.serverLocalIP = serverLocalIP
