@@ -10,6 +10,8 @@ from log import Log
 class Network(Log):
     def __init__(self, logFile, frameRate=30):
 
+        self.logFile = logFile
+
         Log.__init__(self, logFile=logFile)
 
         self.frameRate = frameRate
@@ -18,6 +20,8 @@ class Network(Log):
         self.clientThread = threading.Thread(target=self.start, args=(), daemon=True)
         self.incomingMessagesThread = threading.Thread(target=self.incomingMessages, args=(), daemon=True)
         self.outgoingMessagesThread = threading.Thread(target=self.outgoingMessages, args=(), daemon=True)
+
+        self.disconnecting = False
 
         self.dataSize = 128
         self.ringing = False
@@ -125,27 +129,39 @@ class Network(Log):
             self.connected = True
         self._lock.release()
 
-        while inputs:
+        self.running = True
+        while self.running:
             start = time.time()
-            self.readable, self.writable, self.exceptional = select.select(inputs, outputs, inputs)
-            for s in self.readable:
-                data = s.recv(self.dataSize)
-                if data:
-                    data = data.decode("utf-8")
-                    for message in data.split("/")[:-1]:
-                        self.incomingMessageQueue.put(message)
-                    if s not in outputs:
-                        outputs.append(s)
-                else:
-                    if s in outputs:
-                        outputs.remove(s)
-                        inputs.remove(s)
-                        s.close()
+            try:
+                self.readable, self.writable, self.exceptional = select.select(inputs, outputs, inputs)
+            except:
+                pass
+            else:
+                for s in self.readable:
+                    data = s.recv(self.dataSize)
+                    if data:
+                        data = data.decode("utf-8")
+                        for message in data.split("/")[:-1]:
+                            self.incomingMessageQueue.put(message)
+                        if s not in outputs:
+                            outputs.append(s)
+                    else:
+                        if s in outputs:
+                            outputs.remove(s)
+                            inputs.remove(s)
+                            s.close()
             time.sleep(max(1./self.frameRate - (time.time() - start), 0))
  
         self.server.close()
+        self.connected = False
+        self.disconnecting = False
 
     def connect(self, userName, serverIP, serverPort):
+        while self.disconnecting:
+            time.sleep(0.1)
+
+        self.__init__(logFile=self.logFile)
+
         self.userName = userName
         self.serverIP = serverIP
         self.serverPort = serverPort
@@ -160,7 +176,8 @@ class Network(Log):
         return self.connected
 
     def disconnect(self):
-        self.client.close()
+        self.disconnecting = True
+        self.running = False
 
     def getNumberOfBells(self):
         if self.gotNumberOfBells == True:

@@ -24,6 +24,7 @@ from config import Config
 from audio import Audio
 
 from helpScreen import HelpScreen
+from menuScreen import MenuScreen
 
 import time
 
@@ -58,184 +59,34 @@ class Rebel(Font, KeyPress, Log):
         self.win = pygame.display.set_mode((self.menuWidth, self.menuHeight))
         pygame.display.set_caption("ReBel")
 
-        self.menuBackground = pygame.image.load(os.path.join("..", "img", "menuBackground.png"))
         self.mainBackground = pygame.image.load(os.path.join("..", "img", "mainBackground.png"))
 
-        self.offlineMessage = self.smallFont.render("Server offline...", 1, (255, 0, 0))
-        self.connectingMessage = self.smallFont.render("Connecting to server...", 1, (50, 50, 50))
-        self.connectedMessage = self.smallFont.render("Connected to server!", 1, (0, 255, 0))
-
-        self.userName = ""
-        self.serverIP = ""
-        self.serverPort = None
-
-        self.offline = None
-        self.connection = None
-
-        self.config = Config(fileName=self.configFile)
+        #self.userName = ""
+        #self.serverIP = ""
+        #self.serverPort = None
+        #
+        #self.offline = None
+        #self.connection = None
 
         self.frameRate = 100
+
+        self.config = Config(fileName=self.configFile)
 
         self.network = Network(self.logFile, frameRate=self.frameRate)
 
         self.helpScreen = HelpScreen(self.win, frameRate=self.frameRate)
 
+        self.menuScreen = MenuScreen(win=self.win, network=self.network, frameRate=self.frameRate, logFile=self.logFile, config=self.config)
+
         self.screen = 'menuScreen'
 
     def quit(self):
         self.running = False
-        if self.offline == False:
+        if self.network.connected == True:#offline == False:
             self.network.send("clientDisconnect:Disconnecting")
         self.log("[INFO] Quitting...")
         pygame.quit()
         sys.exit(0)
-
-    def connectionStatusMessage(self):
-        if self.connection == "offline":
-            return self.offlineMessage
-        elif self.connection == "connecting":
-            return self.connectingMessage
-        elif self.connection == "connected":
-            return self.connectedMessage
-
-    def updateConnectionStatusMessage(self):
-        pygame.draw.rect(self.win, (255, 255, 255), self.connectionRectWhite, 0)
-        if self.connection:
-            self.win.blit(self.connectionStatusMessage(), (self.button_serverConnect.width+25, self.button_serverConnect.rect.y+5))
-
-    def sanatiseServerInfo(self):
-        self.userName = self.inputBox_userName.text.replace(":", "-")
-        self.userName = self.inputBox_userName.text.replace("/", "-")
-        self.serverIP = self.inputBox_serverIP.text.replace(":", "-")
-        self.serverIP = self.inputBox_serverIP.text.replace("/", "-")
-        self.serverPort = int(self.inputBox_serverPort.text.replace(":", "-"))
-        self.serverPort = int(self.inputBox_serverPort.text.replace("/", "-"))
-
-    def menuScreen(self):
-
-        self.width = self.win.get_width()
-        self.height = self.win.get_height()
-
-        run_menu = True
-
-        clock = pygame.time.Clock()
-        self.inputBox_userName = TitledInputBox("Your Name:", 150, 300, 200, 32)
-        self.inputBox_serverIP = TitledInputBox("Server IP:", 150, 350, 200, 32)
-        self.inputBox_serverPort = TitledInputBox("Server Port:", 150, 400, 200, 32, text='35555')
-        self.input_boxes = [self.inputBox_userName, self.inputBox_serverIP, self.inputBox_serverPort]
-        self.activeBox = None
-
-        self.button_quit = Button("Quit", (20, self.height-20))
-        self.button_quit.rect.y -= self.button_quit.rect.h
-        #
-        self.button_help = Button("Help", (20, self.button_quit.rect.y-10), active=True)
-        self.button_help.rect.y -= self.button_help.rect.h
-        #
-        self.button_startRinging = Button("Start ringing", (20, self.button_help.rect.y-10), active=False)
-        self.button_startRinging.rect.y -= self.button_startRinging.rect.h
-        #
-        self.button_serverConnect = Button("Connect to server", (20, self.button_startRinging.rect.y-10))
-        self.button_serverConnect.rect.y -= self.button_serverConnect.rect.h
-        #
-        buttons = [self.button_serverConnect, self.button_startRinging, self.button_help, self.button_quit]
-
-        self.connectionRectWhite = pygame.Rect(self.button_serverConnect.width+25, self.button_serverConnect.rect.y+5, self.connectingMessage.get_width(), self.connectingMessage.get_height())
-
-        self.connectionActive = False
-
-        self.win.blit(self.menuBackground, (0, 0))
-
-        for box in self.input_boxes:
-            if box.updated:
-                box.draw(self.win)
-                box.updated = False
-        for button in buttons:
-            if button.updated:
-                button.draw(self.win)
-
-        while run_menu:
-            for box in self.input_boxes:
-                if box.updated:
-                    box.draw(self.win, redrawTitle=False)
-                    box.updated = False
-            for button in buttons:
-                if button.updated:
-                    button.draw(self.win)
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run_menu = False
-                    self.quit()
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.button_serverConnect.rect.collidepoint(event.pos) and self.connectionActive == False:
-                        self.offline = False
-                        try:
-                            self.connection = "connecting"
-                            self.updateConnectionStatusMessage()
-
-                            self.sanatiseServerInfo()
-                            self.offline = not self.connect(self.userName, self.serverIP, self.serverPort)
-                            while self.network.connected is None:
-                                time.sleep(0.1)
-                            self.offline = not self.network.connected
-                            if self.offline == False:
-                                self.connection = "connected"
-                                self.connectionActive = True
-                                self.button_startRinging.active = True
-                                self.updateConnectionStatusMessage()
-                                if self.config.get('testConnectionLatency')[0] == True:
-                                    self.testConnectionLatency(numberOfPings=self.config.get('testConnectionLatency')[1],
-                                                               outputRate=self.config.get('testConnectionLatency')[2])
-                            else:
-                                self.connection = "offline"
-                                self.updateConnectionStatusMessage()
-                        except:
-                            self.connection = "offline"
-                            self.updateConnectionStatusMessage()
-                            self.log("Server offline: {}:{}".format(self.inputBox_serverIP.text, self.inputBox_serverPort.text))
-                            self.offline = True
-
-                    if self.button_startRinging.rect.collidepoint(event.pos) and self.button_startRinging.active == True:
-                        run_menu = False
-                        self.network.send("clientCommand:startRinging")
-                        self.screen = 'ringingScreen'
-                        #self.ringingScreen()
-                        break
-
-                    if self.button_help.rect.collidepoint(event.pos):
-                        run_menu = False
-                        self.screen = 'helpScreen'
-                        #self.helpScreen()
-                        break
-
-                    if self.button_quit.rect.collidepoint(event.pos):
-                        run_menu = False
-                        self.quit()
-
-                    for box in self.input_boxes:
-                        box.mouseDownEvent(event, self.win)
-                        if box.active == True:
-                            self.activeBox = box
-
-                if event.type == pygame.KEYDOWN:
-                    if self.activeBox and self.activeBox.active:
-                        self.activeBox.keyDownEvent(event, self.win)
-
-                for button in buttons:
-                    if button.rect.collidepoint(pygame.mouse.get_pos()):
-                        button.hovered = True
-                        button.updated = True
-                    elif button.active == True:
-                        button.hovered = False
-                        button.updated = True
-                        button.draw(self.win)
-
-            pygame.display.flip()
-            clock.tick(self.frameRate)
-
-    def connect(self, userName, serverIP, serverPort):
-        self.network.connect(userName, serverIP, serverPort)
 
     def testConnectionLatency(self, numberOfPings, outputRate):
         self.log("Performing ping test to measure latency...")
@@ -348,16 +199,20 @@ class Rebel(Font, KeyPress, Log):
         while self.running:
             if self.screen == 'menuScreen':
                 self.previousScreen = 'menuScreen'
-                rtn = self.menuScreen()
+                self.screen = self.menuScreen.display()
+                if self.screen == 'quit':
+                    self.quit()
             elif self.screen == 'helpScreen':
-                rtn = self.helpScreen.display(source=self.previousScreen)
-                if rtn == 'quit':
+                self.screen = self.helpScreen.display(source=self.previousScreen)
+                if self.screen == 'quit':
                     self.quit()
                 else:
                     self.screen = self.previousScreen
             elif self.screen == 'ringingScreen':
                 self.previousScreen = 'menuScreen'
-                rtn = self.ringingScreen()
+                self.screen = self.ringingScreen()
+            else:
+                self.quit()
    
 
 if __name__ == "__main__":
