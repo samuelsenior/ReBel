@@ -1,5 +1,6 @@
 import pygame
 import os
+import time
 
 from font import Font
 from titledInputBox import TitledInputBox
@@ -85,6 +86,36 @@ class MenuScreen(Font, Log):
         self.serverIP = self.inputBox_serverIP.text.replace("/", "-")
         self.serverPort = int(self.inputBox_serverPort.text.replace(":", "-"))
         self.serverPort = int(self.inputBox_serverPort.text.replace("/", "-"))
+
+    def testConnectionLatency(self, numberOfPings, outputRate):
+        self.log("Performing ping test to measure latency...")
+
+        time_start = None
+        time_end = None
+        average = [0, 0]
+
+        self.network.ringing = True
+        for i in range(numberOfPings):
+            time_start = time.time()
+            self.network.send("ping")
+            recvd = False
+            while recvd == False:
+                try:
+                    stroke, bellNumber = self.network.getBellRung()
+                    bellNumber = int(bellNumber)
+                except:
+                    pass
+                else:
+                    if i % outputRate == 0:
+                        self.log("Ping {}/{}".format(i, numberOfPings))
+                    i += 1
+
+                    time_end = time.time()
+                    average[0] += (time_end - time_start)
+                    average[1] += 1
+                    recvd = True
+        self.network.ringing = False
+        self.log("{} pings, average latency of: {} ms".format(average[1], int(1000*average[0]/average[1])))
 
     def display(self):
 

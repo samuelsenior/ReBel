@@ -26,8 +26,6 @@ from audio import Audio
 from helpScreen import HelpScreen
 from menuScreen import MenuScreen
 
-import time
-
         
 class Rebel(Font, KeyPress, Log):
     def __init__(self, menuWidth, menuHeight, mainWidth, mainHeight, configFile=os.path.join("..", "config", "config.txt")):
@@ -61,13 +59,6 @@ class Rebel(Font, KeyPress, Log):
 
         self.mainBackground = pygame.image.load(os.path.join("..", "img", "mainBackground.png"))
 
-        #self.userName = ""
-        #self.serverIP = ""
-        #self.serverPort = None
-        #
-        #self.offline = None
-        #self.connection = None
-
         self.frameRate = 100
 
         self.config = Config(fileName=self.configFile)
@@ -87,36 +78,6 @@ class Rebel(Font, KeyPress, Log):
         self.log("[INFO] Quitting...")
         pygame.quit()
         sys.exit(0)
-
-    def testConnectionLatency(self, numberOfPings, outputRate):
-        self.log("Performing ping test to measure latency...")
-
-        time_start = None
-        time_end = None
-        average = [0, 0]
-
-        self.network.ringing = True
-        for i in range(numberOfPings):
-            time_start = time.time()
-            self.network.send("ping")
-            recvd = False
-            while recvd == False:
-                try:
-                    stroke, bellNumber = self.network.getBellRung()
-                    bellNumber = int(bellNumber)
-                except:
-                    pass
-                else:
-                    if i % outputRate == 0:
-                        self.log("Ping {}/{}".format(i, numberOfPings))
-                    i += 1
-
-                    time_end = time.time()
-                    average[0] += (time_end - time_start)
-                    average[1] += 1
-                    recvd = True
-        self.network.ringing = False
-        self.log("{} pings, average latency of: {} ms".format(average[1], int(1000*average[0]/average[1])))
 
     def ringingScreen(self):
         self.win = pygame.display.set_mode((self.mainWidth, self.mainHeight))
@@ -209,7 +170,7 @@ class Rebel(Font, KeyPress, Log):
                 else:
                     self.screen = self.previousScreen
             elif self.screen == 'ringingScreen':
-                self.previousScreen = 'menuScreen'
+                self.previousScreen = 'ringingScreen'
                 self.screen = self.ringingScreen()
             else:
                 self.quit()
