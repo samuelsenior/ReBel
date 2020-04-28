@@ -86,8 +86,6 @@ class Rebel(Font, Log):
                 self.screen = self.helpScreen.display(source=self.previousScreen)
                 if self.screen == 'quit':
                     self.quit()
-                else:
-                    self.screen = self.previousScreen
             elif self.screen == 'ringingScreen':
                 self.previousScreen = 'ringingScreen'
                 self.screen = self.ringingScreen.display()
