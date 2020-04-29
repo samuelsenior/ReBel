@@ -56,7 +56,7 @@ class HelpScreen:
                             self.ringingSubTitleText]
 
     def drawBackground(self):
-        pygame.draw.rect(self.win, (225, 225, 225), self.helpBackground, 0)
+        pygame.draw.rect(self.win, (170, 170, 170), self.helpBackground, 0)
         pygame.draw.rect(self.win, (100, 100, 100), self.helpBackground, 2)
 
     def display(self, win, source):
@@ -108,6 +108,7 @@ class HelpScreen:
 
         for button in self.buttons:
             if button.updated:
+                button.hovered = False
                 button.draw(self.win)
 
         for txt in text:
