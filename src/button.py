@@ -43,7 +43,7 @@ class Button(Font):
         if self.border:
             return pygame.draw.rect(win, (200, 200, 200), (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), \
                    win.blit(self.rend, (self.rect.x+5, self.rect.y)), \
-                   pygame.draw.rect(win, (100, 100, 100),(self.rect.x, self.rect.y, self.rect.w, self.rect.h), 2)
+                   pygame.draw.rect(win, (255, 255, 255),(self.rect.x, self.rect.y, self.rect.w, self.rect.h), 2)
         else:
             return pygame.draw.rect(win, (200, 200, 200), (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), win.blit(self.rend, (self.rect.x+5, self.rect.y))
         
