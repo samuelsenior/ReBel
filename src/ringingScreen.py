@@ -25,12 +25,14 @@ class RingingScreen(KeyPress, Log):
         #self.backgroundColour = (150, 150, 150)
         self.backgroundColour = (255, 255, 255)
 
-        self.button_options = Button("Options", (0, 0), active=False, border=True, fontSize="medium")
-        self.button_help = Button("Help", (self.button_options.rect.x+self.button_options.rect.w, 0), border=True, fontSize="medium")
-        self.button_about = Button("About", (self.button_help.rect.x+self.button_help.rect.w, 0), active=False, border=True, fontSize="medium")
-        self.button_back = Button("Back", (self.button_about.rect.x+self.button_about.rect.w, 0), border=True, fontSize="medium")
-        self.button_quit = Button("Quit", (self.button_back.rect.x+self.button_back.rect.w, 0), border=True, fontSize="medium")
-        self.buttons = [self.button_options, self.button_help, self.button_about, self.button_back, self.button_quit]
+        self.button_options = Button("Options", (0, 0), active=False, border=True, fontSize="small")
+        self.button_help = Button("Help", (self.button_options.rect.x+self.button_options.rect.w, 0), border=True, fontSize="small")
+        self.button_about = Button("About", (self.button_help.rect.x+self.button_help.rect.w, 0), active=False, border=True, fontSize="small")
+        self.button_back = Button("Back", (self.button_about.rect.x+self.button_about.rect.w, 0), border=True, fontSize="small")
+        self.button_quit = Button("Quit", (self.button_back.rect.x+self.button_back.rect.w, 0), border=True, fontSize="small")
+        self.button_blankSpace = Button("", (self.button_quit.rect.x+self.button_quit.rect.w, 0), border=True, fontSize="small", buttonColour=(self.button_options.borderColour))
+        self.button_blankSpace.rect.w = self.width - self.button_blankSpace.rect.x
+        self.buttons = [self.button_options, self.button_help, self.button_about, self.button_back, self.button_quit, self.button_blankSpace]
 
         self.initialised = False
 
