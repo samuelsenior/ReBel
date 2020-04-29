@@ -31,29 +31,38 @@ class HelpScreen:
         #
         self.buttons = [self.button_back, self.button_ringingPage, self.button_serverPage]
 
-        self.serverTitleText = TextBox('Server Help:', (self.x+20, self.y+self.button_serverPage.rect.h+20), backgroundColour=(150, 150, 150), font='large')
-        self.serverSubTitleText = TextBox('Connecting to a server:', (self.x+20, self.serverTitleText.y+self.serverTitleText.h), font='small')
-        self.serverText_1 = TextBox("In 'Your Name' enter your name.", (self.x+20, self.serverSubTitleText.y+self.serverSubTitleText.h*1.25), font='tiny')
-        self.serverText_2 = TextBox("In 'Server IP' enter the public IP of the server as told by the person running", (self.x+20, self.serverText_1.y+self.serverText_1.h*1.5), font='tiny')
-        self.serverText_3 = TextBox("the server, or the local IP of the server if on the same network, or leave it", (self.x+20, self.serverText_2.y+self.serverText_2.h), font='tiny')
-        self.serverText_4 = TextBox("blank if you are on the same machine as the one runnning the server.", (self.x+20, self.serverText_3.y+self.serverText_3.h), font='tiny')
-        self.serverText_5 = TextBox("Leave 'Server Port' as the default value if the person running the server", (self.x+20, self.serverText_4.y+self.serverText_4.h*1.5), font='tiny')
-        self.serverText_6 = TextBox("hasn't changed it, otherwise change it to the number they give.", (self.x+20, self.serverText_5.y+self.serverText_5.h), font='tiny')
-        self.serverText_7 = TextBox("Once these details have been entered click 'Connect to Server'. If you are", (self.x+20, self.serverText_6.y+self.serverText_6.h*1.5), font='tiny')
-        self.serverText_8 = TextBox("able to connect to the server successfully a 'Connected' message will", (self.x+20, self.serverText_7.y+self.serverText_7.h), font='tiny')
-        self.serverText_9 = TextBox("appear, if not a 'Server Offline' message will appear. If you can't connect", (self.x+20, self.serverText_8.y+self.serverText_8.h), font='tiny')
-        self.serverText_10 = TextBox("make sure to check your internet connection, the server IP, and the server", (self.x+20, self.serverText_9.y+self.serverText_9.h), font='tiny')
-        self.serverText_11 = TextBox("port.", (self.x+20, self.serverText_10.y+self.serverText_10.h), font='tiny')
+        self.serverTitleText = TextBox('Server Help:',
+                                       (self.x+20, self.y+self.button_serverPage.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font='large')
+        self.serverSubTitleText = TextBox('Connecting to a server:',
+                                          (self.x+20, self.serverTitleText.y+self.serverTitleText.h+10), width=self.width-40, font='small')
+        self.serverText_1 = TextBox("In 'Your Name' enter your name.",
+                                    (self.x+20, self.serverSubTitleText.y+self.serverSubTitleText.h+7), width=self.width-40, font='tiny')
+        self.serverText_2 = TextBox("In 'Server IP' enter the public IP of the server as told by the person running the server, or the local IP of the " + \
+                                    "server if on the same network, or leave it blank if you are on the same machine as the one runnning the server.",
+                                    (self.x+20, self.serverText_1.y+self.serverText_1.h+10), width=self.width-40, font='tiny')
+        self.serverText_3 = TextBox("Leave 'Server Port' as the default value if the person running the server hasn't changed it, " + \
+                                    "otherwise change it to the number they give.",
+                                    (self.x+20, self.serverText_2.y+self.serverText_2.h+10), width=self.width-40, font='tiny')
+        self.serverText_4 = TextBox("Once these details have been entered click 'Connect to Server'. If you are able to connect to the " + \
+                                    "server successfully a 'Connected' message will appear, if not a 'Server Offline' message will appear. " +
+                                    "If you can't connect make sure to check your internet connection, the server IP, and the server port.",
+                                    (self.x+20, self.serverText_3.y+self.serverText_3.h+10), width=self.width-40, font='tiny')
+        self.serverText = [self.serverTitleText, self.serverSubTitleText, self.serverText_1, self.serverText_2, self.serverText_3, self.serverText_4]
 
-        self.serverText = [self.serverTitleText,
-                           self.serverSubTitleText, self.serverText_1, self.serverText_2, self.serverText_3, self.serverText_4, self.serverText_5, self.serverText_6,
-                           self.serverText_7, self.serverText_8, self.serverText_9, self.serverText_10, self.serverText_11]
-
-        self.ringingTitleText = TextBox('Ringing Help:', (self.x+20, self.y+self.button_serverPage.rect.h+20), backgroundColour=(150, 150, 150), font='large')
-        self.ringingSubTitleText = TextBox('Ringing Keys:', (self.x+20, self.ringingTitleText.y+self.ringingTitleText.h), font='small')
+        self.ringingTitleText = TextBox('Ringing Help:',
+                                        (self.x+20, self.y+self.button_serverPage.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font='large')
+        self.ringingSubTitleText_1 = TextBox('Ringing Keys:',
+                                             (self.x+20, self.ringingTitleText.y+self.ringingTitleText.h+10), width=self.width-40, font='small')
+        self.ringingText_1 = TextBox("By default the keys to ring your first two bells are the 'j' and 'f' keys. All the bells can be configured to be rung, " + \
+                                     "and their key bindings are set in the 'Options' menu.",
+                                     (self.x+20, self.ringingSubTitleText_1.y+self.ringingSubTitleText_1.h+7), width=self.width-40, font='tiny')
+        self.ringingText_2 = TextBox("The bell you set as your first bell will be placed at the bottom of the ringing circle, just to the right of the " + \
+                                     "center.",
+                                     (self.x+20, self.ringingText_1.y+self.ringingText_1.h+10), width=self.width-40, font='tiny')
+        self.ringingSubTitleText_2 = TextBox('Bell Tunings and Scales:',
+                                             (self.x+20, self.ringingText_2.y+self.ringingText_2.h+16), width=self.width-40, font='small')
         
-        self.ringingText = [self.ringingTitleText,
-                            self.ringingSubTitleText]
+        self.ringingText = [self.ringingTitleText, self.ringingSubTitleText_1, self.ringingText_1, self.ringingText_2, self.ringingSubTitleText_2]
 
     def drawBackground(self):
         pygame.draw.rect(self.win, (170, 170, 170), self.helpBackground, 0)
@@ -76,8 +85,10 @@ class HelpScreen:
 
         for serverText in self.serverText:
             serverText.rect.x = self.x + 20
+            serverText.generateFormattedText(width=self.width-40)
         for ringingText in self.ringingText:
             ringingText.rect.x = self.x + 20
+            ringingText.generateFormattedText(width=self.width-40)
         self.button_back.rect.x = self.x + 20
         self.button_serverPage.rect.x = self.x + self.width - 20 - self.button_serverPage.rect.w
         self.button_ringingPage.rect.x = self.button_serverPage.rect.x - 10 - self.button_ringingPage.rect.w
