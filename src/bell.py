@@ -4,22 +4,23 @@ from font import Font
 import os
 
 class Bell(Font):
-    def __init__(self, bellNumber, location, bellImageFile, width, height, textLocation, key=None):
+    def __init__(self, bellNumber, location, bellImageFile, width, height, textLocation, key=None, backgroundColour=(255, 255, 255)):
         super().__init__()
         self.stroke = 'H'
 
         # Read in bell image and create handstroke and backstroke images from it
         self.width = width
         self.height = height
+        self.backgroundColour = backgroundColour
         bell = pygame.image.load(bellImageFile)
         self.handstrokeBell = pygame.transform.scale(bell, (self.width, self.height))
         self.handstrokeBellBlank = self.handstrokeBell.copy()
-        self.fill(self.handstrokeBellBlank, pygame.Color(255, 255, 255))
+        self.fill(self.handstrokeBellBlank, pygame.Color(*self.backgroundColour))
         self.backstrokeBell = pygame.transform.scale(bell, (self.width, self.height))
         self.backstrokeBell = pygame.transform.rotate(self.backstrokeBell, -90.0)
         self.backstrokeBell = pygame.transform.flip(self.backstrokeBell, True, False)
         self.backstrokeBellBlank = self.backstrokeBell.copy()
-        self.fill(self.backstrokeBellBlank, pygame.Color(255, 255, 255))
+        self.fill(self.backstrokeBellBlank, pygame.Color(*self.backgroundColour))
 
         self.bellNumber = bellNumber
         self.bellNumberText = self.FONT.render(str(self.bellNumber), True, (0, 0, 0))
