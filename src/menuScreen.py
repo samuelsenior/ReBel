@@ -129,6 +129,7 @@ class MenuScreen(Font, Log):
             box.draw(self.win)
             box.updated = False
         for button in self.buttons:
+            button.hovered = False
             button.draw(self.win)
 
         self.updateConnectionStatusMessage()
