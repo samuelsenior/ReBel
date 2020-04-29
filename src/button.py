@@ -3,7 +3,7 @@ from font import Font
 
 class Button(Font):
     
-    def __init__(self, text, pos, active=True, border=False, fontSize='menu'):
+    def __init__(self, text, pos, active=True, border=False, fontSize='menu', buttonColour=(200, 200, 200), borderColour=(170, 170, 170)):
         super().__init__()
         self.text = text
         self.pos = pos
@@ -28,6 +28,9 @@ class Button(Font):
         elif self.fontSize == 'large':
             self.font = self.largeFont
 
+        self.buttonColour = buttonColour
+        self.borderColour = borderColour
+
         self.set_rect()
         self.width = self.rect.width
 
@@ -41,11 +44,11 @@ class Button(Font):
         self.set_rend()
 
         if self.border:
-            return pygame.draw.rect(win, (200, 200, 200), (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), \
+            return pygame.draw.rect(win, self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), \
                    win.blit(self.rend, (self.rect.x+5, self.rect.y)), \
-                   pygame.draw.rect(win, (255, 255, 255),(self.rect.x, self.rect.y, self.rect.w, self.rect.h), 2)
+                   pygame.draw.rect(win, self.borderColour,(self.rect.x, self.rect.y, self.rect.w, self.rect.h), 2)
         else:
-            return pygame.draw.rect(win, (200, 200, 200), (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), win.blit(self.rend, (self.rect.x+5, self.rect.y))
+            return pygame.draw.rect(win, self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), win.blit(self.rend, (self.rect.x+5, self.rect.y))
         
     def set_rend(self):
         self.rend = self.font.render(self.text, True, self.get_color())
