@@ -25,14 +25,15 @@ class RingingScreen(KeyPress, Log):
         #self.backgroundColour = (150, 150, 150)
         self.backgroundColour = (255, 255, 255)
 
-        self.button_options = Button("Options", (0, 0), active=False, border=True, fontSize="small")
+        self.button_reloadBells = Button("Reload Bells", (0, 0), active=True, border=True, fontSize="small")
+        self.button_options = Button("Options", (self.button_reloadBells.rect.x+self.button_reloadBells.rect.w, 0), active=False, border=True, fontSize="small")
         self.button_help = Button("Help", (self.button_options.rect.x+self.button_options.rect.w, 0), border=True, fontSize="small")
         self.button_about = Button("About", (self.button_help.rect.x+self.button_help.rect.w, 0), active=False, border=True, fontSize="small")
         self.button_back = Button("Back", (self.button_about.rect.x+self.button_about.rect.w, 0), border=True, fontSize="small")
         self.button_quit = Button("Quit", (self.button_back.rect.x+self.button_back.rect.w, 0), border=True, fontSize="small")
         self.button_blankSpace = Button("", (self.button_quit.rect.x+self.button_quit.rect.w, 0), border=True, fontSize="small", buttonColour=(self.button_options.borderColour))
         self.button_blankSpace.rect.w = self.width - self.button_blankSpace.rect.x
-        self.buttons = [self.button_options, self.button_help, self.button_about, self.button_back, self.button_quit, self.button_blankSpace]
+        self.buttons = [self.button_reloadBells, self.button_options, self.button_help, self.button_about, self.button_back, self.button_quit, self.button_blankSpace]
 
         self.initialised = False
 
@@ -63,16 +64,13 @@ class RingingScreen(KeyPress, Log):
             height = 140
 
             x = (self.width / 2.0 + self.radius*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
-            #y = (self.height*3.0/5.0 + self.radius*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
             y = (self.height / 2.0 + self.button_options.rect.h + self.radius*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
 
             if (seperationAngle*i + seperationAngle/2.0) <= np.pi/2.0 or (seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0) >= 3.0*np.pi/2.0:
                 textX = (self.width / 2.0 + (self.radius-0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) + width/2.0 - width/14.0
-                #textY = (self.height*3.0/5.0 + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
                 textY = (self.height / 2.0 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
             else:
                 textX = (self.width / 2.0 + (self.radius+0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
-                #textY = (self.height*3.0/5.0 + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
                 textY = (self.height / 2.0 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
 
             self.bells[i+1] = Bell(i+1, location=(x, y), width=width, height=height,
@@ -110,7 +108,6 @@ class RingingScreen(KeyPress, Log):
 
         clock = pygame.time.Clock()
 
-        #self.win.fill((255, 255, 255))
         self.win.fill(self.backgroundColour)
         for bell in self.bells.values():
                 bell.draw(self.win, renderNumber=True)
@@ -135,7 +132,16 @@ class RingingScreen(KeyPress, Log):
                     return 'quit'
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.button_help.rect.collidepoint(event.pos):
+                    if self.button_reloadBells.rect.collidepoint(event.pos):
+                        self.initialise()
+                        self.win.fill(self.backgroundColour)
+                        for bell in self.bells.values():
+                                bell.draw(self.win, renderNumber=True)
+                        for button in self.buttons:
+                            button.hovered = False
+                            button.draw(self.win)
+
+                    elif self.button_help.rect.collidepoint(event.pos):
                         run_help = False
                         return 'helpScreen'
                     elif self.button_back.rect.collidepoint(event.pos):
