@@ -59,7 +59,29 @@ class HelpScreen:
         pygame.draw.rect(self.win, (150, 150, 150), self.helpBackground, 0)
         pygame.draw.rect(self.win, (100, 100, 100), self.helpBackground, 2)
 
-    def display(self, source):
+    def display(self, win, source):
+        self.win = win
+
+        self.width = int(self.win.get_width() * 0.8)
+        self.height = int(self.win.get_height() * 0.8)
+
+        self.backgroundFade = pygame.Surface((self.win.get_width(), self.win.get_height()), pygame.SRCALPHA)
+        self.backgroundFade.fill((255, 255, 255, 156))
+
+        self.helpBackground = pygame.Rect(0 + (self.win.get_width() - self.width) / 2.0, 0 + (self.win.get_height() - self.height) / 2.0, self.width, self.height)
+
+
+        self.x = (self.win.get_width() - self.width) / 2.0
+        self.y = (self.win.get_height() - self.height) / 2.0
+
+        for serverText in self.serverText:
+            serverText.rect.x = self.x + 20
+        for ringingText in self.ringingText:
+            ringingText.rect.x = self.x + 20
+        self.button_back.rect.x = self.x + 20
+        self.button_serverPage.rect.x = self.x + self.width - 20 - self.button_serverPage.rect.w
+        self.button_ringingPage.rect.x = self.button_serverPage.rect.x - 10 - self.button_ringingPage.rect.w
+
         self.win.blit(self.backgroundFade, (0, 0))
 
         if source == "menuScreen":
@@ -72,12 +94,15 @@ class HelpScreen:
         if helpPage == "server":
             text = self.serverText
             self.button_serverPage.active = False
+            self.button_ringingPage.active = True
         elif helpPage == "ringing":
             text = self.ringingText
             self.button_ringingPage.active = False
+            self.button_serverPage.active = True
         else:
             text = self.ringingText
             self.button_ringingPage.active = False
+            self.button_serverPage.active = True
 
         self.drawBackground()
 

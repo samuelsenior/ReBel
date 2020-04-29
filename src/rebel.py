@@ -74,19 +74,25 @@ class Rebel(Font, Log):
         pygame.quit()
         sys.exit(0)
 
+    def updateScreenSize(self, width, height):
+        self.win = pygame.display.set_mode((width, height))
+
     def run(self):
         self.running = True
         while self.running:
             if self.screen == 'menuScreen':
+                self.ringingScreen.initialised = False
+                self.updateScreenSize(self.menuWidth, self.menuHeight)
                 self.previousScreen = 'menuScreen'
                 self.screen = self.menuScreen.display()
                 if self.screen == 'quit':
                     self.quit()
             elif self.screen == 'helpScreen':
-                self.screen = self.helpScreen.display(source=self.previousScreen)
+                self.screen = self.helpScreen.display(win=self.win, source=self.previousScreen)
                 if self.screen == 'quit':
                     self.quit()
             elif self.screen == 'ringingScreen':
+                self.updateScreenSize(self.mainWidth, self.mainHeight)
                 self.previousScreen = 'ringingScreen'
                 self.screen = self.ringingScreen.display()
                 if self.screen == 'quit':

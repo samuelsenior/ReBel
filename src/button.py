@@ -3,7 +3,7 @@ from font import Font
 
 class Button(Font):
     
-    def __init__(self, text, pos, active=True):
+    def __init__(self, text, pos, active=True, border=False, fontSize='menu'):
         super().__init__()
         self.text = text
         self.pos = pos
@@ -13,6 +13,20 @@ class Button(Font):
 
         self.hovered = False
         self.active = active
+
+        self.border = border
+
+        self.fontSize = fontSize
+        if self.fontSize == 'menu':
+            self.font = self.menu_font
+        elif self.fontSize == 'tiny':
+            self.font = self.tinyFont
+        elif self.fontSize == 'small':
+            self.font = self.smallFont
+        elif self.fontSize == 'medium':
+            self.font = self.mediumFont
+        elif self.fontSize == 'large':
+            self.font = self.largeFont
 
         self.set_rect()
         self.width = self.rect.width
@@ -26,10 +40,15 @@ class Button(Font):
     def draw(self, win):
         self.set_rend()
 
-        return pygame.draw.rect(win, (200, 200, 200), (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), win.blit(self.rend, (self.rect.x+5, self.rect.y))
+        if self.border:
+            return pygame.draw.rect(win, (200, 200, 200), (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), \
+                   win.blit(self.rend, (self.rect.x+5, self.rect.y)), \
+                   pygame.draw.rect(win, (100, 100, 100),(self.rect.x, self.rect.y, self.rect.w, self.rect.h), 2)
+        else:
+            return pygame.draw.rect(win, (200, 200, 200), (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), win.blit(self.rend, (self.rect.x+5, self.rect.y))
         
     def set_rend(self):
-        self.rend = self.menu_font.render(self.text, True, self.get_color())
+        self.rend = self.font.render(self.text, True, self.get_color())
         
     def get_color(self):
         if self.hovered and self.active == True:

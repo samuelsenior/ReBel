@@ -179,11 +179,14 @@ class Network(Log):
         self.disconnecting = True
         self.running = False
 
-    def getNumberOfBells(self):
-        if self.gotNumberOfBells == True:
-            return self.numberOfBells.pop(0)
+    def getNumberOfBells(self, empty=False):
+        if empty:
+            self.numberOfBells = []
         else:
-            raise
+            if self.gotNumberOfBells == True:
+                return self.numberOfBells.pop(0)
+            else:
+                raise
 
     def getBellRung(self):
         if len(self.bellsRung) > 0:
