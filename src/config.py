@@ -8,7 +8,8 @@ class Config:
                        'scale':None, 'octaveShift':None, 'pitchShift':None,
                        'testConnectionLatency':[False, 0,100],
                        'regenerateBells':False,
-                       'handbellSource':None, 'rebelBellFileLocation':None, 'abelBellFileLocation':None}
+                       'handbellSource':None, 'rebelBellFileLocation':None, 'abelBellFileLocation':None,
+                       'frameRate':None}
         self.read()
         self.format()
 
@@ -85,6 +86,11 @@ class Config:
             self.config['abelBellFileLocation'] = ""
             for t in tmp:
                 self.config['abelBellFileLocation'] = os.path.join(self.config['abelBellFileLocation'], t)
+
+        if self.config['frameRate'] == None:
+            self.config['frameRate'] = 500
+        else:
+            self.config['frameRate'] = int(self.config['frameRate'])
 
     def get(self, dictKey):
         return self.config[dictKey]
