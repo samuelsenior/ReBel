@@ -34,7 +34,7 @@ class Server(Log):
 
         self.messageEnd = bytes("/", "utf-8")
 
-        self.frameRate = 100
+        self.frameRate = 1000
 
         self.incomingMessagesThread = threading.Thread(target=self.incomingMessages, args=(), daemon=True)
         self.outgoingMessagesThread = threading.Thread(target=self.outgoingMessages, args=(), daemon=True)
