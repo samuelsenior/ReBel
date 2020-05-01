@@ -54,9 +54,11 @@ class Rebel(Font, Log):
         self.win = pygame.display.set_mode((self.menuWidth, self.menuHeight))
         pygame.display.set_caption("ReBel")
 
-        self.frameRate = 100
-
         self.config = Config(fileName=self.configFile)
+
+        self.frameRate = self.config.get('frameRate')
+        self.log("[INFO] FrameRate set to {}".format(self.frameRate))
+
         self.network = Network(self.logFile, frameRate=self.frameRate)
         self.helpScreen = HelpScreen(self.win, frameRate=self.frameRate)
         self.menuScreen = MenuScreen(win=self.win, network=self.network, frameRate=self.frameRate,
