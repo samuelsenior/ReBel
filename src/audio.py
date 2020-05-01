@@ -167,9 +167,9 @@ class Audio(Log, Error):
                 pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
             elif self.config.get('handbellSource') == 'rebel':
                 fadeTime = int(len(pitchShifted_sound)*0.95)
-                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
-                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
-                pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+                #pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+                #pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
+                #pitchShifted_sound = pitchShifted_sound.fade_out(fadeTime)
 
             pitchShifted_sound.export(os.path.join("..", "audio", "{}.wav".format(self.numberOfBells - i)), format='wav')
 
