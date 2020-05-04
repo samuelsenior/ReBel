@@ -71,26 +71,40 @@ class OptionsScreen:
         self.button_keys.rect.x = self.button_tuning.rect.x - self.button_keys.rect.w - 10
 
     def generateBellKeyInputBoxes(self, startingX, y):
+        self.bellNumberInputBoxes = []
         self.bellKeyInputBoxes = []
         if self.config.get('numberOfBells') >= 100:
             width = 48
         else:
             width = 32
         for i in range(self.config.get('numberOfBells')):
+            if i+1 < 10:
+                bellNo = " " + str(self.config.get('ringableBells')[i])
+            else:
+                bellNo = str(self.config.get('ringableBells')[i])
+            key = " " + str(self.config.get('keys')[i])
             if i == 0:
                 try:
-                    self.bellKeyInputBoxes.append(TitledInputBox("Ringable Bells:", startingX+i*10, y, width, 30, font='small',
-                                                  resizable=False, text=str(self.config.get('ringableBells')[i])))
+                    self.bellNumberInputBoxes.append(TitledInputBox("Ringable Bells:", startingX+i*10, y, width, 30, font='small',
+                                                     resizable=False, text=bellNo, startActiveText=True, inputType='numeric'))
+                    self.bellKeyInputBoxes.append(TitledInputBox("Key Press:", startingX+i*10, y+30+5, width, 30, font='small',
+                                                  resizable=False, text=key, startActiveText=True, characterLimit=1))
                 except:
-                    self.bellKeyInputBoxes.append(TitledInputBox("Bell No.", startingX+i*10, y, width, 30, font='small',
-                                                  resizable=False))
+                    self.bellNumberInputBoxes.append(TitledInputBox("Bell No.", startingX+i*10, y, width, 30, font='small',
+                                                     resizable=False, startActiveText=True, inputType='numeric'))
+                    self.bellKeyInputBoxes.append(TitledInputBox("Key Press:", startingX+i*10, y+30+5, width, 30, font='small',
+                                                  resizable=False, startActiveText=True, characterLimit=1))
             else:
                 try:
-                    self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y, width, 30, font='small',
-                                                  resizable=False, text=str(self.config.get('ringableBells')[i])))
+                    self.bellNumberInputBoxes.append(InputBox(self.bellNumberInputBoxes[-1].x+width+10, y, width, 30, font='small',
+                                                  resizable=False, text=bellNo, startActiveText=True, inputType='numeric'))
+                    self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y+30+5, width, 30, font='small',
+                                                  resizable=False, text=key, startActiveText=True, characterLimit=1))
                 except:
-                    self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y, width, 30, font='small',
-                                                  resizable=False))
+                    self.bellNumberInputBoxes.append(InputBox(self.bellNumberInputBoxes[-1].x+width+10, y, width, 30, font='small',
+                                                     resizable=False, startActiveText=True, inputType='numeric'))
+                    self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y+30+5, width, 30, font='small',
+                                                  resizable=False, startActiveText=True, characterLimit=1))
         self.activeBox = None
 
     def drawBackground(self):
@@ -143,6 +157,11 @@ class OptionsScreen:
 
         self.drawBackground()
 
+        self.bellNumberInputBoxes[0].draw(self.win, redrawTitle=True)
+        self.bellNumberInputBoxes[0].updated = False
+        for box in self.bellNumberInputBoxes[1:]:
+            box.draw(self.win)
+            box.updated = False
         self.bellKeyInputBoxes[0].draw(self.win, redrawTitle=True)
         self.bellKeyInputBoxes[0].updated = False
         for box in self.bellKeyInputBoxes[1:]:
@@ -174,6 +193,7 @@ class OptionsScreen:
                         return source
                     elif self.button_keys.rect.collidepoint(event.pos) and self.button_keys.active == True:
                         optionsPage = 'keys'
+                        self.bellNumberInputBoxes[0].redrawTitle = True
                         self.bellKeyInputBoxes[0].redrawTitle = True
                         text = self.keysText
                         self.button_tuning.active = True
@@ -201,6 +221,10 @@ class OptionsScreen:
                         for txt in text:
                             txt.draw(self.win)
 
+                    for box in self.bellNumberInputBoxes:
+                        box.mouseDownEvent(event, self.win)
+                        if box.active == True:
+                            self.activeBox = box
                     for box in self.bellKeyInputBoxes:
                         box.mouseDownEvent(event, self.win)
                         if box.active == True:
@@ -219,10 +243,15 @@ class OptionsScreen:
                         button.updated = True
 
             if optionsPage == 'keys':
+                for box in self.bellNumberInputBoxes:
+                    if box.updated:
+                        box.draw(self.win)
+                        box.updated = False
                 for box in self.bellKeyInputBoxes:
                     if box.updated:
                         box.draw(self.win)
                         box.updated = False
+
             for button in self.buttons:
                 if button.updated:
                     button.draw(self.win)

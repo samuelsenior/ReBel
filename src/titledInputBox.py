@@ -1,8 +1,9 @@
 from inputBox import InputBox
 
 class TitledInputBox(InputBox):
-    def __init__(self, title, x, y, w, h, text='', font='medium', resizable=True):
-        super().__init__(x, y, w, h, text=text, font=font, resizable=resizable)
+    def __init__(self, title, x, y, w, h, text='', font='medium', resizable=True, startActiveText=False, characterLimit=1000, inputType=None):
+        super().__init__(x, y, w, h, text=text, font=font, resizable=resizable, startActiveText=startActiveText,
+                         characterLimit=characterLimit, inputType=inputType)
 
         if font == None:
             self.font = self.tinyFont

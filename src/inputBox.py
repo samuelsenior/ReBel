@@ -3,12 +3,12 @@ from font import Font
 
 class InputBox(Font):
 
-    def __init__(self, x, y, w, h, text='', font='medium', resizable=True):
+    def __init__(self, x, y, w, h, text='', font='medium', resizable=True, startActiveText=False, characterLimit=1000, inputType=None):
 
         super().__init__()
 
-        self.COLOR_INACTIVE = pygame.Color('lightskyblue3')
-        self.COLOR_ACTIVE = pygame.Color('dodgerblue2')
+        self.colour_inactive = pygame.Color('lightskyblue3')
+        self.colour_active = pygame.Color('dodgerblue2')
 
         self.x = x
         self.y = y
@@ -16,9 +16,11 @@ class InputBox(Font):
         self.height = h
         self.rect = pygame.Rect(x, y, w, h)
         self.rectOld = self.rect.copy()
-        self.color = self.COLOR_INACTIVE
+        self.color = self.colour_inactive
         self.text = text
         self.resizable = resizable
+        self.characterLimit = characterLimit
+        self.inputType = inputType
 
         if font == None:
             self.font = self.tinyFont
@@ -31,12 +33,15 @@ class InputBox(Font):
         elif font == 'large':
             self.font = self.largeFont
 
-        self.txt_surface = self.font.render(text, True, self.color)
+        if startActiveText:
+            self.txt_surface = self.font.render(text, True, self.colour_active)
+        else:
+            self.txt_surface = self.font.render(text, True, self.color)
         self.active = False
         self.updated = True
 
         self.characterWidth = self.font.size("W")[0]
-        self.text_width = 0
+        self.text_width = self.txt_surface.get_width()
 
     def mouseDownEvent(self, event, screen):
         # If the user clicked on the input_box rect.
@@ -46,7 +51,7 @@ class InputBox(Font):
         else:
             self.active = False
         # Change the current color of the input box.
-        self.color = self.COLOR_ACTIVE if self.active else self.COLOR_INACTIVE
+        self.color = self.colour_active if self.active else self.colour_inactive
 
         self.updated = True
 
@@ -56,9 +61,21 @@ class InputBox(Font):
         elif event.key == pygame.K_BACKSPACE:
             self.text = self.text[:-1]
         elif self.rect.w < self.text_width + self.characterWidth:
-            pass
-        else:
-            self.text += event.unicode
+            if self.text[0] == " " and len(self.text[1:]) < self.characterLimit:
+                if self.inputType == 'numeric' and event.unicode.isdigit():
+                    self.text = self.text[1:] + event.unicode
+                elif self.inputType == None:
+                    self.text = self.text[1:] + event.unicode
+        elif len(self.text) < self.characterLimit:
+            if self.inputType == 'numeric' and event.unicode.isdigit():
+                self.text += event.unicode
+            elif self.inputType == None:
+                self.text += event.unicode
+        elif self.text[0] == " " and len(self.text[1:]) < self.characterLimit:
+            if self.inputType == 'numeric' and event.unicode.isdigit():
+                self.text += event.unicode
+            elif self.inputType == None:
+                self.text += event.unicode
         # Re-render the text.
         self.txt_surface = self.font.render(self.text, True, self.color)
         self.text_width = self.txt_surface.get_width()
