@@ -3,7 +3,7 @@ from font import Font
 
 class InputBox(Font):
 
-    def __init__(self, x, y, w, h, text=''):
+    def __init__(self, x, y, w, h, text='', font='medium', resizable=True):
 
         super().__init__()
 
@@ -18,9 +18,25 @@ class InputBox(Font):
         self.rectOld = self.rect.copy()
         self.color = self.COLOR_INACTIVE
         self.text = text
-        self.txt_surface = self.FONT.render(text, True, self.color)
+        self.resizable = resizable
+
+        if font == None:
+            self.font = self.tinyFont
+        elif font == 'tiny':
+            self.font = self.tinyFont
+        elif font == 'small':
+            self.font = self.smallFont
+        elif font == 'medium':
+            self.font = self.mediumFont
+        elif font == 'large':
+            self.font = self.largeFont
+
+        self.txt_surface = self.font.render(text, True, self.color)
         self.active = False
         self.updated = True
+
+        self.characterWidth = self.font.size("W")[0]
+        self.text_width = 0
 
     def mouseDownEvent(self, event, screen):
         # If the user clicked on the input_box rect.
@@ -39,10 +55,13 @@ class InputBox(Font):
             pass
         elif event.key == pygame.K_BACKSPACE:
             self.text = self.text[:-1]
+        elif self.rect.w < self.text_width + self.characterWidth:
+            pass
         else:
             self.text += event.unicode
         # Re-render the text.
-        self.txt_surface = self.FONT.render(self.text, True, self.color)
+        self.txt_surface = self.font.render(self.text, True, self.color)
+        self.text_width = self.txt_surface.get_width()
         self.update()
 
         self.updated = True
@@ -52,10 +71,15 @@ class InputBox(Font):
     def update(self):
         # Resize the box if the text is too long.
         self.rectOld = self.rect.copy()
-        self.rectOld.w = self.rectOld.w + 10
-        self.rectOld.h = self.rectOld.h + 10
-        width = max(200, self.txt_surface.get_width()+10)
-        self.rect.w = width
+        if self.resizable == True:
+            self.rectOld.w = self.rectOld.w + 1#+ 10
+            self.rectOld.h = self.rectOld.h + 1#+ 10
+            width = max(self.width, self.txt_surface.get_width()+10)
+            self.rect.w = width
+        else:
+            self.rectOld.w = self.rectOld.w
+            self.rectOld.h = self.rectOld.h
+            self.rect.w = self.width
 
     def draw(self, screen):
         return [pygame.draw.rect(screen, (255, 255, 255), self.rectOld, 0), screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+2)), pygame.draw.rect(screen, self.color, self.rect, 2)]

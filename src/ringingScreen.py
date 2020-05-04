@@ -23,10 +23,11 @@ class RingingScreen(KeyPress, Log):
         self.config = config
 
         #self.backgroundColour = (150, 150, 150)
-        self.backgroundColour = (255, 255, 255)
+        self.backgroundColour = (230, 230, 230)
+        #self.backgroundColour = (255, 255, 255)
 
         self.button_reloadBells = Button("Reload Bells", (0, 0), active=True, border=True, fontSize="small")
-        self.button_options = Button("Options", (self.button_reloadBells.rect.x+self.button_reloadBells.rect.w, 0), active=False, border=True, fontSize="small")
+        self.button_options = Button("Options", (self.button_reloadBells.rect.x+self.button_reloadBells.rect.w, 0), border=True, fontSize="small")
         self.button_help = Button("Help", (self.button_options.rect.x+self.button_options.rect.w, 0), border=True, fontSize="small")
         self.button_about = Button("About", (self.button_help.rect.x+self.button_help.rect.w, 0), active=False, border=True, fontSize="small")
         self.button_back = Button("Back", (self.button_about.rect.x+self.button_about.rect.w, 0), border=True, fontSize="small")
@@ -116,7 +117,6 @@ class RingingScreen(KeyPress, Log):
             button.hovered = False
             button.draw(self.win)
 
-        self.button_options.active = False
         self.button_about.active = False
 
         run_ringing = True
@@ -140,15 +140,17 @@ class RingingScreen(KeyPress, Log):
                         for button in self.buttons:
                             button.hovered = False
                             button.draw(self.win)
-
+                    elif self.button_options.rect.collidepoint(event.pos):
+                        run_ringing = False
+                        return 'optionsScreen'
                     elif self.button_help.rect.collidepoint(event.pos):
                         run_help = False
                         return 'helpScreen'
                     elif self.button_back.rect.collidepoint(event.pos):
-                        run_help = False
+                        run_ringing = False
                         return 'menuScreen'
                     elif self.button_quit.rect.collidepoint(event.pos):
-                        run_help = False
+                        run_ringing = False
                         return 'quit'
 
                 if event.type == pygame.KEYDOWN:

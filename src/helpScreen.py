@@ -132,10 +132,6 @@ class HelpScreen:
         run_help = True
         while run_help:
 
-            for button in self.buttons:
-                if button.updated:
-                    button.draw(self.win)
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run_help = False
@@ -145,8 +141,7 @@ class HelpScreen:
                     if self.button_back.rect.collidepoint(event.pos):
                         run_help = False
                         return source
-
-                    if self.button_serverPage.rect.collidepoint(event.pos) and self.button_serverPage.active == True:
+                    elif self.button_serverPage.rect.collidepoint(event.pos) and self.button_serverPage.active == True:
                         text = self.serverText
                         self.button_serverPage.active = False
                         self.button_ringingPage.active = True
@@ -168,7 +163,10 @@ class HelpScreen:
                     elif button.active == True:
                         button.hovered = False
                         button.updated = True
-                        button.draw(self.win)
+
+            for button in self.buttons:
+                if button.updated:
+                    button.draw(self.win)
 
             pygame.display.flip()
             clock.tick(self.frameRate)

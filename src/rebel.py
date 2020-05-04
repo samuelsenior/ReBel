@@ -22,6 +22,7 @@ from config import Config
 
 from helpScreen import HelpScreen
 from menuScreen import MenuScreen
+from optionsScreen import OptionsScreen
 from ringingScreen import RingingScreen
 
         
@@ -63,6 +64,7 @@ class Rebel(Font, Log):
         self.helpScreen = HelpScreen(self.win, frameRate=self.frameRate)
         self.menuScreen = MenuScreen(win=self.win, network=self.network, frameRate=self.frameRate,
                                      logFile=self.logFile, config=self.config)
+        self.optionsScreen = OptionsScreen(win=self.win, config=self.config, frameRate=self.frameRate)
         self.ringingScreen = RingingScreen(network=self.network, width=self.mainWidth, height=self.mainHeight, frameRate=self.frameRate,
                                            logFile=self.logFile, config=self.config)
 
@@ -91,6 +93,10 @@ class Rebel(Font, Log):
                     self.quit()
             elif self.screen == 'helpScreen':
                 self.screen = self.helpScreen.display(win=self.win, source=self.previousScreen)
+                if self.screen == 'quit':
+                    self.quit()
+            elif self.screen == 'optionsScreen':
+                self.screen = self.optionsScreen.display(win=self.win, source=self.previousScreen)
                 if self.screen == 'quit':
                     self.quit()
             elif self.screen == 'ringingScreen':

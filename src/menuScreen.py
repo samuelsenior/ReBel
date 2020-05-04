@@ -126,7 +126,7 @@ class MenuScreen(Font, Log):
         self.win.blit(self.menuBackground, (0, 0))
 
         for box in self.input_boxes:
-            box.draw(self.win)
+            box.draw(self.win, redrawTitle=True)
             box.updated = False
         for button in self.buttons:
             button.hovered = False

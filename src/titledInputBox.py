@@ -1,12 +1,27 @@
 from inputBox import InputBox
 
 class TitledInputBox(InputBox):
-    def __init__(self, title, x, y, w, h, text=''):
-        super().__init__(x, y, w, h, text=text)
-        self.title = self.FONT.render(title, True, (0, 0, 0))
+    def __init__(self, title, x, y, w, h, text='', font='medium', resizable=True):
+        super().__init__(x, y, w, h, text=text, font=font, resizable=resizable)
 
-    def draw(self, win, redrawTitle=True):
-        if redrawTitle:
+        if font == None:
+            self.font = self.tinyFont
+        elif font == 'tiny':
+            self.font = self.tinyFont
+        elif font == 'small':
+            self.font = self.smallFont
+        elif font == 'medium':
+            self.font = self.mediumFont
+        elif font == 'large':
+            self.font = self.largeFont
+
+        self.title = self.font.render(title, True, (0, 0, 0))
+
+        self.redrawTitle = True
+
+    def draw(self, win, redrawTitle=False):
+        if redrawTitle or self.redrawTitle:
+            self.redrawTitle = False
             return super().draw(win).append(win.blit(self.title, (self.x - self.title.get_width()-5, self.y+2)))
         else:
             return super().draw(win)
