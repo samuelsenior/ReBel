@@ -78,11 +78,19 @@ class OptionsScreen:
             width = 32
         for i in range(self.config.get('numberOfBells')):
             if i == 0:
-                self.bellKeyInputBoxes.append(TitledInputBox("Bell No.", startingX+i*10, y, width, 30, font='small',
-                                              resizable=False, text=str(self.config.get('ringableBells')[i])))
+                try:
+                    self.bellKeyInputBoxes.append(TitledInputBox("Ringable Bells:", startingX+i*10, y, width, 30, font='small',
+                                                  resizable=False, text=str(self.config.get('ringableBells')[i])))
+                except:
+                    self.bellKeyInputBoxes.append(TitledInputBox("Bell No.", startingX+i*10, y, width, 30, font='small',
+                                                  resizable=False))
             else:
-                self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y, width, 30, font='small',
-                                              resizable=False, text=str(self.config.get('ringableBells')[i])))
+                try:
+                    self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y, width, 30, font='small',
+                                                  resizable=False, text=str(self.config.get('ringableBells')[i])))
+                except:
+                    self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y, width, 30, font='small',
+                                                  resizable=False))
         self.activeBox = None
 
     def drawBackground(self):
@@ -116,7 +124,7 @@ class OptionsScreen:
 
         self.realignButtons()
 
-        self.generateBellKeyInputBoxes(self.x+100, self.keysText_1.rect.y)
+        self.generateBellKeyInputBoxes(self.x+170, self.keysText_1.rect.y)
 
         self.win.blit(self.backgroundFade, (0, 0))
 
