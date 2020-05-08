@@ -43,6 +43,9 @@ class InputBox(Font):
         self.characterWidth = self.font.size("W")[0]
         self.text_width = self.txt_surface.get_width()
 
+    def get(self):
+        return self.text
+
     def mouseDownEvent(self, event, screen):
         # If the user clicked on the input_box rect.
         if self.rect.collidepoint(event.pos):

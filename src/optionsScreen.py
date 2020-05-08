@@ -23,8 +23,12 @@ class OptionsScreen:
 
         self.optionsBackground = pygame.Rect(0 + (self.win.get_width() - self.width) / 2.0, 0 + (self.win.get_height() - self.height) / 2.0, self.width, self.height)
 
-        self.button_back = Button("Back", (self.x + 20, self.height + self.y - 20))
+        self.button_back = Button("Cancel", (self.x + 20, self.height + self.y - 20))
         self.button_back.rect.y -= self.button_back.rect.h
+        #
+        self.button_save = Button("Save", (self.x + self.width - 20, self.height + self.y - 20))
+        self.button_save.rect.x -= self.button_save.rect.w
+        self.button_save.rect.y -= self.button_save.rect.h
         #
         self.button_other = Button("Other", (self.x + self.width - 20, self.y + 20))
         self.button_other.rect.x -= self.button_other.rect.w
@@ -35,7 +39,7 @@ class OptionsScreen:
         self.button_keys = Button("keys", (self.button_tuning.x - self.button_tuning.rect.w - 10, self.y + 20))
         self.button_keys.rect.x -= self.button_keys.rect.w
         #
-        self.buttons = [self.button_back, self.button_keys, self.button_tuning, self.button_other]
+        self.buttons = [self.button_back, self.button_save, self.button_keys, self.button_tuning, self.button_other]
 
         self.keysTitleText = TextBox('Keys Options:',
                                         (self.x+20, self.y+self.button_keys.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font='large')
@@ -65,6 +69,7 @@ class OptionsScreen:
 
     def realignButtons(self):
         self.button_back.rect.x = self.x + 20
+        self.button_save.rect.x = self.x + self.width - self.button_save.rect.w - 20
 
         self.button_other.rect.x = self.x + self.width - 20 - self.button_other.rect.w
         self.button_tuning.rect.x = self.button_other.rect.x - self.button_tuning.rect.w - 10
@@ -106,6 +111,19 @@ class OptionsScreen:
                     self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y+30+5, width, 30, font='small',
                                                   resizable=False, startActiveText=True, characterLimit=1))
         self.activeBox = None
+
+    def saveConfig(self):
+        bellNumberList = []
+        bellKeyList = []
+        for i, bellNumberBox in enumerate(self.bellNumberInputBoxes):
+            bellNumber = bellNumberBox.get()
+            bellKey = self.bellKeyInputBoxes[i].get()
+
+            bellNumberList.append(int(bellNumber.replace(" ", "")))
+            bellKeyList.append(bellKey.replace(" ", ""))
+
+        self.config.set('ringableBells', bellNumberList)
+        self.config.set('keys', keys)
 
     def drawBackground(self):
         pygame.draw.rect(self.win, (170, 170, 170), self.optionsBackground, 0)
@@ -190,6 +208,10 @@ class OptionsScreen:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.button_back.rect.collidepoint(event.pos):
                         run_options = False
+                        return source
+                    elif self.button_save.rect.collidepoint(event.pos):
+                        run_options = False
+                        self.saveConfig()
                         return source
                     elif self.button_keys.rect.collidepoint(event.pos) and self.button_keys.active == True:
                         optionsPage = 'keys'
