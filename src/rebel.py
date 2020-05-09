@@ -41,7 +41,7 @@ class Rebel(Font, Log):
         Log.__init__(self, logFile=self.logFile)
         self.clearLog()
 
-        self.reBelClientVersion = "v0.2.14"
+        self.reBelClientVersion = "v0.2.15"
         self.log("[INFO] Running ReBel client {}".format(self.reBelClientVersion))
 
         self.menuWidth = menuWidth
@@ -99,6 +99,9 @@ class Rebel(Font, Log):
                 self.screen = self.optionsScreen.display(win=self.win, source=self.previousScreen)
                 if self.screen == 'quit':
                     self.quit()
+                elif self.optionsScreen.bellKeysUpdated:
+                    self.ringingScreen.updateBellKeys()
+                    self.optionsScreen.bellKeysUpdated = False
             elif self.screen == 'ringingScreen':
                 self.updateScreenSize(self.mainWidth, self.mainHeight)
                 self.previousScreen = 'ringingScreen'

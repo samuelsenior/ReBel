@@ -12,6 +12,8 @@ class OptionsScreen:
         self.config = config
         self.frameRate = frameRate
 
+        self.bellKeysUpdated = False
+
         self.width = int(self.win.get_width() * 0.8)
         self.height = int(self.win.get_height() * 0.8)
 
@@ -84,10 +86,19 @@ class OptionsScreen:
             width = 32
         for i in range(self.config.get('numberOfBells')):
             if i+1 < 10:
-                bellNo = " " + str(self.config.get('ringableBells')[i])
+                try:
+                    bellNo = " " + str(self.config.get('ringableBells')[i])
+                except:
+                    bellNo = ""
             else:
-                bellNo = str(self.config.get('ringableBells')[i])
-            key = " " + str(self.config.get('keys')[i])
+                try:
+                    bellNo = str(self.config.get('ringableBells')[i])
+                except:
+                    bellNo = ""
+            try:
+                key = " " + str(self.config.get('keys')[i])
+            except:
+                key = ""
             if i == 0:
                 try:
                     self.bellNumberInputBoxes.append(TitledInputBox("Ringable Bells:", startingX+i*10, y, width, 30, font='small',
@@ -116,14 +127,23 @@ class OptionsScreen:
         bellNumberList = []
         bellKeyList = []
         for i, bellNumberBox in enumerate(self.bellNumberInputBoxes):
-            bellNumber = bellNumberBox.get()
-            bellKey = self.bellKeyInputBoxes[i].get()
+            bellNumber = bellNumberBox.get().replace(" ", "")
+            bellKey = self.bellKeyInputBoxes[i].get().replace(" ", "")
 
-            bellNumberList.append(int(bellNumber.replace(" ", "")))
-            bellKeyList.append(bellKey.replace(" ", ""))
+            try:
+                bellNumber = int(bellNumber)
+            except:
+                pass
+            else:
+                if bellNumber != "" and bellKey != "" and bellNumber > 0 and bellNumber <= self.config.get('numberOfBells'):
+                    try:
+                        bellNumberList.append(bellNumber)
+                        bellKeyList.append(bellKey)
+                    except:
+                        pass
 
         self.config.set('ringableBells', bellNumberList)
-        self.config.set('keys', keys)
+        self.config.set('keys', bellKeyList)
 
     def drawBackground(self):
         pygame.draw.rect(self.win, (170, 170, 170), self.optionsBackground, 0)
@@ -208,10 +228,12 @@ class OptionsScreen:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.button_back.rect.collidepoint(event.pos):
                         run_options = False
+                        self.bellKeysUpdated = False
                         return source
                     elif self.button_save.rect.collidepoint(event.pos):
                         run_options = False
                         self.saveConfig()
+                        self.bellKeysUpdated = True
                         return source
                     elif self.button_keys.rect.collidepoint(event.pos) and self.button_keys.active == True:
                         optionsPage = 'keys'

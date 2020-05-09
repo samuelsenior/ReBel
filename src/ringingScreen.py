@@ -80,13 +80,27 @@ class RingingScreen(KeyPress, Log):
                                    backgroundColour=self.backgroundColour)
 
         for i, _ in enumerate(self.config.get('ringableBells')) if len(self.config.get('ringableBells')) < self.config.get('numberOfBells') else enumerate(range(self.config.get('numberOfBells'))):
-            key = self.config.get('keys')[i]
-            self.bells[self.config.get('ringableBells')[i]].setKey(self.keyPress(key))
+            try:
+                key = self.config.get('keys')[i]
+                self.bells[self.config.get('ringableBells')[i]].setKey(self.keyPress(key))
+            except:
+                self.log("[WARNING] RingingScreen.initialise: Incorrect bell/key configuration of bell no. '{}' and key '{}'".format(self.config.get('ringableBells')[i], self.config.get('keys')[i]))
 
         pygame.mixer.set_num_channels(self.config.get('numberOfBells'))
         self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config, self.logFile)
 
         self.initialised = True
+
+    def updateBellKeys(self):
+        for i in range(1, self.config.get('numberOfBells')+1, 1):
+            self.bells[i].clearKey()
+        for i, _ in enumerate(self.config.get('ringableBells')) if len(self.config.get('ringableBells')) < self.config.get('numberOfBells') else enumerate(range(self.config.get('numberOfBells'))):
+            try:
+                key = self.config.get('keys')[i]
+                self.bells[self.config.get('ringableBells')[i]].setKey(self.keyPress(key))
+            except:
+                self.log("[WARNING] RingingScreen.updateBellKeys: Incorrect bell/key configuration of bell no. '{}' and key '{}'".format(self.config.get('ringableBells')[i], self.config.get('keys')[i]))
+
 
     def display(self):
         self.win = pygame.display.set_mode((self.width, self.height))
