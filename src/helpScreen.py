@@ -83,12 +83,20 @@ class HelpScreen:
         self.x = (self.win.get_width() - self.width) / 2.0
         self.y = (self.win.get_height() - self.height) / 2.0
 
-        for serverText in self.serverText:
+        for i, serverText in enumerate(self.serverText):
             serverText.rect.x = self.x + 20
-            serverText.generateFormattedText(width=self.width-40)
-        for ringingText in self.ringingText:
+            if i == 0:
+                startingY = serverText.y
+            else:
+                startingY = self.serverText[i-1].y + self.serverText[i-1].h+10
+            serverText.generateFormattedText(startingY=startingY, width=self.width-40)
+        for i, ringingText in enumerate(self.ringingText):
             ringingText.rect.x = self.x + 20
-            ringingText.generateFormattedText(width=self.width-40)
+            if i == 0:
+                startingY = ringingText.y
+            else:
+                startingY = self.ringingText[i-1].y + self.ringingText[i-1].h+10
+            ringingText.generateFormattedText(startingY=startingY, width=self.width-40)
         self.button_back.rect.x = self.x + 20
         self.button_serverPage.rect.x = self.x + self.width - 20 - self.button_serverPage.rect.w
         self.button_ringingPage.rect.x = self.button_serverPage.rect.x - 10 - self.button_ringingPage.rect.w

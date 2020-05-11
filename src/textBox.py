@@ -26,15 +26,17 @@ class TextBox(Font):
 
         self.set_rect()
 
-        self.generateFormattedText(self.width)
+        self.generateFormattedText(self.y, self.width)
 
-    def generateFormattedText(self, width):
+    def generateFormattedText(self, startingY, width):
         self.width = width
         self.textFormatted = []
+        self.y = startingY
         y = 0 + self.y
         self.linespacing = -2
         self.fontHeight = self.font.size("Tg")[1]
         text = "" + self.text
+        self.rect.h = 0
         while text:
             i = 1
             while self.font.size(text[:i])[0] < self.width and i < len(text):
@@ -55,7 +57,15 @@ class TextBox(Font):
 
             text = text[i:]
 
-        self.h = len(self.textFormatted) * (self.fontHeight + self.linespacing)
+            if text == "":
+                text = False
+            else:
+                pass
+
+        if len(self.textFormatted) <= 2:
+            self.h = (y - self.y)#len(self.textFormatted) * (self.fontHeight + self.linespacing)
+        else:
+            self.h = (y - self.y)#(len(self.textFormatted) - 1) * (self.fontHeight + self.linespacing)
             
     def draw(self, win):
         for text in self.textFormatted:
