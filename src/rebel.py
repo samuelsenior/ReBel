@@ -6,10 +6,7 @@ author: Samuel M Senior
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
-
 import sys
-
-import numpy as np
 
 from log import Log
 
@@ -20,6 +17,7 @@ from titledInputBox import TitledInputBox
 from button import Button
 from config import Config
 
+from aboutScreen import AboutScreen
 from helpScreen import HelpScreen
 from menuScreen import MenuScreen
 from optionsScreen import OptionsScreen
@@ -61,6 +59,7 @@ class Rebel(Font, Log):
         self.log("[INFO] FrameRate set to {}".format(self.frameRate))
 
         self.network = Network(self.logFile, frameRate=self.frameRate)
+        self.aboutScreen = AboutScreen(self.win, frameRate=self.frameRate, version=self.reBelClientVersion)
         self.helpScreen = HelpScreen(self.win, frameRate=self.frameRate)
         self.menuScreen = MenuScreen(win=self.win, network=self.network, frameRate=self.frameRate,
                                      logFile=self.logFile, config=self.config)
@@ -91,6 +90,10 @@ class Rebel(Font, Log):
                 self.screen = self.menuScreen.display()
                 if self.screen == 'quit':
                     self.quit()
+            elif self.screen == 'aboutScreen':
+                self.screen = self.aboutScreen.display(win=self.win, source=self.previousScreen)
+                if self.screen == 'quit':
+                    self.quit()
             elif self.screen == 'helpScreen':
                 self.screen = self.helpScreen.display(win=self.win, source=self.previousScreen)
                 if self.screen == 'quit':
@@ -101,6 +104,7 @@ class Rebel(Font, Log):
                     self.quit()
                 elif self.optionsScreen.bellKeysUpdated:
                     self.ringingScreen.updateBellKeys()
+                    self.ringingScreen.updateBellDisplayLocations()
                     self.optionsScreen.bellKeysUpdated = False
             elif self.screen == 'ringingScreen':
                 self.updateScreenSize(self.mainWidth, self.mainHeight)

@@ -164,15 +164,27 @@ class OptionsScreen:
         self.x = (self.win.get_width() - self.width) / 2.0
         self.y = (self.win.get_height() - self.height) / 2.0
 
-        for keysText in self.keysText:
+        for i, keysText in enumerate(self.keysText):
             keysText.rect.x = self.x + 20
-            keysText.generateFormattedText(width=self.width-40)
-        for tuningText in self.tuningText:
+            if i == 0:
+                startingY = keysText.y
+            else:
+                startingY = self.keysText[i-1].y + self.keysText[i-1].h+10
+            keysText.generateFormattedText(startingY=startingY, width=self.width-40)
+        for i, tuningText in enumerate(self.tuningText):
             tuningText.rect.x = self.x + 20
-            tuningText.generateFormattedText(width=self.width-40)
-        for otherText in self.otherText:
+            if i == 0:
+                startingY = tuningText.y
+            else:
+                startingY = self.tuningText[i-1].y + self.tuningText[i-1].h+10
+            tuningText.generateFormattedText(startingY=startingY, width=self.width-40)
+        for i, otherText in enumerate(self.otherText):
             otherText.rect.x = self.x + 20
-            otherText.generateFormattedText(width=self.width-40)
+            if i == 0:
+                startingY = otherText.y
+            else:
+                startingY = self.otherText[i-1].y + self.otherText[i-1].h+10
+            otherText.generateFormattedText(startingY=startingY, width=self.width-40)
 
         self.realignButtons()
 

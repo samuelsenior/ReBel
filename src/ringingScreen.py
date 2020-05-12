@@ -29,7 +29,7 @@ class RingingScreen(KeyPress, Log):
         self.button_reloadBells = Button("Reload Bells", (0, 0), active=True, border=True, fontSize="small")
         self.button_options = Button("Options", (self.button_reloadBells.rect.x+self.button_reloadBells.rect.w, 0), border=True, fontSize="small")
         self.button_help = Button("Help", (self.button_options.rect.x+self.button_options.rect.w, 0), border=True, fontSize="small")
-        self.button_about = Button("About", (self.button_help.rect.x+self.button_help.rect.w, 0), active=False, border=True, fontSize="small")
+        self.button_about = Button("About", (self.button_help.rect.x+self.button_help.rect.w, 0), border=True, fontSize="small")
         self.button_back = Button("Back", (self.button_about.rect.x+self.button_about.rect.w, 0), border=True, fontSize="small")
         self.button_quit = Button("Quit", (self.button_back.rect.x+self.button_back.rect.w, 0), border=True, fontSize="small")
         self.button_blankSpace = Button("", (self.button_quit.rect.x+self.button_quit.rect.w, 0), border=True, fontSize="small", buttonColour=(self.button_options.borderColour))
@@ -101,6 +101,31 @@ class RingingScreen(KeyPress, Log):
             except:
                 self.log("[WARNING] RingingScreen.updateBellKeys: Incorrect bell/key configuration of bell no. '{}' and key '{}'".format(self.config.get('ringableBells')[i], self.config.get('keys')[i]))
 
+    def updateBellDisplayLocations(self):
+        seperationAngle = 2.0*np.pi / self.config.get('numberOfBells')
+
+        self.a = 1.35#*10/8.0
+        self.b = 1.0
+
+        self.radius = 225+5*(self.config.get('numberOfBells')//2)
+
+        for i, bell in self.bells.items():
+            i -= 1
+
+            width = 140
+            height = 140
+
+            x = (self.width / 2.0 + self.radius*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+            y = (self.height / 2.0 + self.button_options.rect.h + self.radius*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+
+            if (seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0) <= np.pi/2.0 or (seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0) >= 3.0*np.pi/2.0:
+                textX = (self.width / 2.0 + (self.radius-0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) + width/2.0 - width/14.0
+                textY = (self.height / 2.0 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+            else:
+                textX = (self.width / 2.0 + (self.radius+0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+                textY = (self.height / 2.0 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+
+            bell.updateLocation(x, y, textX, textY)
 
     def display(self):
         self.win = pygame.display.set_mode((self.width, self.height))
@@ -131,8 +156,6 @@ class RingingScreen(KeyPress, Log):
             button.hovered = False
             button.draw(self.win)
 
-        self.button_about.active = False
-
         run_ringing = True
         while run_ringing:
 
@@ -157,8 +180,11 @@ class RingingScreen(KeyPress, Log):
                     elif self.button_options.rect.collidepoint(event.pos):
                         run_ringing = False
                         return 'optionsScreen'
+                    elif self.button_about.rect.collidepoint(event.pos):
+                        run_ringing = False
+                        return 'aboutScreen'
                     elif self.button_help.rect.collidepoint(event.pos):
-                        run_help = False
+                        run_ringing = False
                         return 'helpScreen'
                     elif self.button_back.rect.collidepoint(event.pos):
                         run_ringing = False

@@ -44,6 +44,14 @@ class Bell(Font):
     def clearKey(self):
         self.key = None
 
+    def updateLocation(self, x, y, textX, textY):
+        self.x = x
+        self.y = y
+        self.textX = textX
+        self.textY = textY
+
+        self.bellNumberTextBlank = pygame.Rect(self.textX, self.textY, self.bellNumberText.get_width(), self.bellNumberText.get_height())
+
     def draw(self, win, renderNumber=True):
         if self.stroke == 'H':
             win.blit(self.backstrokeBellBlank, (self.x, self.y))
