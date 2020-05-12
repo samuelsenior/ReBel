@@ -53,16 +53,26 @@ class HelpScreen:
                                         (self.x+20, self.y+self.button_serverPage.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font='large')
         self.ringingSubTitleText_1 = TextBox('Ringing Keys:',
                                              (self.x+20, self.ringingTitleText.y+self.ringingTitleText.h+10), width=self.width-40, font='small')
-        self.ringingText_1 = TextBox("By default the keys to ring your first two bells are the 'j' and 'f' keys. All the bells can be configured to be rung, " + \
-                                     "and their key bindings are set in the 'Options' menu.",
+        self.ringingText_1 = TextBox("By default bells 1 and 2 are set as the ringable and are rung with the 'j' and 'f' keys.",
                                      (self.x+20, self.ringingSubTitleText_1.y+self.ringingSubTitleText_1.h+7), width=self.width-40, font='tiny')
-        self.ringingText_2 = TextBox("The bell you set as your first bell will be placed at the bottom of the ringing circle, just to the right of the " + \
-                                     "center.",
+        self.ringingText_2 = TextBox("All the bells can be configured to be rung and can be set to use any letter or number key, as well as the '-' " + \
+                                     "and '=' keys. The key bindings are set in the 'Options' menu found in the ringing screen.",
                                      (self.x+20, self.ringingText_1.y+self.ringingText_1.h+10), width=self.width-40, font='tiny')
+        self.ringingText_3 = TextBox("The bell you set as your first bell will be placed at the bottom of the ringing circle, just to the right of the " + \
+                                     "center.",
+                                     (self.x+20, self.ringingText_2.y+self.ringingText_2.h+10), width=self.width-40, font='tiny')
         self.ringingSubTitleText_2 = TextBox('Bell Tunings and Scales:',
-                                             (self.x+20, self.ringingText_2.y+self.ringingText_2.h+16), width=self.width-40, font='small')
+                                             (self.x+20, self.ringingText_3.y+self.ringingText_3.h+16), width=self.width-40, font='small')
+        self.ringingText_4 = TextBox("By default the bells are in the key of C and are generated from a size 15 handbell in C. The key of the bells can " + \
+                                     "changed by shifting them by both an integer number of semitones and an integer number of octaves. Currently this " + \
+                                     "can only be done by manually changing the config file.",
+                                     (self.x+20, self.ringingSubTitleText_2.y+self.ringingSubTitleText_2.h+10), width=self.width-40, font='tiny')
+        self.ringingText_5 = TextBox("The bells are tuned to a major scale by default though they can also be changed to natural, harmonic, and melodic " + \
+                                     "minor scales. Currently this can only be done manually changing the config file.",
+                                     (self.x+20, self.ringingText_4.y+self.ringingText_4.h+10), width=self.width-40, font='tiny')
         
-        self.ringingText = [self.ringingTitleText, self.ringingSubTitleText_1, self.ringingText_1, self.ringingText_2, self.ringingSubTitleText_2]
+        self.ringingText = [self.ringingTitleText, self.ringingSubTitleText_1, self.ringingText_1, self.ringingText_2, self.ringingText_3]#,
+                            #self.ringingSubTitleText_2, self.ringingText_3, self.ringingText_4]
 
     def drawBackground(self):
         pygame.draw.rect(self.win, (170, 170, 170), self.helpBackground, 0)
