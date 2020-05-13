@@ -128,7 +128,6 @@ class MenuScreen(Font, Log):
         clock = pygame.time.Clock()
 
         self.win.fill(self.backgroundColour)
-        #self.win.blit(self.rebelLogo, (self.width/2-self.rebelLogo.get_width()/2, self.rebelLogo.get_height()))
         self.win.blit(self.rebelLogo, (self.width/2-self.rebelLogo.get_width()/2, (self.inputBox_userName.rect.y - self.rebelLogo.get_height())*3/8))
 
         for box in self.input_boxes:
