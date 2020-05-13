@@ -67,15 +67,21 @@ class InputBox(Font):
             if self.text[0] == " " and len(self.text[1:]) < self.characterLimit:
                 if self.inputType == 'numeric' and event.unicode.isdigit():
                     self.text = self.text[1:] + event.unicode
+                elif self.inputType == 'numericAndLetter' and (event.unicode.isdigit() or event.unicode.isalpha()):
+                    self.text = self.text[1:] + event.unicode
                 elif self.inputType == None:
                     self.text = self.text[1:] + event.unicode
         elif len(self.text) < self.characterLimit:
             if self.inputType == 'numeric' and event.unicode.isdigit():
                 self.text += event.unicode
+            elif self.inputType == 'numericAndLetter' and (event.unicode.isdigit() or event.unicode.isalpha()):
+                self.text += event.unicode
             elif self.inputType == None:
                 self.text += event.unicode
         elif self.text[0] == " " and len(self.text[1:]) < self.characterLimit:
             if self.inputType == 'numeric' and event.unicode.isdigit():
+                self.text += event.unicode
+            elif self.inputType == 'numericAndLetter' and (event.unicode.isdigit() or event.unicode.isalpha()):
                 self.text += event.unicode
             elif self.inputType == None:
                 self.text += event.unicode
@@ -86,14 +92,15 @@ class InputBox(Font):
 
         self.updated = True
 
-        return [screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+2)), pygame.draw.rect(screen, self.color, self.rect, 2)]
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+2))
+        pygame.draw.rect(screen, self.color, self.rect, 2)
 
     def update(self):
         # Resize the box if the text is too long.
         self.rectOld = self.rect.copy()
         if self.resizable == True:
-            self.rectOld.w = self.rectOld.w + 1#+ 10
-            self.rectOld.h = self.rectOld.h + 1#+ 10
+            self.rectOld.w = self.rectOld.w + 1
+            self.rectOld.h = self.rectOld.h + 1
             width = max(self.width, self.txt_surface.get_width()+10)
             self.rect.w = width
         else:
@@ -102,5 +109,7 @@ class InputBox(Font):
             self.rect.w = self.width
 
     def draw(self, screen):
-        return [pygame.draw.rect(screen, (255, 255, 255), self.rectOld, 0), screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+2)), pygame.draw.rect(screen, self.color, self.rect, 2)]
+        pygame.draw.rect(screen, (255, 255, 255), self.rectOld, 0)
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+2))
+        pygame.draw.rect(screen, self.color, self.rect, 2)
         

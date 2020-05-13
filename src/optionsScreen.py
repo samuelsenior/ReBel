@@ -41,17 +41,22 @@ class OptionsScreen:
         self.button_keys = Button("keys", (self.button_tuning.x - self.button_tuning.rect.w - 10, self.y + 20))
         self.button_keys.rect.x -= self.button_keys.rect.w
         #
-        self.buttons = [self.button_back, self.button_save, self.button_keys, self.button_tuning, self.button_other]
+        self.buttons = [self.button_back, self.button_save]#, self.button_keys, self.button_tuning, self.button_other]
 
         self.keysTitleText = TextBox('Keys Options:',
-                                        (self.x+20, self.y+self.button_keys.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font='large')
+                                     (self.x+20, self.y+self.button_keys.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font='large')
         self.keysSubTitleText_1 = TextBox('Bell Keys:',
-                                             (self.x+20, self.keysTitleText.y+self.keysTitleText.h+10), width=self.width-40, font='small')
-        self.keysText_1 = TextBox("",
-                                     (self.x+20, self.keysSubTitleText_1.y+self.keysSubTitleText_1.h+7), width=self.width-40, font='tiny')
-        self.keysText_2 = TextBox("",
-                                     (self.x+20, self.keysText_1.y+self.keysText_1.h+10), width=self.width-40, font='tiny')
-        self.keysText = [self.keysTitleText, self.keysSubTitleText_1, self.keysText_1, self.keysText_2]
+                                          (self.x+20, self.keysTitleText.y+self.keysTitleText.h+10), width=self.width-40, font='small')
+        self.keysText_1 = TextBox("In the 'Ringable Bells' row of boxes enter in the bell numbers of the bells that you want to ring.",
+                                  (self.x+20, self.keysSubTitleText_1.y+self.keysSubTitleText_1.h+7), width=self.width-40, font='tiny')
+        self.keysText_2 = TextBox("In the 'Key Press' row of boxes enter in the keys you want to press to ring each bell.",
+                                  (self.x+20, self.keysText_1.y+self.keysText_1.h+10), width=self.width-40, font='tiny')
+        self.keysText_3 = TextBox("Each 'Key Press' box corresponds to the 'Ringable Bell' box above it.",
+                                  (self.x+20, self.keysText_2.y+self.keysText_2.h+10), width=self.width-40, font='tiny')
+        self.keysText_4 = TextBox("Only numbers can be entered into the 'Ringable Bell' boxes and only letters and numbers can be entered " + \
+                                  "into the 'Key Press' boxes.",
+                                  (self.x+20, self.keysText_3.y+self.keysText_3.h+10), width=self.width-40, font='tiny')
+        self.keysText = [self.keysTitleText, self.keysSubTitleText_1, self.keysText_1, self.keysText_2, self.keysText_3, self.keysText_4]
 
         self.tuningTitleText = TextBox('Tuning Options:',
                                        (self.x+20, self.y+self.button_tuning.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font='large')
@@ -104,23 +109,23 @@ class OptionsScreen:
                     self.bellNumberInputBoxes.append(TitledInputBox("Ringable Bells:", startingX+i*10, y, width, 30, font='small',
                                                      resizable=False, text=bellNo, startActiveText=True, inputType='numeric'))
                     self.bellKeyInputBoxes.append(TitledInputBox("Key Press:", startingX+i*10, y+30+5, width, 30, font='small',
-                                                  resizable=False, text=key, startActiveText=True, characterLimit=1))
+                                                  resizable=False, text=key, startActiveText=True, characterLimit=1, inputType='numericAndLetter'))
                 except:
                     self.bellNumberInputBoxes.append(TitledInputBox("Bell No.", startingX+i*10, y, width, 30, font='small',
                                                      resizable=False, startActiveText=True, inputType='numeric'))
                     self.bellKeyInputBoxes.append(TitledInputBox("Key Press:", startingX+i*10, y+30+5, width, 30, font='small',
-                                                  resizable=False, startActiveText=True, characterLimit=1))
+                                                  resizable=False, startActiveText=True, characterLimit=1, inputType='numericAndLetter'))
             else:
                 try:
                     self.bellNumberInputBoxes.append(InputBox(self.bellNumberInputBoxes[-1].x+width+10, y, width, 30, font='small',
                                                   resizable=False, text=bellNo, startActiveText=True, inputType='numeric'))
                     self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y+30+5, width, 30, font='small',
-                                                  resizable=False, text=key, startActiveText=True, characterLimit=1))
+                                                  resizable=False, text=key, startActiveText=True, characterLimit=1, inputType='numericAndLetter'))
                 except:
                     self.bellNumberInputBoxes.append(InputBox(self.bellNumberInputBoxes[-1].x+width+10, y, width, 30, font='small',
                                                      resizable=False, startActiveText=True, inputType='numeric'))
                     self.bellKeyInputBoxes.append(InputBox(self.bellKeyInputBoxes[-1].x+width+10, y+30+5, width, 30, font='small',
-                                                  resizable=False, startActiveText=True, characterLimit=1))
+                                                  resizable=False, startActiveText=True, characterLimit=1, inputType='numericAndLetter'))
         self.activeBox = None
 
     def saveConfig(self):
@@ -188,7 +193,7 @@ class OptionsScreen:
 
         self.realignButtons()
 
-        self.generateBellKeyInputBoxes(self.x+170, self.keysText_1.rect.y)
+        self.generateBellKeyInputBoxes(self.x+170, self.keysText_4.y+self.keysText_4.h + 10)
 
         self.win.blit(self.backgroundFade, (0, 0))
 
@@ -225,7 +230,7 @@ class OptionsScreen:
         for txt in text:
             txt.draw(self.win)
 
-        pygame.display.update()
+        pygame.display.flip()
         
         clock = pygame.time.Clock()
         

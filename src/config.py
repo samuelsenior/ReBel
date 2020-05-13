@@ -4,7 +4,7 @@ import os
 class Config:
     def __init__(self, fileName):
         self.fileName = fileName
-        self.config = {'numberOfBells':None, 'ringableBells':None,
+        self.config = {'numberOfBells':None, 'ringableBells':None, 'keys':None,
                        'scale':None, 'octaveShift':None, 'pitchShift':None,
                        'testConnectionLatency':[False, 0,100],
                        'regenerateBells':False,
@@ -31,18 +31,47 @@ class Config:
 
     def format(self):
         if self.config['numberOfBells'] == None:
-            self.config['numberOfBells'] = 4
+            self.config['numberOfBells'] = 8
         else:
             self.config['numberOfBells'] = int(self.config['numberOfBells'])
 
         if self.config['ringableBells'] == None:
-            self.config['ringableBells'] = [1,2,3,4]
+            self.config['ringableBells'] = [1,2]
         else:
+            ringableBells_tmp = []
             if len(self.config['ringableBells']) == 1:
-                self.config['ringableBells'] = int(self.config['ringableBells'])
+                if self.config['ringableBells'].isdigit():
+                    ringableBells_tmp = [int(self.config['ringableBells'])]
+                else:
+                    ringableBells_tmp = [1]
             else:
-                for i, _ in enumerate(self.config['ringableBells']):
-                    self.config['ringableBells'][i] = int(self.config['ringableBells'][i])
+                for i, bell in enumerate(self.config['ringableBells']):
+                    if self.config['ringableBells'][i].isdigit():
+                        ringableBells_tmp.append(int(self.config['ringableBells'][i]))
+                    else:
+                        pass
+            self.config['ringableBells'] = ringableBells_tmp
+
+        if self.config['keys'] == None:
+            self.config['keys'] = ['j', 'f']
+        else:
+            key_tmp = []
+            if len(self.config['keys']) == 1:
+                if self.config['keys'].isdigit() or self.config['keys'].isalpha():
+                    key_tmp = [self.config['keys']]
+                else:
+                    key_tmp = ['j']
+            else:
+                for i, key in enumerate(self.config['keys']):
+                    if self.config['keys'][i].isdigit() or self.config['keys'][i].isalpha():
+                        key_tmp.append(self.config['keys'][i])
+                    else:
+                        pass
+            self.config['keys'] = key_tmp
+        if len(self.config['ringableBells']) > len(self.config['keys']):
+            self.config['ringableBells'] = self.config['ringableBells'][:len(self.config['keys'])]
+        elif len(self.config['keys']) > len(self.config['ringableBells']):
+            self.config['keys'] = self.config['keys'][:len(self.config['ringableBells'])]
 
         if self.config['scale'] == None:
             self.config['scale'] = "major"

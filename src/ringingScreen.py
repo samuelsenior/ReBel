@@ -50,29 +50,48 @@ class RingingScreen(KeyPress, Log):
             else:
                 waitingForNumberOFBells = False
                 self.log("[Client] Number of bells set to {}".format(self.config.get('numberOfBells')))
+        ringableBells_tmp = self.config.get('ringableBells').copy()
+        keys_tmp = self.config.get('keys').copy()
+        for i in range(len(self.config.get('ringableBells'))):
+            if self.config.get('ringableBells')[i] > self.config.get('numberOfBells') or self.config.get('ringableBells')[i] < 1:
+                del ringableBells_tmp[i]
+                del keys_tmp[i]
+        self.config.set('ringableBells', ringableBells_tmp)
+        self.config.set('keys', keys_tmp)
 
         self.bells = {}
         seperationAngle = 2.0*np.pi / self.config.get('numberOfBells')
 
-        self.a = 1.35#*10/8.0
-        self.b = 1.0
+        if self.config.get('numberOfBells') >= 8:
+            self.a = 1.35#*10/8.0
+            self.b = 1.0
+        elif self.config.get('numberOfBells') > 4:
+            self.a = 1.0 + 0.35 / 4 * (self.config.get('numberOfBells') - 4)
+            self.b = 1.0
+        else:
+            self.a = 1.0
+            self.b = 1.0
 
-        self.radius = 225+5*(self.config.get('numberOfBells')//2)
+        self.radius = 215+5*(self.config.get('numberOfBells'))
 
         for i in range(self.config.get('numberOfBells')):
 
-            width = 140
-            height = 140
+            if self.config.get('numberOfBells') > 12:
+                width = 90 + 60 * 8//12
+                height = 90 + 60 * 8//12
+            else:
+                width = 90 + 60 * 8 // self.config.get('numberOfBells')
+                height = 90 + 60 * 8 // self.config.get('numberOfBells')
 
-            x = (self.width / 2.0 + self.radius*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
-            y = (self.height / 2.0 + self.button_options.rect.h + self.radius*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+            x = (self.width / 2.0 - 10 + self.radius*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+            y = (self.height / 2.0 - 10 + self.button_options.rect.h + self.radius*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
 
             if (seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0) <= np.pi/2.0 or (seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0) >= 3.0*np.pi/2.0:
-                textX = (self.width / 2.0 + (self.radius-0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) + width/2.0 - width/14.0
-                textY = (self.height / 2.0 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+                textX = (self.width / 2.0 - 10 + (self.radius-0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) + width/2.0 - width/14.0
+                textY = (self.height / 2.0 - 10 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
             else:
-                textX = (self.width / 2.0 + (self.radius+0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
-                textY = (self.height / 2.0 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+                textX = (self.width / 2.0 - 10 + (self.radius+0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+                textY = (self.height / 2.0 - 10 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
 
             self.bells[i+1] = Bell(i+1, location=(x, y), width=width, height=height,
                                    textLocation=(textX, textY),
@@ -104,26 +123,37 @@ class RingingScreen(KeyPress, Log):
     def updateBellDisplayLocations(self):
         seperationAngle = 2.0*np.pi / self.config.get('numberOfBells')
 
-        self.a = 1.35#*10/8.0
-        self.b = 1.0
+        if self.config.get('numberOfBells') >= 8:
+            self.a = 1.35#*10/8.0
+            self.b = 1.0
+        elif self.config.get('numberOfBells') > 4:
+            self.a = 1.0 + 0.35 / 4 * (self.config.get('numberOfBells') - 4)
+            self.b = 1.0
+        else:
+            self.a = 1.0
+            self.b = 1.0
 
-        self.radius = 225+5*(self.config.get('numberOfBells')//2)
+        self.radius = 215+5*(self.config.get('numberOfBells'))
 
         for i, bell in self.bells.items():
             i -= 1
 
-            width = 140
-            height = 140
+            if self.config.get('numberOfBells') > 12:
+                width = 90 + 60 * 8//12
+                height = 90 + 60 * 8//12
+            else:
+                width = 90 + 60 * 8 // self.config.get('numberOfBells')
+                height = 90 + 60 * 8 // self.config.get('numberOfBells')
 
-            x = (self.width / 2.0 + self.radius*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
-            y = (self.height / 2.0 + self.button_options.rect.h + self.radius*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+            x = (self.width / 2.0 - 10 + self.radius*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+            y = (self.height / 2.0 - 10 + self.button_options.rect.h + self.radius*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
 
             if (seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0) <= np.pi/2.0 or (seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0) >= 3.0*np.pi/2.0:
-                textX = (self.width / 2.0 + (self.radius-0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) + width/2.0 - width/14.0
-                textY = (self.height / 2.0 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+                textX = (self.width / 2.0 - 10 + (self.radius-0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) + width/2.0 - width/14.0
+                textY = (self.height / 2.0 - 10 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
             else:
-                textX = (self.width / 2.0 + (self.radius+0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
-                textY = (self.height / 2.0 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+                textX = (self.width / 2.0 - 10 + (self.radius+0)*self.a*np.cos(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
+                textY = (self.height / 2.0 - 10 + self.button_options.rect.h + (self.radius+0)*self.b*np.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + np.pi/2.0)) - width/2.0
 
             bell.updateLocation(x, y, textX, textY)
 

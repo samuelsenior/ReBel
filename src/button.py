@@ -44,11 +44,12 @@ class Button(Font):
         self.set_rend()
 
         if self.border:
-            return pygame.draw.rect(win, self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), \
-                   win.blit(self.rend, (self.rect.x+5, self.rect.y)), \
-                   pygame.draw.rect(win, self.borderColour,(self.rect.x, self.rect.y, self.rect.w, self.rect.h), 2)
+            pygame.draw.rect(win, self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h))
+            win.blit(self.rend, (self.rect.x+5, self.rect.y))
+            pygame.draw.rect(win, self.borderColour,(self.rect.x, self.rect.y, self.rect.w, self.rect.h), 2)
         else:
-            return pygame.draw.rect(win, self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h)), win.blit(self.rend, (self.rect.x+5, self.rect.y))
+            pygame.draw.rect(win, self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h))
+            win.blit(self.rend, (self.rect.x+5, self.rect.y))
         
     def set_rend(self):
         self.rend = self.font.render(self.text, True, self.get_color())

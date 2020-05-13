@@ -63,9 +63,9 @@ class TextBox(Font):
                 pass
 
         if len(self.textFormatted) <= 2:
-            self.h = (y - self.y)#len(self.textFormatted) * (self.fontHeight + self.linespacing)
+            self.h = (y - self.y)
         else:
-            self.h = (y - self.y)#(len(self.textFormatted) - 1) * (self.fontHeight + self.linespacing)
+            self.h = (y - self.y)
             
     def draw(self, win):
         for text in self.textFormatted:

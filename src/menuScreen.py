@@ -24,7 +24,8 @@ class MenuScreen(Font, Log):
         self.width = self.win.get_width()
         self.height = self.win.get_height()
 
-        self.menuBackground = pygame.image.load(os.path.join("..", "img", "menuBackground.png"))
+        self.backgroundColour = (255, 255, 255)
+        self.rebelLogo = pygame.image.load(os.path.join("..", "img", "logo.png"))
 
         self.offlineMessage = self.smallFont.render("Server offline...", 1, (255, 0, 0))
         self.connectingMessage = self.smallFont.render("Connecting to server...", 1, (50, 50, 50))
@@ -40,16 +41,13 @@ class MenuScreen(Font, Log):
 
         self.connectionActive = False
 
-        self.inputBox_userName = TitledInputBox("Your Name:", 150, 300, 200, 32)
-        self.inputBox_serverIP = TitledInputBox("Server IP:", 150, 350, 200, 32)
-        self.inputBox_serverPort = TitledInputBox("Server Port:", 150, 400, 200, 32, text='35555')
-        self.input_boxes = [self.inputBox_userName, self.inputBox_serverIP, self.inputBox_serverPort]
-        self.activeBox = None
-
         self.button_quit = Button("Quit", (20, self.height-20))
         self.button_quit.rect.y -= self.button_quit.rect.h
         #
-        self.button_help = Button("Help", (20, self.button_quit.rect.y-10), active=True)
+        self.button_about = Button("About", (20, self.button_quit.rect.y-10), active=True)
+        self.button_about.rect.y -= self.button_about.rect.h
+        #
+        self.button_help = Button("Help Info", (20, self.button_about.rect.y-10), active=True)
         self.button_help.rect.y -= self.button_help.rect.h
         #
         self.button_startRinging = Button("Start ringing", (20, self.button_help.rect.y-10), active=False)
@@ -58,7 +56,13 @@ class MenuScreen(Font, Log):
         self.button_serverConnect = Button("Connect to server", (20, self.button_startRinging.rect.y-10))
         self.button_serverConnect.rect.y -= self.button_serverConnect.rect.h
         #
-        self.buttons = [self.button_serverConnect, self.button_startRinging, self.button_help, self.button_quit]
+        self.buttons = [self.button_serverConnect, self.button_startRinging, self.button_help, self.button_about, self.button_quit]
+
+        self.inputBox_serverPort = TitledInputBox("Server Port:", 160, self.button_serverConnect.rect.y-85, 200, 32, text='35555')
+        self.inputBox_serverIP = TitledInputBox("Server IP:", 160, self.inputBox_serverPort.y-50, 200, 32)
+        self.inputBox_userName = TitledInputBox("Your Name:", 160, self.inputBox_serverIP.y-50, 200, 32)
+        self.input_boxes = [self.inputBox_userName, self.inputBox_serverIP, self.inputBox_serverPort]
+        self.activeBox = None
 
         self.connectionRectWhite = pygame.Rect(self.button_serverConnect.width+25, self.button_serverConnect.rect.y+5, self.connectingMessage.get_width(), self.connectingMessage.get_height())
 
@@ -123,7 +127,9 @@ class MenuScreen(Font, Log):
 
         clock = pygame.time.Clock()
 
-        self.win.blit(self.menuBackground, (0, 0))
+        self.win.fill(self.backgroundColour)
+        #self.win.blit(self.rebelLogo, (self.width/2-self.rebelLogo.get_width()/2, self.rebelLogo.get_height()))
+        self.win.blit(self.rebelLogo, (self.width/2-self.rebelLogo.get_width()/2, (self.inputBox_userName.rect.y - self.rebelLogo.get_height())*3/8))
 
         for box in self.input_boxes:
             box.draw(self.win, redrawTitle=True)
@@ -177,7 +183,7 @@ class MenuScreen(Font, Log):
                         except:
                             self.connection = "offline"
                             self.updateConnectionStatusMessage()
-                            self.log("Server offline: {}:{}".format(self.inputBox_serverIP.text, self.inputBox_serverPort.text))
+                            self.log("[INFO] Server offline: {}:{}".format(self.inputBox_serverIP.text, self.inputBox_serverPort.text))
                             self.offline = True
 
                     if self.button_startRinging.rect.collidepoint(event.pos) and self.button_startRinging.active == True:
@@ -188,6 +194,10 @@ class MenuScreen(Font, Log):
                     if self.button_help.rect.collidepoint(event.pos):
                         self.run_menu = False
                         return 'helpScreen'
+
+                    if self.button_about.rect.collidepoint(event.pos):
+                        self.run_menu = False
+                        return 'aboutScreen'
 
                     if self.button_quit.rect.collidepoint(event.pos):
                         self.run_menu = False

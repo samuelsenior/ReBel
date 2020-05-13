@@ -78,7 +78,7 @@ class AboutScreen:
         for txt in self.aboutText:
             txt.draw(self.win)
 
-        pygame.display.update()
+        pygame.display.flip()
         
         clock = pygame.time.Clock()
         

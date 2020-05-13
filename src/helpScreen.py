@@ -47,7 +47,11 @@ class HelpScreen:
                                     "server successfully a 'Connected' message will appear, if not a 'Server Offline' message will appear. " +
                                     "If you can't connect make sure to check your internet connection, the server IP, and the server port.",
                                     (self.x+20, self.serverText_3.y+self.serverText_3.h+10), width=self.width-40, font='tiny')
-        self.serverText = [self.serverTitleText, self.serverSubTitleText, self.serverText_1, self.serverText_2, self.serverText_3, self.serverText_4]
+        self.serverText_5 = TextBox("To reconnect to a server or to connect to a new one go back to the home screen, enter in the " + \
+                                    "details of the new server (or leave the original details in if reconnecting), then click 'Connect " +
+                                    "to Server' and then click 'Start Ringing' like normal.",
+                                    (self.x+20, self.serverText_4.y+self.serverText_4.h+10), width=self.width-40, font='tiny')
+        self.serverText = [self.serverTitleText, self.serverSubTitleText, self.serverText_1, self.serverText_2, self.serverText_3, self.serverText_4, self.serverText_5]
 
         self.ringingTitleText = TextBox('Ringing Help:',
                                         (self.x+20, self.y+self.button_serverPage.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font='large')
@@ -55,8 +59,8 @@ class HelpScreen:
                                              (self.x+20, self.ringingTitleText.y+self.ringingTitleText.h+10), width=self.width-40, font='small')
         self.ringingText_1 = TextBox("By default bells 1 and 2 are set as the ringable and are rung with the 'j' and 'f' keys.",
                                      (self.x+20, self.ringingSubTitleText_1.y+self.ringingSubTitleText_1.h+7), width=self.width-40, font='tiny')
-        self.ringingText_2 = TextBox("All the bells can be configured to be rung and can be set to use any letter or number key, as well as the '-' " + \
-                                     "and '=' keys. The key bindings are set in the 'Options' menu found in the ringing screen.",
+        self.ringingText_2 = TextBox("All the bells can be configured to be rung and can be set to use any letter or number key. The key bindings are " + \
+                                     "set in the 'Options' menu found in the ringing screen.",
                                      (self.x+20, self.ringingText_1.y+self.ringingText_1.h+10), width=self.width-40, font='tiny')
         self.ringingText_3 = TextBox("The bell you set as your first bell will be placed at the bottom of the ringing circle, just to the right of the " + \
                                      "center.",
@@ -143,7 +147,7 @@ class HelpScreen:
         for txt in text:
             txt.draw(self.win)
 
-        pygame.display.update()
+        pygame.display.flip()
         
         clock = pygame.time.Clock()
         
