@@ -6,11 +6,11 @@ Executables for Windows and macOS have been provided and can be found here. ReBe
 ## Usage
 Open ReBel, enter in your name, the IP of the server (given to you by the person running the server), and the server port. Click 'Connect to Server' and then click 'Start Ringing'. This will take you to the ringing screen and from there you can start ringing.
 
-![](img/ReBel_MenuScreen.png?raw=true | height="50")
+![](img/ReBel_MenuScreen.png?raw=true|width="50")
 
 By default you can ring bells 1 and 2 using the 'j' and 'f' keys though once you are in the ringing screen you can click on the 'Options' menu and change which bells you can ring and which keys you use to ring them. You're not limited to ringing only two bells and can instead set it to as many, or as few, as you want.
 
-![](img/ReBel_RingingScreen.png?raw=true | height="50")
+![](img/ReBel_RingingScreen.png?raw=true|width="50")
 
 The total number of bells is set centrally through the server so that everyone sees and hears the same number of bells.
 
