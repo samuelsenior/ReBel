@@ -39,7 +39,7 @@ class Rebel(Font, Log):
         Log.__init__(self, logFile=self.logFile)
         self.clearLog()
 
-        self.reBelClientVersion = "v0.2.15"
+        self.reBelClientVersion = "v1.0.0"
         self.log("[INFO] Running ReBel client {}".format(self.reBelClientVersion))
 
         self.menuWidth = menuWidth
@@ -52,6 +52,8 @@ class Rebel(Font, Log):
 
         self.win = pygame.display.set_mode((self.menuWidth, self.menuHeight))
         pygame.display.set_caption("ReBel")
+        self.gameIcon = pygame.image.load(os.path.join("..", "img", "ReBel_Icon.png"))
+        pygame.display.set_icon(self.gameIcon)
 
         self.config = Config(fileName=self.configFile)
 
