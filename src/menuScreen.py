@@ -1,23 +1,29 @@
 import pygame
 import os
+import sys
 import time
 
-from font import Font
 from titledInputBox import TitledInputBox
 from button import Button
 
 from log import Log
 
 
-class MenuScreen(Font, Log):
-    def __init__(self, win, network, frameRate, logFile, config):
-        Font.__init__(self)
+class MenuScreen(Log):
+    def __init__(self, win, network, frameRate, logFile, config, font):
+        if getattr(sys, 'frozen', False):
+            # In a bundle
+            self.exeDir = os.path.dirname(sys.executable)
+        else:
+            # In normal python
+            self.exeDir = ""
 
         self.win = win
         self.network = network
         self.frameRate = frameRate
         self.logFile = logFile
         self.config = config
+        self.font = font
 
         Log.__init__(self, logFile=logFile)
 
@@ -25,12 +31,12 @@ class MenuScreen(Font, Log):
         self.height = self.win.get_height()
 
         self.backgroundColour = (255, 255, 255)
-        self.rebelLogo = pygame.image.load(os.path.join("..", "img", "logo.png"))
+        self.rebelLogo = pygame.image.load(os.path.join(self.exeDir, "..", "img", "logo.png"))
 
-        self.offlineMessage = self.smallFont.render("Server offline...", 1, (255, 0, 0))
-        self.connectingMessage = self.smallFont.render("Connecting to server...", 1, (50, 50, 50))
-        self.connectedMessage = self.smallFont.render("Connected to server!", 1, (0, 255, 0))
-        self.blankMessage = self.smallFont.render("", 1, (255, 255, 255))
+        self.offlineMessage = self.font.smallFont.render("Server offline...", 1, (255, 0, 0))
+        self.connectingMessage = self.font.smallFont.render("Connecting to server...", 1, (50, 50, 50))
+        self.connectedMessage = self.font.smallFont.render("Connected to server!", 1, (0, 255, 0))
+        self.blankMessage = self.font.smallFont.render("", 1, (255, 255, 255))
 
         self.userName = ""
         self.serverIP = ""
@@ -41,26 +47,26 @@ class MenuScreen(Font, Log):
 
         self.connectionActive = False
 
-        self.button_quit = Button("Quit", (20, self.height-20))
+        self.button_quit = Button("Quit", (20, self.height-20), font=self.font)
         self.button_quit.rect.y -= self.button_quit.rect.h
         #
-        self.button_about = Button("About", (20, self.button_quit.rect.y-10), active=True)
+        self.button_about = Button("About", (20, self.button_quit.rect.y-10), font=self.font, active=True)
         self.button_about.rect.y -= self.button_about.rect.h
         #
-        self.button_help = Button("Help Info", (20, self.button_about.rect.y-10), active=True)
+        self.button_help = Button("Help Info", (20, self.button_about.rect.y-10), font=self.font, active=True)
         self.button_help.rect.y -= self.button_help.rect.h
         #
-        self.button_startRinging = Button("Start ringing", (20, self.button_help.rect.y-10), active=False)
+        self.button_startRinging = Button("Start ringing", (20, self.button_help.rect.y-10), font=self.font, active=False)
         self.button_startRinging.rect.y -= self.button_startRinging.rect.h
         #
-        self.button_serverConnect = Button("Connect to server", (20, self.button_startRinging.rect.y-10))
+        self.button_serverConnect = Button("Connect to server", (20, self.button_startRinging.rect.y-10), font=self.font)
         self.button_serverConnect.rect.y -= self.button_serverConnect.rect.h
         #
         self.buttons = [self.button_serverConnect, self.button_startRinging, self.button_help, self.button_about, self.button_quit]
 
-        self.inputBox_serverPort = TitledInputBox("Server Port:", 160, self.button_serverConnect.rect.y-85, 200, 32, text='35555')
-        self.inputBox_serverIP = TitledInputBox("Server IP:", 160, self.inputBox_serverPort.y-50, 200, 32)
-        self.inputBox_userName = TitledInputBox("Your Name:", 160, self.inputBox_serverIP.y-50, 200, 32)
+        self.inputBox_serverPort = TitledInputBox("Server Port:", 160, self.button_serverConnect.rect.y-85, 200, 32, font=self.font, text='35555')
+        self.inputBox_serverIP = TitledInputBox("Server IP:", 160, self.inputBox_serverPort.y-50, 200, 32, font=self.font)
+        self.inputBox_userName = TitledInputBox("Your Name:", 160, self.inputBox_serverIP.y-50, 200, 32, font=self.font)
         self.input_boxes = [self.inputBox_userName, self.inputBox_serverIP, self.inputBox_serverPort]
         self.activeBox = None
 

@@ -1,11 +1,17 @@
 import pygame
-from font import Font
 
 import os
+import sys
 
-class Bell(Font):
-    def __init__(self, bellNumber, location, bellImageFile, width, height, textLocation, key=None, backgroundColour=(255, 255, 255)):
-        super().__init__()
+class Bell:
+    def __init__(self, bellNumber, location, bellImageFile, width, height, textLocation, font, key=None, backgroundColour=(255, 255, 255)):
+        if getattr(sys, 'frozen', False):
+            # In a bundle
+            self.exeDir = os.path.dirname(sys.executable)
+        else:
+            # In normal python
+            self.exeDir = ""
+        self.font = font
         self.stroke = 'H'
 
         # Read in bell image and create handstroke and backstroke images from it
@@ -30,7 +36,7 @@ class Bell(Font):
         self.textY = textLocation[1]
 
         self.bellNumber = bellNumber
-        self.bellNumberText = self.FONT.render(str(self.bellNumber), True, (0, 0, 0))
+        self.bellNumberText = self.font.FONT.render(str(self.bellNumber), True, (0, 0, 0))
         self.bellNumberTextBlank = pygame.Rect(self.textX, self.textY, self.bellNumberText.get_width(), self.bellNumberText.get_height())
 
         self.key = key

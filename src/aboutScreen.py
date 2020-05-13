@@ -5,8 +5,9 @@ from textBox import TextBox
 
 class AboutScreen:
 
-    def __init__(self, win, frameRate, version):
+    def __init__(self, win, font, frameRate, version):
         self.win = win
+        self.font = font
         self.frameRate = frameRate
         self.version = version
 
@@ -21,21 +22,21 @@ class AboutScreen:
 
         self.aboutBackground = pygame.Rect(0 + (self.win.get_width() - self.width) / 2.0, 0 + (self.win.get_height() - self.height) / 2.0, self.width, self.height)
 
-        self.button_back = Button("Back", (self.x + 20, self.height + self.y - 20))
+        self.button_back = Button("Back", (self.x + 20, self.height + self.y - 20), font=self.font)
         self.button_back.rect.y -= self.button_back.rect.h
         self.buttons = [self.button_back]
 
         self.aboutTitleText = TextBox('About:',
-                                       (self.x+20, self.y+20), width=self.width-40, backgroundColour=(150, 150, 150), font='large')
+                                       (self.x+20, self.y+20), width=self.width-40, backgroundColour=(150, 150, 150), font=self.font, fontSize='large')
         self.aboutText_1 = TextBox("ReBel version {}".format(self.version[1:]),
-                                   (self.x+20, self.aboutTitleText.y+self.aboutTitleText.h+7), width=self.width-40, font='small')
+                                   (self.x+20, self.aboutTitleText.y+self.aboutTitleText.h+7), width=self.width-40, font=self.font, fontSize='small')
         self.aboutText_2 = TextBox("ReBel is a client-server-based multiuser online ringing software. Developed by Samuel M. Senior and " + \
                                    "open-sourced using the BSD-3-Clause license.",
-                                   (self.x+20, self.aboutText_1.y+self.aboutText_1.h+10), width=self.width-40, font='tiny')
+                                   (self.x+20, self.aboutText_1.y+self.aboutText_1.h+10), width=self.width-40, font=self.font, fontSize='tiny')
         self.aboutText_3 = TextBox("Source code can be downloaded from 'https://github.com/samuelsenior/ReBel'.",
-                                   (self.x+20, self.aboutText_2.y+self.aboutText_2.h+10), width=self.width-40, font='tiny')
+                                   (self.x+20, self.aboutText_2.y+self.aboutText_2.h+10), width=self.width-40, font=self.font, fontSize='tiny')
         self.aboutText_4 = TextBox("The latest release can be downloaded from 'https://github.com/samuelsenior/ReBel/releases'.",
-                                   (self.x+20, self.aboutText_3.y+self.aboutText_3.h+10), width=self.width-40, font='tiny')
+                                   (self.x+20, self.aboutText_3.y+self.aboutText_3.h+10), width=self.width-40, font=self.font, fontSize='tiny')
         self.aboutText = [self.aboutTitleText, self.aboutText_1, self.aboutText_2, self.aboutText_3, self.aboutText_4]
 
     def drawBackground(self):

@@ -1,5 +1,6 @@
 import pygame
 import os
+import sys
 
 import math
 
@@ -10,7 +11,13 @@ from keyPress import KeyPress
 from log import Log
 
 class RingingScreen(KeyPress, Log):
-    def __init__(self, network, width, height, frameRate, logFile, config):
+    def __init__(self, network, width, height, font, frameRate, logFile, config):
+        if getattr(sys, 'frozen', False):
+            # In a bundle
+            self.exeDir = os.path.dirname(sys.executable)
+        else:
+            # In normal python
+            self.exeDir = ""
         self.logFile = logFile
         Log.__init__(self, logFile=logFile)
 
@@ -19,6 +26,7 @@ class RingingScreen(KeyPress, Log):
         self.network = network
         self.width = width
         self.height = height
+        self.font = font
         self.frameRate = frameRate
         self.config = config
 
@@ -26,13 +34,13 @@ class RingingScreen(KeyPress, Log):
         self.backgroundColour = (230, 230, 230)
         #self.backgroundColour = (255, 255, 255)
 
-        self.button_reloadBells = Button("Reload Bells", (0, 0), active=True, border=True, fontSize="small")
-        self.button_options = Button("Options", (self.button_reloadBells.rect.x+self.button_reloadBells.rect.w, 0), border=True, fontSize="small")
-        self.button_help = Button("Help", (self.button_options.rect.x+self.button_options.rect.w, 0), border=True, fontSize="small")
-        self.button_about = Button("About", (self.button_help.rect.x+self.button_help.rect.w, 0), border=True, fontSize="small")
-        self.button_back = Button("Back", (self.button_about.rect.x+self.button_about.rect.w, 0), border=True, fontSize="small")
-        self.button_quit = Button("Quit", (self.button_back.rect.x+self.button_back.rect.w, 0), border=True, fontSize="small")
-        self.button_blankSpace = Button("", (self.button_quit.rect.x+self.button_quit.rect.w, 0), border=True, fontSize="small", buttonColour=(self.button_options.borderColour))
+        self.button_reloadBells = Button("Reload Bells", (0, 0), font=self.font, active=True, border=True, fontSize="small")
+        self.button_options = Button("Options", (self.button_reloadBells.rect.x+self.button_reloadBells.rect.w, 0), font=self.font, border=True, fontSize="small")
+        self.button_help = Button("Help", (self.button_options.rect.x+self.button_options.rect.w, 0), font=self.font, border=True, fontSize="small")
+        self.button_about = Button("About", (self.button_help.rect.x+self.button_help.rect.w, 0), font=self.font, border=True, fontSize="small")
+        self.button_back = Button("Back", (self.button_about.rect.x+self.button_about.rect.w, 0), font=self.font, border=True, fontSize="small")
+        self.button_quit = Button("Quit", (self.button_back.rect.x+self.button_back.rect.w, 0), font=self.font, border=True, fontSize="small")
+        self.button_blankSpace = Button("", (self.button_quit.rect.x+self.button_quit.rect.w, 0), font=self.font, border=True, fontSize="small", buttonColour=(self.button_options.borderColour))
         self.button_blankSpace.rect.w = self.width - self.button_blankSpace.rect.x
         self.buttons = [self.button_reloadBells, self.button_options, self.button_help, self.button_about, self.button_back, self.button_quit, self.button_blankSpace]
 
@@ -94,8 +102,8 @@ class RingingScreen(KeyPress, Log):
                 textY = (self.height / 2.0 - 10 + self.button_options.rect.h + (self.radius+0)*self.b*math.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + math.pi/2.0)) - width/2.0
 
             self.bells[i+1] = Bell(i+1, location=(x, y), width=width, height=height,
-                                   textLocation=(textX, textY),
-                                   bellImageFile=os.path.join("..", "img", "handbell.png"),
+                                   textLocation=(textX, textY), font=self.font,
+                                   bellImageFile=os.path.join(self.exeDir, "..", "img", "handbell.png"),
                                    backgroundColour=self.backgroundColour)
 
         for i, _ in enumerate(self.config.get('ringableBells')) if len(self.config.get('ringableBells')) < self.config.get('numberOfBells') else enumerate(range(self.config.get('numberOfBells'))):

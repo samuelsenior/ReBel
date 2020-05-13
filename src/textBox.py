@@ -1,28 +1,35 @@
 import pygame
-from font import Font
+import os
+import sys
 
-class TextBox(Font):
+class TextBox:
     
-    def __init__(self, text, pos, width, drawRect=False, textColour=(0, 0, 0), backgroundColour=None, font=None):
-        super().__init__()
+    def __init__(self, text, pos, width, font, drawRect=False, textColour=(0, 0, 0), backgroundColour=None, fontSize=None):
+        if getattr(sys, 'frozen', False):
+            # In a bundle
+            self.exeDir = os.path.dirname(sys.executable)
+        else:
+            # In normal python
+            self.exeDir = ""
         self.text = text
         self.pos = pos
         self.x = self.pos[0]
         self.y = self.pos[1]
         self.width = width
+        self.font = font
         self.drawRect = drawRect
         self.textColour = textColour
         self.backgroundColour = backgroundColour
-        if font == None:
-            self.font = self.tinyFont
-        elif font == 'tiny':
-            self.font = self.tinyFont
-        elif font == 'small':
-            self.font = self.smallFont
-        elif font == 'medium':
-            self.font = self.mediumFont
-        elif font == 'large':
-            self.font = self.largeFont
+        if fontSize == None:
+            self.font = self.font.tinyFont
+        elif fontSize == 'tiny':
+            self.font = self.font.tinyFont
+        elif fontSize == 'small':
+            self.font = self.font.smallFont
+        elif fontSize == 'medium':
+            self.font = self.font.mediumFont
+        elif fontSize == 'large':
+            self.font = self.font.largeFont
 
         self.set_rect()
 

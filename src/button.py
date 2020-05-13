@@ -1,10 +1,17 @@
 import pygame
-from font import Font
+import os
+import sys
 
-class Button(Font):
+class Button:
     
-    def __init__(self, text, pos, active=True, border=False, fontSize='menu', buttonColour=(200, 200, 200), borderColour=(170, 170, 170)):
-        super().__init__()
+    def __init__(self, text, pos, font, active=True, border=False, fontSize='menu', buttonColour=(200, 200, 200), borderColour=(170, 170, 170)):
+        if getattr(sys, 'frozen', False):
+            # In a bundle
+            self.exeDir = os.path.dirname(sys.executable)
+        else:
+            # In normal python
+            self.exeDir = ""
+        self.font = font
         self.text = text
         self.pos = pos
 
@@ -18,15 +25,15 @@ class Button(Font):
 
         self.fontSize = fontSize
         if self.fontSize == 'menu':
-            self.font = self.menu_font
+            self.font = self.font.menu_font
         elif self.fontSize == 'tiny':
-            self.font = self.tinyFont
+            self.font = self.font.tinyFont
         elif self.fontSize == 'small':
-            self.font = self.smallFont
+            self.font = self.font.smallFont
         elif self.fontSize == 'medium':
             self.font = self.mediumFont
         elif self.fontSize == 'large':
-            self.font = self.largeFont
+            self.font = self.font.largeFont
 
         self.buttonColour = buttonColour
         self.borderColour = borderColour

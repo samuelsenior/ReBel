@@ -182,23 +182,27 @@ class Server(Log):
                     self.inputs.append(connection)
                 else:
 
-                    data = s.recv(self.dataSize)
-                    if data:
-                        data = data.decode("utf-8")
-                        for message in data.split("/")[:-1]:
-                            self.clientIncomingMessageQueue.put([s, message])
-
-                        if s not in self.outputs:
-                            self.outputs.append(s)
+                    try:
+                        data = s.recv(self.dataSize)
+                    except:
+                        pass
                     else:
-                        if s in self.outputs:
-                            self.outputs.remove(s)
-                            self.inputs.remove(s)
-                            name_tmp = self.clients[s]['name']
-                            self.clients.pop(s)
-                            s.close()
-                            self.connections -= 1
-                            self.log("[CLIENT] Client {} disconnected".format(name_tmp))
+                        if data:
+                            data = data.decode("utf-8")
+                            for message in data.split("/")[:-1]:
+                                self.clientIncomingMessageQueue.put([s, message])
+
+                            if s not in self.outputs:
+                                self.outputs.append(s)
+                        else:
+                            if s in self.outputs:
+                                self.outputs.remove(s)
+                                self.inputs.remove(s)
+                                name_tmp = self.clients[s]['name']
+                                self.clients.pop(s)
+                                s.close()
+                                self.connections -= 1
+                                self.log("[CLIENT] Client {} disconnected".format(name_tmp))
 
             time.sleep(max(1./self.frameRate - (time.time() - start), 0))
  

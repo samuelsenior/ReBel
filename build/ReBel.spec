@@ -34,5 +34,5 @@ exe = EXE(pyz,
           icon='../img/ReBel_Icon.ico' )
 app = BUNDLE(exe,
              name='ReBel.app',
-             icon='../img/ReBel_Icon.ico',
+             icon='../img/ReBel_Icon.icns',
              bundle_identifier=None)

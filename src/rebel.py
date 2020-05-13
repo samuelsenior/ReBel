@@ -13,8 +13,6 @@ from log import Log
 from client import Network
 
 from font import Font
-from titledInputBox import TitledInputBox
-from button import Button
 from config import Config
 
 from aboutScreen import AboutScreen
@@ -24,7 +22,7 @@ from optionsScreen import OptionsScreen
 from ringingScreen import RingingScreen
 
         
-class Rebel(Font, Log):
+class Rebel(Log):
     def __init__(self, menuWidth, menuHeight, mainWidth, mainHeight, configFile=os.path.join("..", "config", "config.txt")):
 
         # initialize
@@ -33,9 +31,16 @@ class Rebel(Font, Log):
         pygame.mixer.init()
         pygame.font.init()
 
-        Font.__init__(self)
+        if getattr(sys, 'frozen', False):
+            # In a bundle
+            self.exeDir = os.path.dirname(sys.executable)
+        else:
+            # In normal python
+            self.exeDir = ""
+            
+        self.font = Font(directory=os.path.join(self.exeDir, "..", "fonts"))
 
-        self.logFile = os.path.join("..", "log", "log.txt")
+        self.logFile = os.path.join(self.exeDir, "..", "log", "log.txt")
         Log.__init__(self, logFile=self.logFile)
         self.clearLog()
 
@@ -48,11 +53,11 @@ class Rebel(Font, Log):
         self.mainWidth = mainWidth
         self.mainHeight = mainHeight
 
-        self.configFile = configFile
+        self.configFile = os.path.join(self.exeDir, configFile)
 
         self.win = pygame.display.set_mode((self.menuWidth, self.menuHeight))
         pygame.display.set_caption("ReBel")
-        self.gameIcon = pygame.image.load(os.path.join("..", "img", "ReBel_Icon.png"))
+        self.gameIcon = pygame.image.load(os.path.join(self.exeDir, "..", "img", "ReBel_Icon.png"))
         pygame.display.set_icon(self.gameIcon)
 
         self.config = Config(fileName=self.configFile)
@@ -61,12 +66,13 @@ class Rebel(Font, Log):
         self.log("[INFO] FrameRate set to {}".format(self.frameRate))
 
         self.network = Network(self.logFile, frameRate=self.frameRate)
-        self.aboutScreen = AboutScreen(self.win, frameRate=self.frameRate, version=self.reBelClientVersion)
-        self.helpScreen = HelpScreen(self.win, frameRate=self.frameRate)
-        self.menuScreen = MenuScreen(win=self.win, network=self.network, frameRate=self.frameRate,
+        self.aboutScreen = AboutScreen(self.win, font=self.font, frameRate=self.frameRate, version=self.reBelClientVersion)
+        self.helpScreen = HelpScreen(self.win, font=self.font, frameRate=self.frameRate)
+        self.menuScreen = MenuScreen(win=self.win, font=self.font, network=self.network, frameRate=self.frameRate,
                                      logFile=self.logFile, config=self.config)
-        self.optionsScreen = OptionsScreen(win=self.win, config=self.config, frameRate=self.frameRate)
-        self.ringingScreen = RingingScreen(network=self.network, width=self.mainWidth, height=self.mainHeight, frameRate=self.frameRate,
+        self.optionsScreen = OptionsScreen(win=self.win, font=self.font, config=self.config, frameRate=self.frameRate)
+        self.ringingScreen = RingingScreen(network=self.network, width=self.mainWidth, height=self.mainHeight, font=self.font,
+                                           frameRate=self.frameRate,
                                            logFile=self.logFile, config=self.config)
 
         self.screen = 'menuScreen'

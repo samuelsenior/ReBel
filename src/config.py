@@ -1,5 +1,6 @@
 import csv
 import os
+import sys
 
 class Config:
     def __init__(self, fileName):
@@ -10,6 +11,12 @@ class Config:
                        'regenerateBells':False,
                        'handbellSource':None, 'rebelBellFileLocation':None, 'abelBellFileLocation':None,
                        'frameRate':None}
+        if getattr(sys, 'frozen', False):
+            # In a bundle
+            self.exeDir = os.path.dirname(sys.executable)
+        else:
+            # In normal python
+            self.exeDir = ""
         self.read()
         self.format()
 
@@ -101,12 +108,13 @@ class Config:
             self.config['handbellSource'] = 'rebel'
 
         if self.config['rebelBellFileLocation'] == None:
-            self.config['rebelBellFileLocation'] = os.path.join('audio', 'handbell.wav')
+            self.config['rebelBellFileLocation'] = os.path.join(self.exeDir, "..", 'audio', 'handbell.wav')
         else:
             tmp = self.config['rebelBellFileLocation'].split('/|\\')
             self.config['rebelBellFileLocation'] = ""
             for t in tmp:
                 self.config['rebelBellFileLocation'] = os.path.join(self.config['rebelBellFileLocation'], t)
+            self.config['rebelBellFileLocation'] = os.path.join(self.exeDir, self.config['rebelBellFileLocation'])
 
         if self.config['abelBellFileLocation'] == None:
             pass
@@ -115,6 +123,7 @@ class Config:
             self.config['abelBellFileLocation'] = ""
             for t in tmp:
                 self.config['abelBellFileLocation'] = os.path.join(self.config['abelBellFileLocation'], t)
+            self.config['abelBellFileLocation'] = os.path.join(self.exeDir, self.config['abelBellFileLocation'])
 
         if self.config['frameRate'] == None:
             self.config['frameRate'] = 500

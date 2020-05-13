@@ -1,11 +1,18 @@
 import pygame
+import os
+import sys
 from font import Font
 
 class InputBox(Font):
 
-    def __init__(self, x, y, w, h, text='', font='medium', resizable=True, startActiveText=False, characterLimit=1000, inputType=None):
-
-        super().__init__()
+    def __init__(self, x, y, w, h, font, text='', fontSize='medium', resizable=True, startActiveText=False, characterLimit=1000, inputType=None):
+        if getattr(sys, 'frozen', False):
+            # In a bundle
+            self.exeDir = os.path.dirname(sys.executable)
+        else:
+            # In normal python
+            self.exeDir = ""
+        Font.__init__(self, directory=os.path.join(self.exeDir, "..", "fonts"))
 
         self.colour_inactive = pygame.Color('lightskyblue3')
         self.colour_active = pygame.Color('dodgerblue2')
@@ -14,6 +21,7 @@ class InputBox(Font):
         self.y = y
         self.width = w
         self.height = h
+        self.font = font
         self.rect = pygame.Rect(x, y, w, h)
         self.rectOld = self.rect.copy()
         self.color = self.colour_inactive
@@ -22,16 +30,16 @@ class InputBox(Font):
         self.characterLimit = characterLimit
         self.inputType = inputType
 
-        if font == None:
-            self.font = self.tinyFont
-        elif font == 'tiny':
-            self.font = self.tinyFont
-        elif font == 'small':
-            self.font = self.smallFont
-        elif font == 'medium':
-            self.font = self.mediumFont
-        elif font == 'large':
-            self.font = self.largeFont
+        if fontSize == None:
+            self.font = self.font.tinyFont
+        elif fontSize == 'tiny':
+            self.font = self.font.tinyFont
+        elif fontSize == 'small':
+            self.font = self.font.smallFont
+        elif fontSize == 'medium':
+            self.font = self.font.mediumFont
+        elif fontSize == 'large':
+            self.font = self.font.largeFont
 
         if startActiveText:
             self.txt_surface = self.font.render(text, True, self.colour_active)
