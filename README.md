@@ -1,7 +1,7 @@
 # ReBel
 ReBel is a client-server-based multiuser ringing software, use it to ring with others across the internet. The bells each person can ring and the keys used to ring them are all completely customisable, as is the total number of bells.
 
-Executables for Windows and macOS have been provided and can be found [here](https://github.com/samuelsenior/ReBel/releases/latest). ReBel is written in Python 3 and so it can also be run directly from the source code. To do this change into the 'src' directory and run 'rebel.py'.
+Windows and macOS executables have been provided for both the ReBel client and ReBel server and can be found [here](https://github.com/samuelsenior/ReBel/releases/latest). ReBel is written in Python 3 and so can be rung on any OS that Python 3 supports by running it directly from the source code. To do this just change into the 'src' directory and run 'rebel.py' using Python 3 (see the notes below for the Python dependencies that need to be installed to run it in Python).
 
 ## Usage
 Open ReBel, enter in your name, the IP of the server (given to you by the person running the server), and the server port. Click 'Connect to Server' and then click 'Start Ringing'. This will take you to the ringing screen and from there you can start ringing.
