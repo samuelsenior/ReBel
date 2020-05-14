@@ -15,7 +15,13 @@ from log import Log
 
 class Server(Log):
     def __init__(self, serverLocalIP, serverPort):
-        Log.__init__(self, logFile=os.path.join("..", "log", "serverLog.txt"))
+        if getattr(sys, 'frozen', False):
+            # In a bundle
+            self.exeDir = os.path.dirname(sys.executable)
+        else:
+            # In normal python
+            self.exeDir = ""
+        Log.__init__(self, logFile=os.path.join(self.exeDir, "..", "log", "serverLog.txt"))
         self.clearLog()
 
         self.reBelServerVersion = "v1.0.0"
