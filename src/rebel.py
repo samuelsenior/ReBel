@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 ReBel
 author: Samuel M Senior
