@@ -1,3 +1,4 @@
+#!/bin/python
 """
 ReBel
 author: Samuel M Senior
