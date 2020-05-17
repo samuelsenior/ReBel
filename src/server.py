@@ -133,7 +133,10 @@ class Server(Log):
             else:
                 if s == 'all':
                     for client in self.clients.values():
-                        client['connection'].send(message+self.messageEnd)
+                        try:
+                            client['connection'].send(message+self.messageEnd)
+                        except:
+                            self.log("[ERROR] Could not send message to client {} ({}:{}). Message: {}".format(self.clients[s]['name'], self.clients[s]['addr'][0], self.clients[s]['addr'][1], message))
                 else:
                     s.send(message+self.messageEnd)
             time.sleep(max(1./self.frameRate - (time.time() - start), 0))
