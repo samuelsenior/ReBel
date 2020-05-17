@@ -14,7 +14,7 @@ class Network(Log):
 
         self.logFile = logFile
         Log.__init__(self, logFile=logFile)
-        self._lock = threading.Lock()
+        #self._lock = threading.Lock()
         self.incomingMessagesThread = threading.Thread(target=self.incomingMessages, args=(), daemon=True)
         self.outgoingMessagesThread = threading.Thread(target=self.outgoingMessages, args=(), daemon=True)
         self.incomingMessageQueue = Queue()
@@ -24,12 +24,12 @@ class Network(Log):
 
         manager = Manager()
         self.variables = manager.dict({'frameRate':frameRate, 'disconnecting':False, 'dataSize':128, 'ringing':False,
-                                       'messageEnd':bytes("/", "utf-8"), 'connected':False, 'gotNumberOfBells':False, 'numberOfBells':0,
+                                       'messageEnd':bytes("/", "utf-8"), 'connected':None, 'gotNumberOfBells':False, 'numberOfBells':0,
                                        'userName':"", 'serverIP':"", 'serverPort':-1, 'addr':None, 'serverVersion':'-1.-1.-1',
                                        'clientName':"", 'running':False, 'messagingThreadsClosed':False})
 
         self.clientThread = Process(target=self.start, args=(self.incomingMessagesThread, self.outgoingMessagesThread,
-                                                             self._lock, self.logFile))#, daemon=True)
+                                                             self.logFile))#, daemon=True)
 
     def send(self, message):
         try:
@@ -100,11 +100,11 @@ class Network(Log):
                 self.server.send(message+self.variables['messageEnd'])
             time.sleep(max(1./self.variables['frameRate'] - (time.time() - start), 0))
 
-    def start(self, incomingMessagesThread, outgoingMessagesThread, _lock, logFile):
+    def start(self, incomingMessagesThread, outgoingMessagesThread, logFile):
 
         self.incomingMessagesThread = incomingMessagesThread
         self.outgoingMessagesThread = outgoingMessagesThread
-        self._lock = _lock
+        self._lock = threading.Lock()
         self.logFile = logFile
         Log.__init__(self, logFile=logFile)
 
@@ -123,15 +123,16 @@ class Network(Log):
         try:
             self.server.connect(self.variables['addr'])
         except socket.error as e:
-            self.log("Client.start.connect(): {}".format(str(e)))
+            self.log("[ERROR] Client.start.connect(): {}".format(str(e)))
             inputs = None
             self.variables['connected'] = False
+            self.variables['running'] = False
         else:
             self.server.setblocking(0)
             self.variables['connected'] = True
+            self.variables['running'] = True
         self._lock.release()
 
-        self.variables['running'] = True
         while self.variables['running']:
             start = time.time()
             try:
@@ -158,10 +159,8 @@ class Network(Log):
         self.variables['connected'] = False
         self.variables['disconnecting'] = False
 
-        #self.incomingMessagesThread.kill()
-        #self.outgoingMessagesThread.kill()
-
     def connect(self, userName, serverIP, serverPort):
+
         while self.variables['disconnecting']:
             time.sleep(0.1)
 
@@ -174,10 +173,12 @@ class Network(Log):
 
         self.clientThread.start()
         time.sleep(0.5)
-        self._lock.acquire()
+        #self._lock.acquire()
+
         if self.variables['connected'] == False:
             self.clientThread.join()
-        self._lock.release()
+
+        #self._lock.release()
         return self.variables['connected']
 
     def disconnect(self):
