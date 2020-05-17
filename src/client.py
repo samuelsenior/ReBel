@@ -9,27 +9,20 @@ import select
 
 from log import Log
 
-class Network(Log):
-    def __init__(self, logFile, frameRate=30):
-
+class NetworkSubprocess(Log):
+    def __init__(self, logFile, incomingMessageQueue, outgoingMessageQueue, bellsRung, variables):
         self.logFile = logFile
         Log.__init__(self, logFile=logFile)
-        #self._lock = threading.Lock()
+
+        self.incomingMessageQueue = incomingMessageQueue
+        self.outgoingMessageQueue = outgoingMessageQueue
+
+        self.bellsRung = bellsRung
+
+        self.variables = variables
+
         self.incomingMessagesThread = threading.Thread(target=self.incomingMessages, args=(), daemon=True)
         self.outgoingMessagesThread = threading.Thread(target=self.outgoingMessages, args=(), daemon=True)
-        self.incomingMessageQueue = Queue()
-        self.outgoingMessageQueue = Queue()
-
-        self.bellsRung = Queue()
-
-        manager = Manager()
-        self.variables = manager.dict({'frameRate':frameRate, 'disconnecting':False, 'dataSize':128, 'ringing':False,
-                                       'messageEnd':bytes("/", "utf-8"), 'connected':None, 'gotNumberOfBells':False, 'numberOfBells':0,
-                                       'userName':"", 'serverIP':"", 'serverPort':-1, 'addr':None, 'serverVersion':'-1.-1.-1',
-                                       'clientName':"", 'running':False, 'messagingThreadsClosed':False})
-
-        self.clientThread = Process(target=self.start, args=(self.incomingMessagesThread, self.outgoingMessagesThread,
-                                                             self.logFile))#, daemon=True)
 
     def send(self, message):
         try:
@@ -100,13 +93,9 @@ class Network(Log):
                 self.server.send(message+self.variables['messageEnd'])
             time.sleep(max(1./self.variables['frameRate'] - (time.time() - start), 0))
 
-    def start(self, incomingMessagesThread, outgoingMessagesThread, logFile):
-
-        self.incomingMessagesThread = incomingMessagesThread
-        self.outgoingMessagesThread = outgoingMessagesThread
+    def start(self):
         self._lock = threading.Lock()
-        self.logFile = logFile
-        Log.__init__(self, logFile=logFile)
+        Log.__init__(self, logFile=self.logFile)
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -159,6 +148,40 @@ class Network(Log):
         self.variables['connected'] = False
         self.variables['disconnecting'] = False
 
+class Network(Log):
+    def __init__(self, logFile, frameRate=30):
+
+        self.logFile = logFile
+        Log.__init__(self, logFile=logFile)
+        self.incomingMessageQueue = Queue()
+        self.outgoingMessageQueue = Queue()
+
+        self.bellsRung = Queue()
+
+        manager = Manager()
+        self.variables = manager.dict({'frameRate':frameRate, 'disconnecting':False, 'dataSize':128, 'ringing':False,
+                                       'messageEnd':bytes("/", "utf-8"), 'connected':None, 'gotNumberOfBells':False, 'numberOfBells':0,
+                                       'userName':"", 'serverIP':"", 'serverPort':-1, 'addr':None, 'serverVersion':'-1.-1.-1',
+                                       'clientName':"", 'running':False, 'messagingThreadsClosed':False})
+
+        self.networkSubprocess = NetworkSubprocess(self.logFile, self.incomingMessageQueue, self.outgoingMessageQueue, self.bellsRung, self.variables)
+
+    def send(self, message):
+        try:
+            self.outgoingMessageQueue.put(bytes(message, "utf-8"))
+        except:
+            self.log("[ERROR] Could not send message to server: {}".format(message))
+
+    def startNetworkSubProcess(self):
+        self.networkSubprocess = NetworkSubprocess(self.logFile, self.incomingMessageQueue, self.outgoingMessageQueue, self.bellsRung, self.variables)
+
+        self.networkSubprocess.start()
+
+    def start(self):
+        self.clientThread = Process(target=self.startNetworkSubProcess, args=())
+
+        self.clientThread.start()
+
     def connect(self, userName, serverIP, serverPort):
 
         while self.variables['disconnecting']:
@@ -171,14 +194,13 @@ class Network(Log):
         self.variables['serverPort'] = serverPort
         self.variables['addr'] = (self.variables['serverIP'], self.variables['serverPort'])
 
+        self.clientThread = Process(target=self.startNetworkSubProcess, args=())
         self.clientThread.start()
         time.sleep(0.5)
-        #self._lock.acquire()
 
         if self.variables['connected'] == False:
             self.clientThread.join()
 
-        #self._lock.release()
         return self.variables['connected']
 
     def disconnect(self):
