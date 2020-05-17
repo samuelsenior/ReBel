@@ -164,23 +164,15 @@ class Network(Log):
                                        'userName':"", 'serverIP':"", 'serverPort':-1, 'addr':None, 'serverVersion':'-1.-1.-1',
                                        'clientName':"", 'running':False, 'messagingThreadsClosed':False})
 
-        self.networkSubprocess = NetworkSubprocess(self.logFile, self.incomingMessageQueue, self.outgoingMessageQueue, self.bellsRung, self.variables)
-
     def send(self, message):
         try:
             self.outgoingMessageQueue.put(bytes(message, "utf-8"))
         except:
             self.log("[ERROR] Could not send message to server: {}".format(message))
 
-    def startNetworkSubProcess(self):
-        self.networkSubprocess = NetworkSubprocess(self.logFile, self.incomingMessageQueue, self.outgoingMessageQueue, self.bellsRung, self.variables)
-
-        self.networkSubprocess.start()
-
-    def start(self):
-        self.clientThread = Process(target=self.startNetworkSubProcess, args=())
-
-        self.clientThread.start()
+    def startNetworkSubProcess(logFile, incomingMessageQueue, outgoingMessageQueue, bellsRung, variables):
+        networkSubprocess = NetworkSubprocess(logFile, incomingMessageQueue, outgoingMessageQueue, bellsRung, variables)
+        networkSubprocess.start()
 
     def connect(self, userName, serverIP, serverPort):
 
@@ -194,7 +186,7 @@ class Network(Log):
         self.variables['serverPort'] = serverPort
         self.variables['addr'] = (self.variables['serverIP'], self.variables['serverPort'])
 
-        self.clientThread = Process(target=self.startNetworkSubProcess, args=())
+        self.clientThread = Process(target=Network.startNetworkSubProcess, args=(self.logFile, self.incomingMessageQueue, self.outgoingMessageQueue, self.bellsRung, self.variables))
         self.clientThread.start()
         time.sleep(0.5)
 
