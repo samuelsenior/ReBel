@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+import time
 
 import math
 
@@ -47,8 +48,13 @@ class RingingScreen(KeyPress, Log):
         self.initialised = False
 
     def initialise(self):
+
         self.network.getNumberOfBells(empty=True)
+        #time.sleep(0.1)
+
         self.network.send("numberOfBells:get")
+        #time.sleep(0.1)
+
         waitingForNumberOFBells = True
         while waitingForNumberOFBells:
             try:
@@ -58,6 +64,7 @@ class RingingScreen(KeyPress, Log):
             else:
                 waitingForNumberOFBells = False
                 self.log("[Client] Number of bells set to {}".format(self.config.get('numberOfBells')))
+
         ringableBells_tmp = self.config.get('ringableBells').copy()
         keys_tmp = self.config.get('keys').copy()
         for i in range(len(self.config.get('ringableBells'))):
@@ -166,6 +173,7 @@ class RingingScreen(KeyPress, Log):
             bell.updateLocation(x, y, textX, textY)
 
     def display(self):
+
         self.win = pygame.display.set_mode((self.width, self.height))
         
         if self.initialised == False:
@@ -248,6 +256,7 @@ class RingingScreen(KeyPress, Log):
             try:
                 stroke, bellNumber = self.network.getBellRung()
                 bellNumber = int(bellNumber)
+
             except:
                 pass
             else:

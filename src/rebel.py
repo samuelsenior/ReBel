@@ -9,6 +9,8 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import sys
 
+import time
+
 from log import Log
 
 from client import Network
@@ -45,7 +47,7 @@ class Rebel(Log):
         Log.__init__(self, logFile=self.logFile)
         self.clearLog()
 
-        self.reBelClientVersion = "v1.0.2"
+        self.reBelClientVersion = "v1.1.0"
         self.log("[INFO] Running ReBel client {}".format(self.reBelClientVersion))
 
         self.menuWidth = menuWidth
@@ -80,8 +82,14 @@ class Rebel(Log):
 
     def quit(self):
         self.running = False
-        if self.network.connected == True:
+        if self.network.getVar('connected') == True:
             self.network.send("clientDisconnect:Disconnecting")
+            time.sleep(0.5)
+            self.network.shutdown()
+
+            while self.network.threadsRunning():
+                time.sleep(0.1)
+
         self.log("[INFO] Quitting...")
         pygame.quit()
         sys.exit(0)

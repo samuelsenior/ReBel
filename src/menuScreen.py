@@ -104,7 +104,7 @@ class MenuScreen(Log):
         time_end = None
         average = [0, 0]
 
-        self.network.ringing = True
+        self.network.setVar('ringing', True)
         for i in range(numberOfPings):
             time_start = time.time()
             self.network.send("ping")
@@ -124,7 +124,7 @@ class MenuScreen(Log):
                     average[0] += (time_end - time_start)
                     average[1] += 1
                     recvd = True
-        self.network.ringing = False
+        self.network.setVar('ringing', False)
         self.log("{} pings, average latency of: {} ms".format(average[1], int(1000*average[0]/average[1])))
 
     def display(self):
@@ -161,7 +161,7 @@ class MenuScreen(Log):
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.button_serverConnect.rect.collidepoint(event.pos):
-                        if self.network.connected:
+                        if self.network.getVar('connected'):
                             self.network.disconnect()
                         self.offline = False
                         self.connectionActive = False
@@ -171,9 +171,9 @@ class MenuScreen(Log):
 
                             self.sanatiseServerInfo()
                             self.offline = not self.network.connect(self.userName, self.serverIP, self.serverPort)
-                            while self.network.connected is None:
+                            while self.network.getVar('connected') is None:
                                 time.sleep(0.1)
-                            self.offline = not self.network.connected
+                            self.offline = not self.network.getVar('connected')
                             if self.offline == False:
                                 self.connection = "connected"
                                 self.connectionActive = True
