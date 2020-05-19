@@ -6,6 +6,7 @@ import threading
 from multiprocessing import Process, Queue
 from multiprocessing import Manager
 import multiprocessing
+multiprocessing.freeze_support()
 
 import select
 
@@ -153,7 +154,7 @@ class NetworkSubprocess(Log):
 class Network(Log):
     def __init__(self, logFile, frameRate=30):
 
-        multiprocessing.freeze_support()
+        #multiprocessing.freeze_support()
 
         self.logFile = logFile
         Log.__init__(self, logFile=logFile)

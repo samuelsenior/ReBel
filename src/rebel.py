@@ -9,6 +9,9 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import sys
 
+import multiprocessing
+multiprocessing.freeze_support()
+
 import time
 
 from log import Log
