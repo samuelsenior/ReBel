@@ -6,6 +6,7 @@ class Config:
     def __init__(self, fileName):
         self.fileName = fileName
         self.config = {'numberOfBells':None, 'ringableBells':None, 'keys':None,
+                       'bellStates':None,
                        'scale':None, 'octaveShift':None, 'pitchShift':None,
                        'testConnectionLatency':[False, 0,100],
                        'regenerateBells':False,
@@ -79,6 +80,25 @@ class Config:
             self.config['ringableBells'] = self.config['ringableBells'][:len(self.config['keys'])]
         elif len(self.config['keys']) > len(self.config['ringableBells']):
             self.config['keys'] = self.config['keys'][:len(self.config['ringableBells'])]
+
+        if self.config['bellStates'] == None:
+            self.config['bellStates'] = ['B'] * self.config['numberOfBells']
+        else:
+            bellStates_tmp = []
+            if len(self.config['bellStates']) == 1:
+                if self.config['bellStates'].lower() == 'b' or self.config['bellStates'].lower() == 'h':
+                    bellStates_tmp = [self.config['bellStates'].upper()]
+                else:
+                    bellStates_tmp = ['B']
+            else:
+                for i, state in enumerate(self.config['bellStates']):
+                    if self.config['bellStates'][i].lower() == 'b' or self.config['bellStates'][i].lower() == 'h':
+                        bellStates_tmp.append(self.config['bellStates'][i].upper())
+                    else:
+                        pass
+            self.config['bellStates'] = bellStates_tmp
+        if len(self.config['bellStates']) > self.config['numberOfBells']:
+            self.config['bellStates'] = self.config['bellStates'][:len(self.config['numberOfBells'])]
 
         if self.config['scale'] == None:
             self.config['scale'] = "major"
