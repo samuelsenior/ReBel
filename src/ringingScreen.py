@@ -50,9 +50,7 @@ class RingingScreen(KeyPress, Log):
     def initialise(self):
 
         self.network.getNumberOfBells(empty=True)
-        #time.sleep(0.1)
         self.network.send("numberOfBells:get")
-        #time.sleep(0.1)
         waitingForNumberOFBells = True
         while waitingForNumberOFBells:
             try:
@@ -120,6 +118,8 @@ class RingingScreen(KeyPress, Log):
 
         pygame.mixer.set_num_channels(self.config.get('numberOfBells'))
         self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config, self.logFile)
+
+        self.updateBellStates()
 
         self.initialised = True
 
@@ -193,21 +193,23 @@ class RingingScreen(KeyPress, Log):
         
         if self.initialised == False:
             self.initialise()
+        else:
+            self.network.getNumberOfBells(empty=True)
+            self.network.send("numberOfBells:get")
+            waitingForNumberOFBells = True
+            while waitingForNumberOFBells:
+                try:
+                    numberOfBells = self.network.getNumberOfBells()
+                except:
+                    pass
+                else:
+                    if numberOfBells != self.config.get('numberOfBells'):
+                        self.initialise()
+                    else:
+                        self.updateBellStates()
+                    waitingForNumberOFBells = False
 
-        self.network.getNumberOfBells(empty=True)
-        self.network.send("numberOfBells:get")
-        waitingForNumberOFBells = True
-        while waitingForNumberOFBells:
-            try:
-                numberOfBells = self.network.getNumberOfBells()
-            except:
-                pass
-            else:
-                if numberOfBells != self.config.get('numberOfBells'):
-                    self.initialise()
-                waitingForNumberOFBells = False
-
-        self.updateBellStates()
+        #self.updateBellStates()
 
         clock = pygame.time.Clock()
 
