@@ -51,10 +51,8 @@ class RingingScreen(KeyPress, Log):
 
         self.network.getNumberOfBells(empty=True)
         #time.sleep(0.1)
-
         self.network.send("numberOfBells:get")
         #time.sleep(0.1)
-
         waitingForNumberOFBells = True
         while waitingForNumberOFBells:
             try:
@@ -125,6 +123,23 @@ class RingingScreen(KeyPress, Log):
 
         self.initialised = True
 
+    def updateBellStates(self):
+        self.network.getBellStates(empty=True)
+        self.network.send("bellStates:get")
+        waitingForBellStates = True
+        while waitingForBellStates:
+            try:
+                self.config.set('bellStates', self.network.getBellStates())
+            except:
+                pass
+            else:
+                waitingForBellStates = False
+                self.log("[Client] Bell States set to {}".format(self.config.get('bellStates')))
+        bellStates = self.config.get('bellStates')
+
+        for i in range(self.config.get('numberOfBells')):
+            self.bells[i+1].stroke = bellStates[i]
+
     def updateBellKeys(self):
         for i in range(1, self.config.get('numberOfBells')+1, 1):
             self.bells[i].clearKey()
@@ -191,6 +206,8 @@ class RingingScreen(KeyPress, Log):
                 if numberOfBells != self.config.get('numberOfBells'):
                     self.initialise()
                 waitingForNumberOFBells = False
+
+        self.updateBellStates()
 
         clock = pygame.time.Clock()
 
