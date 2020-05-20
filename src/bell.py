@@ -4,7 +4,7 @@ import os
 import sys
 
 class Bell:
-    def __init__(self, bellNumber, location, bellImageFile, width, height, textLocation, font, key=None, backgroundColour=(255, 255, 255)):
+    def __init__(self, bellNumber, location, bellImageFile, width, height, textLocation, font, stroke='H', key=None, backgroundColour=(255, 255, 255)):
         if getattr(sys, 'frozen', False):
             # In a bundle
             self.exeDir = os.path.dirname(sys.executable)
@@ -12,7 +12,7 @@ class Bell:
             # In normal python
             self.exeDir = ""
         self.font = font
-        self.stroke = 'H'
+        self.stroke = stroke
 
         # Read in bell image and create handstroke and backstroke images from it
         self.width = width
