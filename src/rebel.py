@@ -1,4 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env sh
+''''which python3 >/dev/null 2>&1 && exec python3 "$0" "$@"                 # '''
+''''test $(python --version 2>&1 | cut -c 8) -eq 3 && exec python "$0" "$@" # '''
+''''exec echo "Python 3 not found."                                         # '''
+
 """
 ReBel
 author: Samuel M Senior
