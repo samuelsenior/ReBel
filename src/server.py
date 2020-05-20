@@ -48,13 +48,13 @@ class Server(Log):
         self.backgroundTasksThread = threading.Thread(target=self.backgroundTasks, args=(), daemon=True)
 
         self.numberOfBells = 8
-        self.bellStrokeList = ['B'] * self.numberOfBells
+        self.bellStrokeList = ['H'] * self.numberOfBells
 
     def bellRinging(self, s, stroke, bell):
         try:
-            self.bellStrokeList[int(bell)-1]  = 'B' if self.bellStrokeList[int(bell)-1] == 'H' else 'H'
             self.clientOutgoingMessageQueue.put(['all', bytes("R:"+self.bellStrokeList[int(bell)-1]+bell ,"utf-8")])
             self.log("[RINGING] Bell {} rung by {}".format(self.bellStrokeList[int(bell)-1]+bell, self.clients[s]['name']))
+            self.bellStrokeList[int(bell)-1]  = 'B' if self.bellStrokeList[int(bell)-1] == 'H' else 'H'
         except:
             self.log("[ERROR] Connection to {} ({}:{}) lost".format(self.clients[s]['name'], self.clients[s]['addr'][0], self.clients[s]['addr'][1]))
 
@@ -92,22 +92,35 @@ class Server(Log):
 
         if message == "clientCommand:startRinging":
             self.startRinging(s, message)
+
         elif (message.split(":"))[0] == "setClientName":
             self.setClientName(s, message)
+
         elif (message.split(":"))[0] == "clientDisconnect":
             self.clientDisconnect(s, message)
+
         elif (message.split(":"))[0] == "ping":
             self.ping(s)
+
         elif (message.split(":"))[0] == "numberOfBells":
             if (message.split(":"))[1] == "get":
                 self.clientOutgoingMessageQueue.put([s, bytes("setNumberOfBells:{}".format(self.numberOfBells) ,"utf-8")])
             elif (message.split(":"))[1] == "set":
                 pass
+
+        elif (message.split(":"))[0] == "bellStates":
+            if (message.split(":"))[1] == "get":
+                self.clientOutgoingMessageQueue.put([s, bytes("setBellStates:{}".format(self.bellStrokeList) ,"utf-8")])
+            elif (message.split(":"))[1] == "set":
+                pass
+
         elif (message.split(":"))[0] == "R":
             self.bellRinging(s, (message.split(":"))[1][0], (message.split(":"))[1][1:])
+
         elif (message.split(":"))[0] == "":
             self.log("[WARNING] Blank client command, possible deconnection by {} ({}:{})".format(self.clientName, self.addr[0], self.addr[1]))
             self.clientOutgoingMessageQueue.put([s, bytes("serverMessage:[WARNING] Blank client command, are you still there?" ,"utf-8")])
+
         else:
             self.log('[ERROR] Unrecognised command from client "{}"'.format((message.split(":"))[0]))
             self.clientOutgoingMessageQueue.put([s, bytes('serverMessage:[ERROR] Unrecognised command from client "{}"'.format((message.split(":"))[0]), "utf-8")])
