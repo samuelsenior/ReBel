@@ -311,8 +311,21 @@ class Server(Log):
         '''
         self.numberOfBells = int(args[0])
         self.clientOutgoingMessageQueue.put(['all', bytes("setNumberOfBells:{}".format(self.numberOfBells) ,"utf-8")])
-        self.bellStrokeList = ['B'] * self.numberOfBells
+        self.bellStrokeList = ['H'] * self.numberOfBells
         self.log("[INFO] Set number of bells to {}".format(self.numberOfBells))
+
+    def bellstrokes(self, args):
+        '''
+        Prints the current strokes of all the bells.
+        '''
+        self.log("[INFO] Bell strokes currently are: {}".format(self.bellStrokeList))
+
+    def resetbellstrokes(self, args):
+        '''
+        Resets the strokes of the bells back to handstroke.
+        '''
+        self.bellStrokeList = ['H'] * self.numberOfBells
+        self.log("[INFO] Resetting bells back to handstroke")
 
     def getServerCommand(self):
 
@@ -322,7 +335,9 @@ class Server(Log):
                               "ip":self.ip,
                               "ls":self.ls,
                               "numberofbells":self.numberofbells,
-                              "setnumberofbells":self.setnumberofbells}
+                              "setnumberofbells":self.setnumberofbells,
+                              "bellstrokes":self.bellstrokes,
+                              "resetbellstrokes":self.resetbellstrokes}
         self.log("[INFO] Type 'help' for help")
         while True:
             start = time.time()
