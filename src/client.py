@@ -49,6 +49,7 @@ class NetworkSubprocess(Log):
                 raise
         elif message.split(":")[0] == "serverMessage":
             self.log("[SERVER] {}".format(message.split(":")[1]))
+
         elif (message.split(":"))[0] == "setClientName":
             if (message.split(":"))[1] == "Success":
                 self.variables['clientName'] = (message.split(":"))[2]
@@ -56,21 +57,31 @@ class NetworkSubprocess(Log):
             else:
                 self.log("[SERVER] Could not set name, error: {}".format((message.split(":"))[1]))
                 self.variables['clientName'] = "Default"
-                self.log("[SERVER] Using name 'None'")  
+                self.log("[SERVER] Using name 'None'")
+
         elif (message.split(":"))[0] == "setNumberOfBells":
             self.variables['numberOfBells'] = int(message.split(":")[1])
             self.variables['gotNumberOfBells'] = True
             self.log("[SERVER] Number of ringing bells is {}".format(message.split(":")[1]))
+
+        elif (message.split(":"))[0] == "setBellStates":
+            self.variables['bellStates'] = message.split(":")[1]
+            self.variables['gotBellStates'] = True
+            self.log("[SERVER] Current bell states are {}".format(message.split(":")[1]))
+
         elif message.split(":")[0] == "ringingCommand":
             if message.split(":")[1] == "Begin":
                 self.log("[RINGING] Ringing beginning")
                 self.variables['ringing'] = True 
             else:
                 self.log("[ERROR] Unrecognised ringing command: {}".format((message.split(":"))[1]))
+
         elif (message.split(":"))[0] == "R":
             self.bellsRung.put(((message.split(":"))[1][0], (message.split(":"))[1][1:]))
+
         elif (message.split(":"))[0] == "":
             self.log("[WARNING] Empty server message, possible deconnection")
+
         else:
             self.log('[ERROR] Unrecognised command from server "{}"'.format((message.split(":"))[0]))
 
@@ -166,6 +177,7 @@ class Network(Log):
         manager = Manager()
         self.variables = manager.dict({'frameRate':frameRate, 'disconnecting':False, 'dataSize':128, 'ringing':False,
                                        'messageEnd':bytes("/", "utf-8"), 'connected':None, 'gotNumberOfBells':False, 'numberOfBells':0,
+                                       'gotBellStates':False, 'bellStates':'',
                                        'userName':"", 'serverIP':"", 'serverPort':-1, 'addr':None, 'serverVersion':'-1.-1.-1',
                                        'clientName':"", 'running':False, 'messagingThreadsClosed':False})
 
@@ -226,6 +238,15 @@ class Network(Log):
         else:
             if self.variables['gotNumberOfBells'] == True:
                 return self.variables['numberOfBells']
+            else:
+                raise
+
+    def getBellStates(self, empty=False):
+        if empty:
+            self.variables['gotBellStates'] = False
+        else:
+            if self.variables['gotBellStates'] == True:
+                return self.variables['bellStates'][1:-1].replace("'", "").split(", ")
             else:
                 raise
 
