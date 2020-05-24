@@ -32,13 +32,15 @@ class Audio(Log, Error):
         The name and location of the log file to write to.
     '''
     def __init__(self, numberOfBells, mixer, config, logFile):
-        # Initialise the inherited Log instance.
+        # Set the working directory based on if ReBel is being run from an
+        # executable or the Python source code.
         if getattr(sys, 'frozen', False):
             # In a bundle
             self.exeDir = os.path.dirname(sys.executable)
         else:
             # In normal python
             self.exeDir = ""
+        # Initialise the inherited Log instance.
         Log.__init__(self, logFile=logFile)
         # Initialise the inherited Error instance.
         Error.__init__(self)
