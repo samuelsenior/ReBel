@@ -70,28 +70,33 @@ class AboutScreen:
                                    (self.x+20, self.aboutText_3.y+self.aboutText_3.h+10), width=self.width-40, font=self.font, fontSize='tiny')
         self.aboutText = [self.aboutTitleText, self.aboutText_1, self.aboutText_2, self.aboutText_3, self.aboutText_4]
 
-    def drawBackground(self):
+    def drawBackground(self, display):
         '''
         Draws the background of the AboutScreen with a border line drawn around
         it too.
-        '''
-        pygame.draw.rect(self.win, (170, 170, 170), self.aboutBackground, 0)
-        pygame.draw.rect(self.win, (100, 100, 100), self.aboutBackground, 2)
 
-    def display(self, win, source):
+        Parameters
+        ----------
+        display : Display
+            The Display instance used for displaying to the screen.
+        '''
+        display.draw.rect(self.win, (170, 170, 170), self.aboutBackground, 0)
+        display.draw.rect(self.win, (100, 100, 100), self.aboutBackground, 2)
+
+    def display(self, display, source):
         '''
         Displays the AboutScreen.
 
         Parameters
         ----------
-        win : pygame.display
-            The pygame display window.
+        display : Display
+            The display instance used for displaying to the screen.
 
         source : string
             The name of the screen type from where the user is coming from.
 
         '''
-        self.win = win
+        self.win = display.win
 
         # Set the width and the height of the About screen to 80% of the main window.
         self.width = int(self.win.get_width() * 0.8)
@@ -131,8 +136,8 @@ class AboutScreen:
 
         # Apply the bakground fade to the previous screen the user is coming from
         # and draw the background of the AboutScreen.
-        self.win.blit(self.backgroundFade, (0, 0))
-        self.drawBackground()
+        display.blit(self.backgroundFade, (0, 0))
+        self.drawBackground(display)
 
         # Update the button to not being hovered over by the mouse and draw them.
         for button in self.buttons:
@@ -145,7 +150,7 @@ class AboutScreen:
             txt.draw(self.win)
 
         # Update the screen to display the updated draws.
-        pygame.display.flip()
+        display.flip()
         
         # Pygame clock for setting frame rate.
         clock = pygame.time.Clock()
@@ -189,7 +194,7 @@ class AboutScreen:
                     button.draw(self.win)
 
             # Update the screen to display the updated draws.
-            pygame.display.flip()
+            display.flip()
 
             # Pause the loop until all of the frame rate time has passed.
             clock.tick(self.frameRate)

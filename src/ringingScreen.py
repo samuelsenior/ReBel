@@ -187,9 +187,9 @@ class RingingScreen(KeyPress, Log):
 
             bell.updateLocation(x, y, textX, textY)
 
-    def display(self):
+    def display(self, display):
 
-        self.win = pygame.display.set_mode((self.width, self.height))
+        self.win = display.set_mode((self.width, self.height))
         
         if self.initialised == False:
             self.initialise()
@@ -283,6 +283,6 @@ class RingingScreen(KeyPress, Log):
                 self.bells[bellNumber].draw(self.win)
                 pygame.mixer.Channel(bellNumber-1).play(self.audio.bells[bellNumber])
 
-            pygame.display.flip()
+            display.flip()
 
             clock.tick(self.frameRate)

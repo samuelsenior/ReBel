@@ -79,12 +79,21 @@ class HelpScreen:
         self.ringingText = [self.ringingTitleText, self.ringingSubTitleText_1, self.ringingText_1, self.ringingText_2, self.ringingText_3]#,
                             #self.ringingSubTitleText_2, self.ringingText_3, self.ringingText_4]
 
-    def drawBackground(self):
-        pygame.draw.rect(self.win, (170, 170, 170), self.helpBackground, 0)
-        pygame.draw.rect(self.win, (100, 100, 100), self.helpBackground, 2)
+    def drawBackground(self, display):
+        '''
+        Draws the background of the HelpScreen with a border line drawn around
+        it too.
 
-    def display(self, win, source):
-        self.win = win
+        Parameters
+        ----------
+        display : Display
+            The Display instance used for displaying to the screen.
+        '''
+        display.draw.rect(self.win, (170, 170, 170), self.helpBackground, 0)
+        display.draw.rect(self.win, (100, 100, 100), self.helpBackground, 2)
+
+    def display(self, display, source):
+        self.win = display.win
 
         self.width = int(self.win.get_width() * 0.8)
         self.height = int(self.win.get_height() * 0.8)
@@ -116,7 +125,7 @@ class HelpScreen:
         self.button_serverPage.rect.x = self.x + self.width - 20 - self.button_serverPage.rect.w
         self.button_ringingPage.rect.x = self.button_serverPage.rect.x - 10 - self.button_ringingPage.rect.w
 
-        self.win.blit(self.backgroundFade, (0, 0))
+        display.blit(self.backgroundFade, (0, 0))
 
         if source == "menuScreen":
             helpPage = "server"
@@ -138,7 +147,7 @@ class HelpScreen:
             self.button_ringingPage.active = False
             self.button_serverPage.active = True
 
-        self.drawBackground()
+        self.drawBackground(display)
 
         for button in self.buttons:
             if button.updated:
@@ -148,7 +157,7 @@ class HelpScreen:
         for txt in text:
             txt.draw(self.win)
 
-        pygame.display.flip()
+        display.flip()
         
         clock = pygame.time.Clock()
         
@@ -168,14 +177,14 @@ class HelpScreen:
                         text = self.serverText
                         self.button_serverPage.active = False
                         self.button_ringingPage.active = True
-                        self.drawBackground()
+                        self.drawBackground(display)
                         for txt in text:
                             txt.draw(self.win)
                     elif self.button_ringingPage.rect.collidepoint(event.pos) and self.button_ringingPage.active == True:
                         text = self.ringingText
                         self.button_serverPage.active = True
                         self.button_ringingPage.active = False
-                        self.drawBackground()
+                        self.drawBackground(display)
                         for txt in text:
                             txt.draw(self.win)
 
@@ -191,5 +200,5 @@ class HelpScreen:
                 if button.updated:
                     button.draw(self.win)
 
-            pygame.display.flip()
+            display.flip()
             clock.tick(self.frameRate)

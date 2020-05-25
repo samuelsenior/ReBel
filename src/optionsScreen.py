@@ -151,12 +151,12 @@ class OptionsScreen:
         self.config.set('ringableBells', bellNumberList)
         self.config.set('keys', bellKeyList)
 
-    def drawBackground(self):
-        pygame.draw.rect(self.win, (170, 170, 170), self.optionsBackground, 0)
-        pygame.draw.rect(self.win, (100, 100, 100), self.optionsBackground, 2)
+    def drawBackground(self, display):
+        display.draw.rect(self.win, (170, 170, 170), self.optionsBackground, 0)
+        display.draw.rect(self.win, (100, 100, 100), self.optionsBackground, 2)
 
-    def display(self, win, source):
-        self.win = win
+    def display(self, display, source):
+        self.win = display.win
 
         self.width = int(self.win.get_width() * 0.8)
         self.height = int(self.win.get_height() * 0.8)
@@ -196,7 +196,7 @@ class OptionsScreen:
 
         self.generateBellKeyInputBoxes(self.x+170, self.keysText_4.y+self.keysText_4.h + 10)
 
-        self.win.blit(self.backgroundFade, (0, 0))
+        display.blit(self.backgroundFade, (0, 0))
 
         optionsPage = "keys"
 
@@ -211,7 +211,7 @@ class OptionsScreen:
             self.button_tuning.active = True
             self.button_other.active = True
 
-        self.drawBackground()
+        self.drawBackground(display)
 
         self.bellNumberInputBoxes[0].draw(self.win, redrawTitle=True)
         self.bellNumberInputBoxes[0].updated = False
@@ -231,7 +231,7 @@ class OptionsScreen:
         for txt in text:
             txt.draw(self.win)
 
-        pygame.display.flip()
+        display.flip()
         
         clock = pygame.time.Clock()
         
@@ -318,5 +318,5 @@ class OptionsScreen:
                 if button.updated:
                     button.draw(self.win)
 
-            pygame.display.flip()
+            display.flip()
             clock.tick(self.frameRate)

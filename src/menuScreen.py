@@ -84,10 +84,10 @@ class MenuScreen(Log):
         else:
             return self.blankMessage
 
-    def updateConnectionStatusMessage(self):
-        pygame.draw.rect(self.win, (255, 255, 255), self.connectionRectWhite, 0)
+    def updateConnectionStatusMessage(self, display):
+        display.draw.rect(self.win, (255, 255, 255), self.connectionRectWhite, 0)
         if self.connection:
-            self.win.blit(self.connectionStatusMessage(), (self.button_serverConnect.width+25, self.button_serverConnect.rect.y+5))
+            display.blit(self.connectionStatusMessage(), (self.button_serverConnect.width+25, self.button_serverConnect.rect.y+5))
 
     def sanatiseServerInfo(self):
         self.userName = self.inputBox_userName.text.replace(":", "-")
@@ -127,14 +127,15 @@ class MenuScreen(Log):
         self.network.setVar('ringing', False)
         self.log("{} pings, average latency of: {} ms".format(average[1], int(1000*average[0]/average[1])))
 
-    def display(self):
+    def display(self, display):
+        self.win = display.win
 
         self.run_menu = True
 
         clock = pygame.time.Clock()
 
         self.win.fill(self.backgroundColour)
-        self.win.blit(self.rebelLogo, (self.width/2-self.rebelLogo.get_width()/2, (self.inputBox_userName.rect.y - self.rebelLogo.get_height())*3/8))
+        display.blit(self.rebelLogo, (self.width/2-self.rebelLogo.get_width()/2, (self.inputBox_userName.rect.y - self.rebelLogo.get_height())*3/8))
 
         for box in self.input_boxes:
             box.draw(self.win, redrawTitle=True)
@@ -143,7 +144,7 @@ class MenuScreen(Log):
             button.hovered = False
             button.draw(self.win)
 
-        self.updateConnectionStatusMessage()
+        self.updateConnectionStatusMessage(display)
 
         while self.run_menu:
             for box in self.input_boxes:
@@ -167,7 +168,7 @@ class MenuScreen(Log):
                         self.connectionActive = False
                         try:
                             self.connection = "connecting"
-                            self.updateConnectionStatusMessage()
+                            self.updateConnectionStatusMessage(display)
 
                             self.sanatiseServerInfo()
                             self.offline = not self.network.connect(self.userName, self.serverIP, self.serverPort)
@@ -178,16 +179,16 @@ class MenuScreen(Log):
                                 self.connection = "connected"
                                 self.connectionActive = True
                                 self.button_startRinging.active = True
-                                self.updateConnectionStatusMessage()
+                                self.updateConnectionStatusMessage(display)
                                 if self.config.get('testConnectionLatency')[0] == True:
                                     self.testConnectionLatency(numberOfPings=self.config.get('testConnectionLatency')[1],
                                                                outputRate=self.config.get('testConnectionLatency')[2])
                             else:
                                 self.connection = "offline"
-                                self.updateConnectionStatusMessage()
+                                self.updateConnectionStatusMessage(display)
                         except:
                             self.connection = "offline"
-                            self.updateConnectionStatusMessage()
+                            self.updateConnectionStatusMessage(display)
                             self.log("[INFO] Server offline: {}:{}".format(self.inputBox_serverIP.text, self.inputBox_serverPort.text))
                             self.offline = True
 
@@ -226,5 +227,5 @@ class MenuScreen(Log):
                         button.updated = True
                         button.draw(self.win)
 
-            pygame.display.flip()
+            display.flip()
             clock.tick(self.frameRate)
