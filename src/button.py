@@ -47,16 +47,16 @@ class Button:
         self.active = False
         self.hovered = True
             
-    def draw(self, win):
+    def draw(self, display):
         self.set_rend()
 
         if self.border:
-            pygame.draw.rect(win, self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h))
-            win.blit(self.rend, (self.rect.x+5, self.rect.y))
-            pygame.draw.rect(win, self.borderColour,(self.rect.x, self.rect.y, self.rect.w, self.rect.h), 2)
+            display.draw.rect(self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h))
+            display.blit(self.rend, (self.rect.x+5, self.rect.y))
+            display.draw.rect(self.borderColour,(self.rect.x, self.rect.y, self.rect.w, self.rect.h), 2)
         else:
-            pygame.draw.rect(win, self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h))
-            win.blit(self.rend, (self.rect.x+5, self.rect.y))
+            display.draw.rect(self.buttonColour, (self.rect.x, self.rect.y, self.rect.w, self.rect.h))
+            display.blit(self.rend, (self.rect.x+5, self.rect.y))
         
     def set_rend(self):
         self.rend = self.font.render(self.text, True, self.get_color())

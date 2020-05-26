@@ -150,7 +150,7 @@ class Bell:
         # Update the position of the 'blank' bell image too.
         self.bellNumberTextBlank = pygame.Rect(self.textX, self.textY, self.bellNumberText.get_width(), self.bellNumberText.get_height())
 
-    def draw(self, win, renderNumber=True):
+    def draw(self, display, renderNumber=True):
         '''
         Draws the bell image and bell number text to the screen, with the bell
         stroke being drawn corresponding to the current value of the internal
@@ -158,21 +158,21 @@ class Bell:
 
         Parameters
         ----------
-        win : pygame.display
-            The pygame display window.
+        display : Display
+            The display instance used for displaying to the screen.
 
         renderNumber : bool
             The flag to decide whether to draw the bell number text.
         '''
         if self.stroke == 'H':
-            win.blit(self.backstrokeBellBlank, (self.x, self.y))
-            win.blit(self.handstrokeBell, (self.x, self.y))
+            display.blit(self.backstrokeBellBlank, (self.x, self.y))
+            display.blit(self.handstrokeBell, (self.x, self.y))
         else:
-            win.blit(self.handstrokeBellBlank, (self.x, self.y))
-            win.blit(self.backstrokeBell, (self.x, self.y))
+            display.blit(self.handstrokeBellBlank, (self.x, self.y))
+            display.blit(self.backstrokeBell, (self.x, self.y))
         if renderNumber:
-            pygame.draw.rect(win, self.backgroundColour, self.bellNumberTextBlank, 0)
-            win.blit(self.bellNumberText, (self.textX, self.textY))
+            display.draw.rect(self.backgroundColour, self.bellNumberTextBlank, 0)
+            display.blit(self.bellNumberText, (self.textX, self.textY))
 
     def handle_event(self, send):
         '''

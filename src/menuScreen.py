@@ -85,7 +85,7 @@ class MenuScreen(Log):
             return self.blankMessage
 
     def updateConnectionStatusMessage(self, display):
-        display.draw.rect(self.win, (255, 255, 255), self.connectionRectWhite, 0)
+        display.draw.rect((255, 255, 255), self.connectionRectWhite, 0)
         if self.connection:
             display.blit(self.connectionStatusMessage(), (self.button_serverConnect.width+25, self.button_serverConnect.rect.y+5))
 
@@ -138,22 +138,22 @@ class MenuScreen(Log):
         display.blit(self.rebelLogo, (self.width/2-self.rebelLogo.get_width()/2, (self.inputBox_userName.rect.y - self.rebelLogo.get_height())*3/8))
 
         for box in self.input_boxes:
-            box.draw(self.win, redrawTitle=True)
+            box.draw(display, redrawTitle=True)
             box.updated = False
         for button in self.buttons:
             button.hovered = False
-            button.draw(self.win)
+            button.draw(display)
 
         self.updateConnectionStatusMessage(display)
 
         while self.run_menu:
             for box in self.input_boxes:
                 if box.updated:
-                    box.draw(self.win, redrawTitle=False)
+                    box.draw(display, redrawTitle=False)
                     box.updated = False
             for button in self.buttons:
                 if button.updated:
-                    button.draw(self.win)
+                    button.draw(display)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -225,7 +225,7 @@ class MenuScreen(Log):
                     elif button.active == True:
                         button.hovered = False
                         button.updated = True
-                        button.draw(self.win)
+                        button.draw(display)
 
             display.flip()
             clock.tick(self.frameRate)

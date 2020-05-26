@@ -74,9 +74,9 @@ class TextBox:
         else:
             self.h = (y - self.y)
             
-    def draw(self, win):
+    def draw(self, display):
         for text in self.textFormatted:
-            win.blit(*text)
+            display.blit(*text)
         
     def set_rect(self):
         self.rect = pygame.Rect(self.x, self.y, self.width, 0)

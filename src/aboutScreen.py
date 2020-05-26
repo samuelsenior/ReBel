@@ -80,8 +80,8 @@ class AboutScreen:
         display : Display
             The Display instance used for displaying to the screen.
         '''
-        display.draw.rect(self.win, (170, 170, 170), self.aboutBackground, 0)
-        display.draw.rect(self.win, (100, 100, 100), self.aboutBackground, 2)
+        display.draw.rect((170, 170, 170), self.aboutBackground, 0)
+        display.draw.rect((100, 100, 100), self.aboutBackground, 2)
 
     def display(self, display, source):
         '''
@@ -143,11 +143,11 @@ class AboutScreen:
         for button in self.buttons:
             if button.updated:
                 button.hovered = False
-                button.draw(self.win)
+                button.draw(display)
 
         # Draw the text to the screen.
         for txt in self.aboutText:
-            txt.draw(self.win)
+            txt.draw(display)
 
         # Update the screen to display the updated draws.
         display.flip()
@@ -191,7 +191,7 @@ class AboutScreen:
                 # If any of the buttons have had changes happen to them
                 # then redraw them.
                 if button.updated:
-                    button.draw(self.win)
+                    button.draw(display)
 
             # Update the screen to display the updated draws.
             display.flip()

@@ -152,8 +152,8 @@ class OptionsScreen:
         self.config.set('keys', bellKeyList)
 
     def drawBackground(self, display):
-        display.draw.rect(self.win, (170, 170, 170), self.optionsBackground, 0)
-        display.draw.rect(self.win, (100, 100, 100), self.optionsBackground, 2)
+        display.draw.rect((170, 170, 170), self.optionsBackground, 0)
+        display.draw.rect((100, 100, 100), self.optionsBackground, 2)
 
     def display(self, display, source):
         self.win = display.win
@@ -213,23 +213,23 @@ class OptionsScreen:
 
         self.drawBackground(display)
 
-        self.bellNumberInputBoxes[0].draw(self.win, redrawTitle=True)
+        self.bellNumberInputBoxes[0].draw(display, redrawTitle=True)
         self.bellNumberInputBoxes[0].updated = False
         for box in self.bellNumberInputBoxes[1:]:
-            box.draw(self.win)
+            box.draw(display)
             box.updated = False
-        self.bellKeyInputBoxes[0].draw(self.win, redrawTitle=True)
+        self.bellKeyInputBoxes[0].draw(display, redrawTitle=True)
         self.bellKeyInputBoxes[0].updated = False
         for box in self.bellKeyInputBoxes[1:]:
-            box.draw(self.win)
+            box.draw(display)
             box.updated = False
         for button in self.buttons:
             if button.updated:
                 button.hovered = False
-                button.draw(self.win)
+                button.draw(display)
 
         for txt in text:
-            txt.draw(self.win)
+            txt.draw(display)
 
         display.flip()
         
@@ -261,27 +261,27 @@ class OptionsScreen:
                         self.button_tuning.active = True
                         self.button_keys.active = False
                         self.button_other.active = True
-                        self.drawBackground()
+                        self.drawBackground(display)
                         for txt in text:
-                            txt.draw(self.win)
+                            txt.draw(display)
                     elif self.button_tuning.rect.collidepoint(event.pos) and self.button_tuning.active == True:
                         optionsPage = 'tuning'
                         text = self.tuningText
                         self.button_keys.active = True
                         self.button_tuning.active = False
                         self.button_other.active = True
-                        self.drawBackground()
+                        self.drawBackground(display)
                         for txt in text:
-                            txt.draw(self.win)
+                            txt.draw(display)
                     elif self.button_other.rect.collidepoint(event.pos) and self.button_other.active == True:
                         optionsPage = 'other'
                         text = self.otherText
                         self.button_keys.active = True
                         self.button_tuning.active = True
                         self.button_other.active = False
-                        self.drawBackground()
+                        self.drawBackground(display)
                         for txt in text:
-                            txt.draw(self.win)
+                            txt.draw(display)
 
                     for box in self.bellNumberInputBoxes:
                         box.mouseDownEvent(event, self.win)
@@ -307,16 +307,16 @@ class OptionsScreen:
             if optionsPage == 'keys':
                 for box in self.bellNumberInputBoxes:
                     if box.updated:
-                        box.draw(self.win)
+                        box.draw(display)
                         box.updated = False
                 for box in self.bellKeyInputBoxes:
                     if box.updated:
-                        box.draw(self.win)
+                        box.draw(display)
                         box.updated = False
 
             for button in self.buttons:
                 if button.updated:
-                    button.draw(self.win)
+                    button.draw(display)
 
             display.flip()
             clock.tick(self.frameRate)

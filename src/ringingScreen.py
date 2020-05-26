@@ -215,18 +215,18 @@ class RingingScreen(KeyPress, Log):
 
         self.win.fill(self.backgroundColour)
         for bell in self.bells.values():
-                bell.draw(self.win, renderNumber=True)
+                bell.draw(display, renderNumber=True)
         for button in self.buttons:
             button.active = True
             button.hovered = False
-            button.draw(self.win)
+            button.draw(display)
 
         run_ringing = True
         while run_ringing:
 
             for button in self.buttons:
                 if button.updated:
-                    button.draw(self.win)
+                    button.draw(display)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -238,10 +238,10 @@ class RingingScreen(KeyPress, Log):
                         self.initialise()
                         self.win.fill(self.backgroundColour)
                         for bell in self.bells.values():
-                                bell.draw(self.win, renderNumber=True)
+                                bell.draw(display, renderNumber=True)
                         for button in self.buttons:
                             button.hovered = False
-                            button.draw(self.win)
+                            button.draw(display)
                     elif self.button_options.rect.collidepoint(event.pos):
                         run_ringing = False
                         return 'optionsScreen'
@@ -270,7 +270,7 @@ class RingingScreen(KeyPress, Log):
                     elif button.active == True:
                         button.hovered = False
                         button.updated = True
-                        button.draw(self.win)
+                        button.draw(display)
 
             try:
                 stroke, bellNumber = self.network.getBellRung()
@@ -280,7 +280,7 @@ class RingingScreen(KeyPress, Log):
                 pass
             else:
                 self.bells[bellNumber].bellRung(stroke)
-                self.bells[bellNumber].draw(self.win)
+                self.bells[bellNumber].draw(display)
                 pygame.mixer.Channel(bellNumber-1).play(self.audio.bells[bellNumber])
 
             display.flip()

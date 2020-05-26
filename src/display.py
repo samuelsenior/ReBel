@@ -1,11 +1,11 @@
 import pygame
 
 class Draw:
-    def __init__(self):
-        pass
+    def __init__(self, win):
+        self.win = win
 
     def rect(self, *args):
-        pygame.draw.rect(*args)
+        pygame.draw.rect(self.win, *args)
 
 class Display:
 
@@ -23,7 +23,7 @@ class Display:
             self.icon = pygame.image.load(self.iconFile)
             pygame.display.set_icon(self.icon)
 
-        self.draw = Draw()
+        self.draw = Draw(self.win)
 
     def set_mode(self, *args):
         self.win = pygame.display.set_mode(*args)

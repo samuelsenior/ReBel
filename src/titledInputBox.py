@@ -21,11 +21,11 @@ class TitledInputBox(InputBox):
 
         self.redrawTitle = True
 
-    def draw(self, win, redrawTitle=False):
+    def draw(self, display, redrawTitle=False):
         if redrawTitle or self.redrawTitle:
             self.redrawTitle = False
-            super().draw(win)
-            win.blit(self.title, (self.x - self.title.get_width()-5, self.y+2))
+            super().draw(display)
+            display.blit(self.title, (self.x - self.title.get_width()-5, self.y+2))
         else:
-            super().draw(win)
+            super().draw(display)
         

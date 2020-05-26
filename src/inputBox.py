@@ -116,8 +116,8 @@ class InputBox(Font):
             self.rectOld.h = self.rectOld.h
             self.rect.w = self.width
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, (255, 255, 255), self.rectOld, 0)
-        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+2))
-        pygame.draw.rect(screen, self.color, self.rect, 2)
+    def draw(self, display):
+        display.draw.rect((255, 255, 255), self.rectOld, 0)
+        display.blit(self.txt_surface, (self.rect.x+5, self.rect.y+2))
+        display.draw.rect(self.color, self.rect, 2)
         

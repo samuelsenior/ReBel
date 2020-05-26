@@ -89,8 +89,8 @@ class HelpScreen:
         display : Display
             The Display instance used for displaying to the screen.
         '''
-        display.draw.rect(self.win, (170, 170, 170), self.helpBackground, 0)
-        display.draw.rect(self.win, (100, 100, 100), self.helpBackground, 2)
+        display.draw.rect((170, 170, 170), self.helpBackground, 0)
+        display.draw.rect((100, 100, 100), self.helpBackground, 2)
 
     def display(self, display, source):
         self.win = display.win
@@ -152,10 +152,10 @@ class HelpScreen:
         for button in self.buttons:
             if button.updated:
                 button.hovered = False
-                button.draw(self.win)
+                button.draw(display)
 
         for txt in text:
-            txt.draw(self.win)
+            txt.draw(display)
 
         display.flip()
         
@@ -179,14 +179,14 @@ class HelpScreen:
                         self.button_ringingPage.active = True
                         self.drawBackground(display)
                         for txt in text:
-                            txt.draw(self.win)
+                            txt.draw(display)
                     elif self.button_ringingPage.rect.collidepoint(event.pos) and self.button_ringingPage.active == True:
                         text = self.ringingText
                         self.button_serverPage.active = True
                         self.button_ringingPage.active = False
                         self.drawBackground(display)
                         for txt in text:
-                            txt.draw(self.win)
+                            txt.draw(display)
 
                 for button in self.buttons:
                     if button.rect.collidepoint(pygame.mouse.get_pos()):
@@ -198,7 +198,7 @@ class HelpScreen:
 
             for button in self.buttons:
                 if button.updated:
-                    button.draw(self.win)
+                    button.draw(display)
 
             display.flip()
             clock.tick(self.frameRate)
