@@ -126,6 +126,7 @@ class HelpScreen:
         self.button_ringingPage.rect.x = self.button_serverPage.rect.x - 10 - self.button_ringingPage.rect.w
 
         display.blit(self.backgroundFade, (0, 0))
+        display.flip()
 
         if source == "menuScreen":
             helpPage = "server"
@@ -148,6 +149,7 @@ class HelpScreen:
             self.button_serverPage.active = True
 
         self.drawBackground(display)
+        display.flip()
 
         for button in self.buttons:
             if button.updated:
@@ -160,6 +162,8 @@ class HelpScreen:
         display.flip()
         
         clock = pygame.time.Clock()
+
+        self.updated = True
         
         run_help = True
         while run_help:
@@ -178,27 +182,36 @@ class HelpScreen:
                         self.button_serverPage.active = False
                         self.button_ringingPage.active = True
                         self.drawBackground(display)
+                        for button in self.buttons:
+                            button.draw(display)
                         for txt in text:
                             txt.draw(display)
+                        self.updated = True
                     elif self.button_ringingPage.rect.collidepoint(event.pos) and self.button_ringingPage.active == True:
                         text = self.ringingText
                         self.button_serverPage.active = True
                         self.button_ringingPage.active = False
                         self.drawBackground(display)
+                        for button in self.buttons:
+                            button.draw(display)
                         for txt in text:
                             txt.draw(display)
+                        self.updated = True
 
                 for button in self.buttons:
                     if button.rect.collidepoint(pygame.mouse.get_pos()):
                         button.hovered = True
                         button.updated = True
-                    elif button.active == True:
+                        button.draw(display)
+                        self.updated = True
+                    elif button.active == True and button.hovered == True:
                         button.hovered = False
                         button.updated = True
+                        button.draw(display)
+                        self.updated = True
 
-            for button in self.buttons:
-                if button.updated:
-                    button.draw(display)
+            if self.updated:
+                display.flip()
+                self.updated = False
 
-            display.flip()
             clock.tick(self.frameRate)

@@ -155,6 +155,10 @@ class AboutScreen:
         # Pygame clock for setting frame rate.
         clock = pygame.time.Clock()
         
+        # Switch for limiting the display.flip calls to just when a display
+        # update has occured.
+        self.updated = True
+
         # Main display loop.
         run_about = True
         while run_about:
@@ -183,18 +187,18 @@ class AboutScreen:
                     if button.rect.collidepoint(pygame.mouse.get_pos()):
                         button.hovered = True
                         button.updated = True
-                    elif button.active == True:
+                        button.draw(display)
+                        self.updated = True
+                    elif button.active == True and button.hovered == True:
                         button.hovered = False
                         button.updated = True
-
-            for button in self.buttons:
-                # If any of the buttons have had changes happen to them
-                # then redraw them.
-                if button.updated:
-                    button.draw(display)
+                        button.draw(display)
+                        self.updated = True
 
             # Update the screen to display the updated draws.
-            display.flip()
+            if self.updated:
+                display.flip()
+                self.updated = False
 
             # Pause the loop until all of the frame rate time has passed.
             clock.tick(self.frameRate)

@@ -234,6 +234,8 @@ class OptionsScreen:
         display.flip()
         
         clock = pygame.time.Clock()
+
+        self.updated = True
         
         run_options = True
         while run_options:
@@ -264,6 +266,7 @@ class OptionsScreen:
                         self.drawBackground(display)
                         for txt in text:
                             txt.draw(display)
+                        self.updated = True
                     elif self.button_tuning.rect.collidepoint(event.pos) and self.button_tuning.active == True:
                         optionsPage = 'tuning'
                         text = self.tuningText
@@ -273,6 +276,7 @@ class OptionsScreen:
                         self.drawBackground(display)
                         for txt in text:
                             txt.draw(display)
+                        self.updated = True
                     elif self.button_other.rect.collidepoint(event.pos) and self.button_other.active == True:
                         optionsPage = 'other'
                         text = self.otherText
@@ -282,6 +286,7 @@ class OptionsScreen:
                         self.drawBackground(display)
                         for txt in text:
                             txt.draw(display)
+                        self.updated = True
 
                     for box in self.bellNumberInputBoxes:
                         box.mouseDownEvent(event, self.win)
@@ -295,28 +300,38 @@ class OptionsScreen:
                 if event.type == pygame.KEYDOWN:
                     if self.activeBox and self.activeBox.active:
                         self.activeBox.keyDownEvent(event, self.win)
+                        self.updated = True
 
                 for button in self.buttons:
                     if button.rect.collidepoint(pygame.mouse.get_pos()):
                         button.hovered = True
                         button.updated = True
-                    elif button.active == True:
+                        button.draw(display)
+                        self.updated = True
+                    elif button.active == True and button.hovered == True:
                         button.hovered = False
                         button.updated = True
+                        button.draw(display)
+                        self.updated = True
 
             if optionsPage == 'keys':
                 for box in self.bellNumberInputBoxes:
                     if box.updated:
                         box.draw(display)
                         box.updated = False
+                        self.updated = True
                 for box in self.bellKeyInputBoxes:
                     if box.updated:
                         box.draw(display)
                         box.updated = False
+                        self.updated = True
 
-            for button in self.buttons:
-                if button.updated:
-                    button.draw(display)
+            #for button in self.buttons:
+            #    if button.updated:
+            #        button.draw(display)
 
-            display.flip()
+            if self.updated:
+                display.flip()
+                self.updated = False
+
             clock.tick(self.frameRate)

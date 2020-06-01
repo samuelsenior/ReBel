@@ -143,17 +143,22 @@ class MenuScreen(Log):
         for button in self.buttons:
             button.hovered = False
             button.draw(display)
+            button.updated = False
 
         self.updateConnectionStatusMessage(display)
+
+        self.updated = True
 
         while self.run_menu:
             for box in self.input_boxes:
                 if box.updated:
                     box.draw(display, redrawTitle=False)
                     box.updated = False
-            for button in self.buttons:
-                if button.updated:
-                    button.draw(display)
+                    self.updated = True
+            #for button in self.buttons:
+            #    if button.updated:
+            #        button.draw(display)
+            #        print("BARRR")
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -222,10 +227,15 @@ class MenuScreen(Log):
                     if button.rect.collidepoint(pygame.mouse.get_pos()):
                         button.hovered = True
                         button.updated = True
-                    elif button.active == True:
+                        button.draw(display)
+                        self.updated = True
+                    elif button.active == True and button.hovered == True:
                         button.hovered = False
                         button.updated = True
                         button.draw(display)
+                        self.updated = True
 
-            display.flip()
+            if self.updated:
+                display.flip()
+                self.updated = False
             clock.tick(self.frameRate)

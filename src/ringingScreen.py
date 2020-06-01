@@ -221,12 +221,10 @@ class RingingScreen(KeyPress, Log):
             button.hovered = False
             button.draw(display)
 
+        self.updated = True
+
         run_ringing = True
         while run_ringing:
-
-            for button in self.buttons:
-                if button.updated:
-                    button.draw(display)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -242,6 +240,7 @@ class RingingScreen(KeyPress, Log):
                         for button in self.buttons:
                             button.hovered = False
                             button.draw(display)
+                        self.updated = True
                     elif self.button_options.rect.collidepoint(event.pos):
                         run_ringing = False
                         return 'optionsScreen'
@@ -267,10 +266,13 @@ class RingingScreen(KeyPress, Log):
                     if button.rect.collidepoint(pygame.mouse.get_pos()):
                         button.hovered = True
                         button.updated = True
-                    elif button.active == True:
+                        button.draw(display)
+                        self.updated = True
+                    elif button.active == True and button.hovered == True:
                         button.hovered = False
                         button.updated = True
                         button.draw(display)
+                        self.updated = True
 
             try:
                 stroke, bellNumber = self.network.getBellRung()
@@ -282,7 +284,10 @@ class RingingScreen(KeyPress, Log):
                 self.bells[bellNumber].bellRung(stroke)
                 self.bells[bellNumber].draw(display)
                 pygame.mixer.Channel(bellNumber-1).play(self.audio.bells[bellNumber])
+                self.updated = True
 
-            display.flip()
+            if self.updated:
+                display.flip()
+                self.updated = False
 
             clock.tick(self.frameRate)
