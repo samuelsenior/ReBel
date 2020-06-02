@@ -37,8 +37,8 @@ class Rebel(Log):
 
         # initialize
         pygame.init()
-        pygame.mixer.pre_init(frequency=44100, size=16, channels=1)
-        pygame.mixer.init()
+        #pygame.mixer.pre_init(frequency=44100, size=16, channels=1)
+        #pygame.mixer.init()
         pygame.font.init()
 
         if getattr(sys, 'frozen', False):

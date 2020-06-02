@@ -22,7 +22,7 @@ class Display:
 
     def __init__(self, width, height, caption=None, iconFile=None):
 
-        self.frameRate = 500
+        self.frameRate = 100
 
         self.width = width
         self.height = height
@@ -70,15 +70,17 @@ class Display:
     def display(self, win):
         self.win = win
         self.draw = Draw(self.win, displayThread=True)
+        clock = pygame.time.Clock()
         while self.running:
-            start = time.time()
+            #start = time.time()
             try:
                 displayObject = self.displayThreadQueue.get_nowait()
             except:
                 pass
             else:
                 self.displayFunctions[displayObject[0]](displayObject[1])
-            time.sleep(max(1./self.frameRate - (time.time() - start), 0))
+            #time.sleep(max(1./self.frameRate - (time.time() - start), 0))
+            clock.tick(self.frameRate)
 
     def subprocess(self):
         pass

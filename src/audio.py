@@ -9,6 +9,8 @@ import time
 from log import Log
 from error import Error
 
+import pygame
+
 class Audio(Log, Error):
     '''
     The Audio object takes the number of handbells and their tuning from the
@@ -34,7 +36,7 @@ class Audio(Log, Error):
     logFile : string
         The name and location of the log file to write to.
     '''
-    def __init__(self, numberOfBells, mixer, config, logFile):
+    def __init__(self, numberOfBells, config, logFile):
         # Set the working directory based on if ReBel is being run from an
         # executable or the Python source code.
         if getattr(sys, 'frozen', False):
@@ -50,7 +52,7 @@ class Audio(Log, Error):
 
         self.numberOfBells = numberOfBells
         self.config = config
-        self.mixer = mixer
+        #self.mixer = mixer
 
         self.bellSemitones = []
         self.bells = {}
@@ -86,7 +88,7 @@ class Audio(Log, Error):
             self.generateBells()
 
         # Load in the bell sounds.
-        self.loadBells()
+        #self.loadBells()
 
         self.frameRate = 500
         self.running = True
@@ -288,6 +290,14 @@ class Audio(Log, Error):
             self.bells[i+1] = self.mixer.Sound(os.path.join(self.exeDir, "..", "audio", "{}.wav".format(i+1)))
 
     def playBell(self):
+        pygame.mixer.pre_init(frequency=44100, size=16, channels=self.config.get('numberOfBells'))
+        pygame.mixer.init()
+
+        self.mixer = pygame.mixer
+        #self.mixer.set_num_channels(self.config.get('numberOfBells'))
+
+        self.loadBells()
+
         while self.running:
             start = time.time()
             try:
