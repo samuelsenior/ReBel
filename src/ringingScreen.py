@@ -116,8 +116,9 @@ class RingingScreen(KeyPress, Log):
             except:
                 self.log("[WARNING] RingingScreen.initialise: Incorrect bell/key configuration of bell no. '{}' and key '{}'".format(self.config.get('ringableBells')[i], self.config.get('keys')[i]))
 
-        pygame.mixer.set_num_channels(self.config.get('numberOfBells'))
-        self.audio = Audio(self.config.get('numberOfBells'), pygame.mixer, self.config, self.logFile)
+        self.mixer = pygame.mixer
+        self.mixer.set_num_channels(self.config.get('numberOfBells'))
+        self.audio = Audio(self.config.get('numberOfBells'), self.mixer, self.config, self.logFile)
 
         self.updateBellStates()
 
@@ -283,7 +284,8 @@ class RingingScreen(KeyPress, Log):
             else:
                 self.bells[bellNumber].bellRung(stroke)
                 self.bells[bellNumber].draw(display)
-                pygame.mixer.Channel(bellNumber-1).play(self.audio.bells[bellNumber])
+                self.audio.play(bellNumber)
+
                 self.updated = True
 
             if self.updated:

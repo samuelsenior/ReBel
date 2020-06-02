@@ -3,6 +3,9 @@ import os
 import sys
 import csv
 
+import threading, queue
+import time
+
 from log import Log
 from error import Error
 
@@ -84,6 +87,12 @@ class Audio(Log, Error):
 
         # Load in the bell sounds.
         self.loadBells()
+
+        self.frameRate = 500
+        self.running = True
+        self.playBellQueue = queue.Queue()
+        self.playBellThread = threading.Thread(target=self.playBell, args=(), daemon=True)
+        self.playBellThread.start()
 
     def checkGeneratedBells(self):
         '''
@@ -277,3 +286,17 @@ class Audio(Log, Error):
         # equal the bell numbers.
         for i in range(self.numberOfBells):
             self.bells[i+1] = self.mixer.Sound(os.path.join(self.exeDir, "..", "audio", "{}.wav".format(i+1)))
+
+    def playBell(self):
+        while self.running:
+            start = time.time()
+            try:
+                bellNumber = self.playBellQueue.get_nowait()
+            except:
+                pass
+            else:
+                self.mixer.Channel(bellNumber-1).play(self.bells[bellNumber])
+            time.sleep(max(1./self.frameRate - (time.time() - start), 0))
+
+    def play(self, bellNumber):
+        self.playBellQueue.put(bellNumber)
