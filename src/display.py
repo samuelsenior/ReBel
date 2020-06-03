@@ -4,10 +4,10 @@ import threading, queue
 import time
 
 class Draw:
-    def __init__(self, win, displayThread=False):
+    def __init__(self, win, displayingThread=False):
         self.win = win
 
-        if displayThread:
+        if displayingThread:
             self.rect = self.rect_displayThread
         else:
             self.rect = self.rect_mainThread
@@ -36,17 +36,24 @@ class Display:
             self.icon = pygame.image.load(self.iconFile)
             pygame.display.set_icon(self.icon)
 
-        self.draw = Draw(self.win)
-
-        self.running = True
-        self.displayThreadQueue = queue.Queue()
-        self.displayThread = threading.Thread(target=self.display, args=(self.win, ), daemon=True)
-        self.displayThread.start()
-        self.displayFunctions = {
-                                 'flip':self._flip,
-                                 'blit':self._blit,
-                                 'draw_rect':self.draw.rect,
-        }
+        self.displayOnDedicatedThread = False
+        if self.displayOnDedicatedThread:
+            self.draw = Draw(self.win)
+            self.blit = self.blitLinker
+            self.flip = self.flipLinker
+            self.running = True
+            self.displayThreadQueue = queue.Queue()
+            self.displayThread = threading.Thread(target=self.display, args=(self.win, ), daemon=True)
+            self.displayThread.start()
+            self.displayFunctions = {
+                                     'flip':self.flipFunction,
+                                     'blit':self.blitFunction,
+                                     'draw_rect':self.draw.rect,
+            }
+        else:
+            self.draw = Draw(self.win, displayingThread=True)
+            self.blit = self.blitFunction
+            self.flip = self.flipFunction
 
     def set_mode(self, *args):
         self.win = pygame.display.set_mode(*args)
@@ -55,31 +62,29 @@ class Display:
     def updateScreenSize(self, width, height):
         self.win = pygame.display.set_mode((width, height))
 
-    def blit(self, *args):
+    def blitLinker(self, *args):
         self.displayThreadQueue.put(('blit', args))
 
-    def flip(self):
+    def flipLinker(self):
         self.displayThreadQueue.put(('flip', None))
 
-    def _blit(self, args):
+    def blitFunction(self, *args):
         self.win.blit(*args)
 
-    def _flip(self, args):
+    def flipFunction(self, *args):
         pygame.display.flip()
 
     def display(self, win):
         self.win = win
-        self.draw = Draw(self.win, displayThread=True)
+        self.draw = Draw(self.win, displayingThread=True)
         clock = pygame.time.Clock()
         while self.running:
-            #start = time.time()
             try:
                 displayObject = self.displayThreadQueue.get_nowait()
             except:
                 pass
             else:
                 self.displayFunctions[displayObject[0]](displayObject[1])
-            #time.sleep(max(1./self.frameRate - (time.time() - start), 0))
             clock.tick(self.frameRate)
 
     def subprocess(self):
