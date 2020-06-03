@@ -30,3 +30,11 @@ For computers outside of your home network to see your ReBel server you'll need 
 - ls - Lists the clients connected to the server.
 - numberOfBells - Gives the total number of bells.
 - setNumberOfBells x - Sets the total number of bells to x, where x is a positive integer.
+- bellstrokes - Prints the current strokes of all the bells.
+- resetbellstrokes - Resets the strokes of the bells back to handstroke.
+
+## Building the ReBel Executables
+The Python module 'pyinstaller' is used to build the ReBel executables, done through using the provided scripts in the 'build' directory. The latest stable build of pyinstaller has an issue that causes the built executables to not work and so the latest development build is needed instead. To install the latest pyinstaller development build run:
+- pip install https://github.com/pyinstaller/pyinstaller/archive/develop.zip
+
+To build the ReBel executables change to the 'build' directory and run 'build_X.sh' and 'buildServer_X.sh', where X is replaced with 'windows' if you are on Windows, 'mac' if you are on Mac, and 'linux' if you are on Linux. The script 'build_X.sh' builds the ReBel client executable and the script 'buildServer_X.sh' builds the ReBel server executable.
