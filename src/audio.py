@@ -290,11 +290,9 @@ class Audio(Log, Error):
             self.bells[i+1] = self.mixer.Sound(os.path.join(self.exeDir, "..", "audio", "{}.wav".format(i+1)))
 
     def playBell(self):
-        pygame.mixer.pre_init(frequency=44100, size=16, channels=self.config.get('numberOfBells'))
-        pygame.mixer.init()
 
         self.mixer = pygame.mixer
-        #self.mixer.set_num_channels(self.config.get('numberOfBells'))
+        self.mixer.set_num_channels(self.config.get('numberOfBells'))
 
         self.loadBells()
 
