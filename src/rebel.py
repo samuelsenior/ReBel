@@ -54,7 +54,7 @@ class Rebel(Log):
         Log.__init__(self, logFile=self.logFile)
         self.clearLog()
 
-        self.reBelClientVersion = "v1.1.0"
+        self.reBelClientVersion = "v1.2.0"
         self.log("[INFO] Running ReBel client {}".format(self.reBelClientVersion))
 
         self.menuWidth = menuWidth
