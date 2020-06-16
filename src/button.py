@@ -16,7 +16,7 @@ class Button:
         self.pos = pos
 
         self.x = self.pos[0]
-        self.y = self.pos[0]
+        self.y = self.pos[1]
 
         self.hovered = False
         self.active = active
@@ -40,6 +40,10 @@ class Button:
 
         self.set_rect()
         self.width = self.rect.width
+        self.height = self.rect.height
+
+        self.w = self.width
+        self.h = self.height
 
         self.updated = True
 
