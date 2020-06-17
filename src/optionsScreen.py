@@ -26,6 +26,16 @@ class OptionsScreen:
 
         self.optionsBackground = pygame.Rect(0 + (self.win.get_width() - self.width) / 2.0, 0 + (self.win.get_height() - self.height) / 2.0, self.width, self.height)
 
+        self.generateMenuButtons()
+
+        self.generateKeysPageText()
+        self.generateTuningMenu()
+
+        self.generateOtherMenuText()
+
+        self.generateTuningInputBoxes()
+
+    def generateMenuButtons(self):
         self.button_back = Button("Cancel", (self.x + 20, self.height + self.y - 20), font=self.font)
         self.button_back.rect.y -= self.button_back.rect.h
         #
@@ -36,14 +46,16 @@ class OptionsScreen:
         self.button_other = Button("Other", (self.x + self.width - 20, self.y + 20), font=self.font)
         self.button_other.rect.x -= self.button_other.rect.w
         #
-        self.button_tuning = Button("Tuning", (self.button_other.x - self.button_other.rect.w - 10, self.y + 20), font=self.font)
+        self.button_tuning = Button("Tuning", (self.x + self.width - 20, self.y + 20), font=self.font)
+        #self.button_tuning = Button("Tuning", (self.button_other.x - self.button_other.rect.w - 10, self.y + 20), font=self.font)
         self.button_tuning.rect.x -= self.button_tuning.rect.w
         #
         self.button_keys = Button("keys", (self.button_tuning.x - self.button_tuning.rect.w - 10, self.y + 20), font=self.font)
         self.button_keys.rect.x -= self.button_keys.rect.w
         #
-        self.buttons = [self.button_back, self.button_save]#, self.button_keys, self.button_tuning, self.button_other]
+        self.buttons = [self.button_back, self.button_save, self.button_keys, self.button_tuning]#, self.button_other]
 
+    def generateKeysPageText(self):
         self.keysTitleText = TextBox('Keys Options:',
                                      (self.x+20, self.y+self.button_keys.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font=self.font, fontSize='large')
         self.keysSubTitleText_1 = TextBox('Bell Keys:',
@@ -59,14 +71,7 @@ class OptionsScreen:
                                   (self.x+20, self.keysText_3.y+self.keysText_3.h+10), width=self.width-40, font=self.font, fontSize='tiny')
         self.keysText = [self.keysTitleText, self.keysSubTitleText_1, self.keysText_1, self.keysText_2, self.keysText_3, self.keysText_4]
 
-        self.tuningTitleText = TextBox('Tuning Options:',
-                                       (self.x+20, self.y+self.button_tuning.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font=self.font, fontSize='large')
-        self.tuningSubTitleText_1 = TextBox('Octave and Semitone Shift:',
-                                            (self.x+20, self.tuningTitleText.y+self.tuningTitleText.h+10), width=self.width-40, font=self.font, fontSize='small')
-        self.tuningText_1 = TextBox("... still to do...",
-                                     (self.x+20, self.tuningSubTitleText_1.y+self.tuningSubTitleText_1.h+7), width=self.width-40, font=self.font, fontSize='tiny')
-        self.tuningText = [self.tuningTitleText, self.tuningSubTitleText_1, self.tuningText_1]
-
+    def generateOtherMenuText(self):
         self.otherTitleText = TextBox('Other Options:',
                                        (self.x+20, self.y+self.button_other.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font=self.font, fontSize='large')
         self.otherSubTitleText_1 = TextBox('...:',
@@ -75,12 +80,13 @@ class OptionsScreen:
                                      (self.x+20, self.otherSubTitleText_1.y+self.otherSubTitleText_1.h+7), width=self.width-40, font=self.font, fontSize='tiny')
         self.otherText = [self.otherTitleText, self.otherSubTitleText_1, self.otherText_1]
 
-    def realignButtons(self):
+    def realignMenuButtons(self):
         self.button_back.rect.x = self.x + 20
         self.button_save.rect.x = self.x + self.width - self.button_save.rect.w - 20
 
         self.button_other.rect.x = self.x + self.width - 20 - self.button_other.rect.w
-        self.button_tuning.rect.x = self.button_other.rect.x - self.button_tuning.rect.w - 10
+        self.button_tuning.rect.x = self.x + self.width - 20 - self.button_tuning.rect.w
+        #self.button_tuning.rect.x = self.button_other.rect.x - self.button_tuning.rect.w - 10
         self.button_keys.rect.x = self.button_tuning.rect.x - self.button_keys.rect.w - 10
 
     def generateBellKeyInputBoxes(self, startingX, y):
@@ -129,6 +135,61 @@ class OptionsScreen:
                                                   resizable=False, startActiveText=True, characterLimit=1, inputType='numericAndLetter'))
         self.activeBox = None
 
+    def generateTuningMenu(self):
+        self.tuningTitleText = TextBox('Tuning Options:',
+                                       (self.x+20, self.y+self.button_tuning.rect.h+20), width=self.width-40, backgroundColour=(150, 150, 150), font=self.font, fontSize='large')
+        self.tuningText_1 = TextBox("The tuning of the bells can be set from the server so that everyone has the same bell tunings. " + \
+                                    "Alternatively, they can be set manually below.",
+                                     (self.x+20, self.tuningTitleText.y+self.tuningTitleText.h+10), width=self.width-40, font=self.font, fontSize='tiny')
+
+        self.tuningServerButton = Button("X", (self.x+40, self.tuningText_1.y+self.tuningText_1.h+15), font=self.font, fontSize='small', activeNotHoveredTextColour=(0, 0, 0), textColour=(200, 200, 200))
+        self.tuningServerButtonText = TextBox("Get bell tunings from the server.",
+                                              (self.tuningServerButton.x+self.tuningServerButton.width+10, self.tuningServerButton.y+3),
+                                              width=self.width-40, font=self.font, fontSize='tiny')
+
+
+        self.tuningClientButton = Button("X", (self.x+40, self.tuningServerButton.y+self.tuningServerButton.h+10), font=self.font, fontSize='small', activeNotHoveredTextColour=(0, 0, 0), textColour=(200, 200, 200))
+        self.tuningClientButtonText = TextBox("Get bell tunings from below.",
+                                              (self.tuningClientButton.x+self.tuningClientButton.width+10, self.tuningClientButton.y+3),
+                                              width=self.width-40, font=self.font, fontSize='tiny')
+
+        self.tuningSubTitleText_1 = TextBox('Octave Shift:',
+                                            (self.x+20, self.tuningClientButton.y+self.tuningClientButton.h+15), width=self.width-40, font=self.font, fontSize='small')
+        self.bellOctaveShiftBox = InputBox(self.x+40, self.tuningSubTitleText_1.y+self.tuningSubTitleText_1.h+7, self.tuningClientButton.width, 30, font=self.font, fontSize='small',
+                                           resizable=False, text=str(self.config.get('octaveShift')), startActiveText=True, inputType='numeric')
+        self.tuningText_2 = TextBox("Number of octaves to shift the bells by (positive for higher pitches, negative for lower).",
+                                     (self.bellOctaveShiftBox.x+self.bellOctaveShiftBox.width+10, self.tuningSubTitleText_1.y+self.tuningSubTitleText_1.h+12),
+                                     width=self.width-40, font=self.font, fontSize='tiny')
+        self.tuningSubTitleText_2 = TextBox('Semitone Shift:',
+                                            (self.x+20, self.tuningText_2.y+self.tuningText_2.h+15), width=self.width-40, font=self.font, fontSize='small')
+        self.bellSemitoneShiftBox = InputBox(self.x+40, self.tuningSubTitleText_2.y+self.tuningSubTitleText_2.h+7, self.tuningClientButton.width, 30, font=self.font, fontSize='small',
+                                           resizable=False, text=str(self.config.get('octaveShift')), startActiveText=True, inputType='numeric')
+        self.tuningText_3 = TextBox("Number of semitones to shift the bells by (positive for higher pitches, negative for lower).",
+                                     (self.bellOctaveShiftBox.x+self.bellOctaveShiftBox.width+10, self.tuningSubTitleText_2.y+self.tuningSubTitleText_2.h+12),
+                                     width=self.width-40, font=self.font, fontSize='tiny')
+
+        self.tuningSubTitleText_3 = TextBox('Scale:',
+                                            (self.x+20, self.tuningText_3.y+self.tuningText_3.h+15), width=self.width-40, font=self.font, fontSize='small')
+        self.tuningText_4 = TextBox("The bells can be set to either the major scale or the natural, harmonic, or melodic minor scale.",
+                                     (self.x+20, self.tuningSubTitleText_3.y+self.tuningSubTitleText_3.h+10), width=self.width-40, font=self.font, fontSize='tiny')
+
+        self.tuningText = [self.tuningTitleText, self.tuningText_1, self.tuningServerButtonText, self.tuningClientButtonText,
+                           self.tuningSubTitleText_1, self.tuningText_2, self.tuningSubTitleText_2, self.tuningText_3,
+                           self.tuningSubTitleText_3, self.tuningText_4]
+
+        self.buttons_tuning = [self.tuningServerButton, self.tuningClientButton]
+
+    def generateTuningInputBoxes(self):
+        #self.tuningServerButton = None
+        #self.tuningServerButton = Button("  ", (self.x + 20, self.tuningText_1.y+self.tuningText_1.h+10), font=self.font, fontSize='small')
+        #self.tuningServerButtonText = None
+
+        self.tuningClientButton = None
+        self.tuningClientButtonText = None
+
+    def updateTuningTextPosition(self):
+        pass
+
     def saveConfig(self):
         bellNumberList = []
         bellKeyList = []
@@ -150,6 +211,13 @@ class OptionsScreen:
 
         self.config.set('ringableBells', bellNumberList)
         self.config.set('keys', bellKeyList)
+
+        if not self.tuningServerButton.active:
+            self.config.set('tuningSource', 'server')
+        elif not self.tuningClientButton.active:
+            self.config.set('tuningSource', 'client')
+        else:
+            self.config.set('tuningSource', 'server')
 
     def drawBackground(self, display):
         display.draw.rect((170, 170, 170), self.optionsBackground, 0)
@@ -192,9 +260,18 @@ class OptionsScreen:
                 startingY = self.otherText[i-1].y + self.otherText[i-1].h+10
             otherText.generateFormattedText(startingY=startingY, width=self.width-40)
 
-        self.realignButtons()
+        self.realignMenuButtons()
 
         self.generateBellKeyInputBoxes(self.x+170, self.keysText_4.y+self.keysText_4.h + 10)
+
+        self.generateTuningMenu()
+
+        if self.config.get('tuningSource') == 'server':
+            self.tuningServerButton.active = False
+            self.tuningClientButton.active = True
+        else:
+            self.tuningServerButton.active = True
+            self.tuningClientButton.active = False
 
         display.blit(self.backgroundFade, (0, 0))
 
@@ -255,6 +332,7 @@ class OptionsScreen:
                         self.saveConfig()
                         self.bellKeysUpdated = True
                         return source
+
                     elif self.button_keys.rect.collidepoint(event.pos) and self.button_keys.active == True:
                         optionsPage = 'keys'
                         self.bellNumberInputBoxes[0].redrawTitle = True
@@ -266,6 +344,10 @@ class OptionsScreen:
                         self.drawBackground(display)
                         for txt in text:
                             txt.draw(display)
+                        self.button_keys.draw(display)
+                        self.button_tuning.draw(display)
+                        self.button_back.draw(display)
+                        self.button_save.draw(display)
                         self.updated = True
                     elif self.button_tuning.rect.collidepoint(event.pos) and self.button_tuning.active == True:
                         optionsPage = 'tuning'
@@ -276,6 +358,14 @@ class OptionsScreen:
                         self.drawBackground(display)
                         for txt in text:
                             txt.draw(display)
+                        self.button_keys.draw(display)
+                        self.button_tuning.draw(display)
+                        self.button_back.draw(display)
+                        self.button_save.draw(display)
+                        self.tuningServerButton.draw(display)
+                        self.tuningClientButton.draw(display)
+                        self.bellOctaveShiftBox.draw(display)
+                        self.bellSemitoneShiftBox.draw(display)
                         self.updated = True
                     elif self.button_other.rect.collidepoint(event.pos) and self.button_other.active == True:
                         optionsPage = 'other'
@@ -286,6 +376,23 @@ class OptionsScreen:
                         self.drawBackground(display)
                         for txt in text:
                             txt.draw(display)
+                        self.button_keys.draw(display)
+                        self.button_tuning.draw(display)
+                        self.button_back.draw(display)
+                        self.button_save.draw(display)
+                        self.updated = True
+
+                    elif self.tuningServerButton.rect.collidepoint(event.pos) and self.tuningServerButton.active == True:
+                        self.tuningServerButton.active = False
+                        self.tuningClientButton.active = True
+                        self.tuningServerButton.draw(display)
+                        self.tuningClientButton.draw(display)
+                        self.updated = True
+                    elif self.tuningClientButton.rect.collidepoint(event.pos) and self.tuningClientButton.active == True:
+                        self.tuningClientButton.active = False
+                        self.tuningServerButton.active = True
+                        self.tuningClientButton.draw(display)
+                        self.tuningServerButton.draw(display)
                         self.updated = True
 
                     for box in self.bellNumberInputBoxes:
@@ -314,6 +421,19 @@ class OptionsScreen:
                         button.draw(display)
                         self.updated = True
 
+                if optionsPage == 'tuning':
+                    for button in self.buttons_tuning:
+                        if button.rect.collidepoint(pygame.mouse.get_pos()):
+                            button.hovered = True
+                            button.updated = True
+                            button.draw(display)
+                            self.updated = True
+                        elif button.active == True and button.hovered == True:
+                            button.hovered = False
+                            button.updated = True
+                            button.draw(display)
+                            self.updated = True
+
             if optionsPage == 'keys':
                 for box in self.bellNumberInputBoxes:
                     if box.updated:
@@ -325,10 +445,6 @@ class OptionsScreen:
                         box.draw(display)
                         box.updated = False
                         self.updated = True
-
-            #for button in self.buttons:
-            #    if button.updated:
-            #        button.draw(display)
 
             if self.updated:
                 display.flip()
