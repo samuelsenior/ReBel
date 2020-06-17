@@ -119,10 +119,11 @@ class Rebel(Log):
                 self.screen = self.optionsScreen.display(display=self.display, source=self.previousScreen)
                 if self.screen == 'quit':
                     self.quit()
-                elif self.optionsScreen.bellKeysUpdated:
+                elif self.optionsScreen.configUpdated:
                     self.ringingScreen.updateBellKeys()
                     self.ringingScreen.updateBellDisplayLocations()
-                    self.optionsScreen.bellKeysUpdated = False
+                    self.ringingScreen.updateBellTunings()
+                    self.optionsScreen.configUpdated = False
             elif self.screen == 'ringingScreen':
                 self.display.updateScreenSize(self.mainWidth, self.mainHeight)
                 self.previousScreen = 'ringingScreen'
