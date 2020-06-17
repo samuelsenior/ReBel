@@ -116,8 +116,31 @@ class RingingScreen(KeyPress, Log):
             except:
                 self.log("[WARNING] RingingScreen.initialise: Incorrect bell/key configuration of bell no. '{}' and key '{}'".format(self.config.get('ringableBells')[i], self.config.get('keys')[i]))
 
-        #self.mixer = pygame.mixer
-        #self.mixer.set_num_channels(self.config.get('numberOfBells'))
+        #if self.config.get('tuningSource') == 'server':
+            # Try and get+set the bell tuning config settings from the server, then load in audio again to update it.
+            #waitingForBellTuningSettings = True
+            #while waitingForBellTuningSettings:
+            #    try:
+            #        bellTuningSettings = self.network.getBellTuningSettings()
+            #    except:
+            #        pass
+            #    else:
+            #        try:
+            #            self.config.set('octaveShift') = int(bellTuningSettings[0])
+            #        except:
+            #            self.log("[WARNING] Could not set bell octave shift from server.")
+            #
+            #        try:
+            #            self.config.set('semitoneShift') = int(bellTuningSettings[1])
+            #        except:
+            #            self.log("[WARNING] Could not set bell semitone shift from server.")
+            #
+            #        try:
+            #            self.config.set('scale') = bellTuningSettings[2]
+            #        except:
+            #            self.log("[WARNING] Could not set bell tuning scale from server.")
+            #
+            #        waitingForBellTuningSettings = False
         self.audio = Audio(self.config.get('numberOfBells'), self.config, self.logFile)
 
         self.updateBellStates()
@@ -187,6 +210,35 @@ class RingingScreen(KeyPress, Log):
                 textY = (self.height / 2.0 - 10 + self.button_options.rect.h + (self.radius+0)*self.b*math.sin(seperationAngle*(i-self.config.get('ringableBells')[0]+1) - seperationAngle/2.0 + math.pi/2.0)) - width/2.0
 
             bell.updateLocation(x, y, textX, textY)
+
+    def updateBellTunings(self):
+        #if self.config.get('tuningSource') == 'server':
+            # Try and get+set the bell tuning config settings from the server, then load in audio again to update it.
+            #waitingForBellTuningSettings = True
+            #while waitingForBellTuningSettings:
+            #    try:
+            #        bellTuningSettings = self.network.getBellTuningSettings()
+            #    except:
+            #        pass
+            #    else:
+            #        try:
+            #            self.config.set('octaveShift') = int(bellTuningSettings[0])
+            #        except:
+            #            self.log("[WARNING] Could not set bell octave shift from server.")
+            #
+            #        try:
+            #            self.config.set('semitoneShift') = int(bellTuningSettings[1])
+            #        except:
+            #            self.log("[WARNING] Could not set bell semitone shift from server.")
+            #
+            #        try:
+            #            self.config.set('scale') = bellTuningSettings[2]
+            #        except:
+            #            self.log("[WARNING] Could not set bell tuning scale from server.")
+            #
+            #        waitingForBellTuningSettings = False
+
+        self.audio = Audio(self.config.get('numberOfBells'), self.config, self.logFile)
 
     def display(self, display):
 
