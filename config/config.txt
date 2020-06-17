@@ -12,7 +12,7 @@ keys:j,f
 [Sound Options]
 scale:major
 octaveShift:0
-pitchShift:0
+semitoneShift:0
 
 # Source location of the handbell sound, currently either ReBel or Abel
 handbellSource:rebel

@@ -119,7 +119,7 @@ class Audio(Log, Error):
             bellSpec['scale'] = [int(b) for b in bellSpec['scale']]
             bellSpec['numberOfBells'] = int(bellSpec['numberOfBells'])
             bellSpec['octaveShift'] = int(bellSpec['octaveShift'])
-            bellSpec['pitchShift'] = int(bellSpec['pitchShift'])
+            bellSpec['semitoneShift'] = int(bellSpec['semitoneShift'])
 
             # Compare the bell spec file parameters to the ReBel config
             # parameters.
@@ -127,7 +127,7 @@ class Audio(Log, Error):
                and bellSpec['scale'] == self.scale \
                and bellSpec['numberOfBells'] == self.config.get('numberOfBells') \
                and bellSpec['octaveShift'] == self.config.get('octaveShift') \
-               and bellSpec['pitchShift'] == self.config.get('pitchShift') \
+               and bellSpec['semitoneShift'] == self.config.get('semitoneShift') \
                and bellSpec['handbellSource'] == self.config.get('handbellSource'):
                 # If all the parameters match then the bells do not need to be
                 # generated/regenerated.
@@ -155,7 +155,7 @@ class Audio(Log, Error):
             bellSpecFile.write("\n")
             bellSpecFile.write("{}:{}\n".format("numberOfBells", self.config.get('numberOfBells')))
             bellSpecFile.write("{}:{}\n".format("octaveShift", self.config.get('octaveShift')))
-            bellSpecFile.write("{}:{}\n".format("pitchShift", self.config.get('pitchShift')))
+            bellSpecFile.write("{}:{}\n".format("semitoneShift", self.config.get('semitoneShift')))
             bellSpecFile.write("{}:{}\n".format("handbellSource", self.config.get('handbellSource')))
 
     def generateBells(self):
@@ -250,7 +250,7 @@ class Audio(Log, Error):
         # note.
         for i, semitone in enumerate(self.bellSemitones):
             octave = 12
-            new_sample_rate = int(sound.frame_rate * (2.0 ** (self.config.get('octaveShift') + (self.config.get('pitchShift')+semitone)/octave)))
+            new_sample_rate = int(sound.frame_rate * (2.0 ** (self.config.get('octaveShift') + (self.config.get('semitoneShift')+semitone)/octave)))
             pitchShifted_sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
 
             # The pitch shifting via changing sampling rate inherently changes

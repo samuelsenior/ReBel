@@ -7,7 +7,7 @@ class Config:
         self.fileName = fileName
         self.config = {'numberOfBells':None, 'ringableBells':None, 'keys':None,
                        'bellStates':None,
-                       'tuningSource':None, 'scale':None, 'octaveShift':None, 'pitchShift':None,
+                       'tuningSource':None, 'scale':None, 'octaveShift':None, 'semitoneShift':None,
                        'testConnectionLatency':[False, 0,100],
                        'regenerateBells':False,
                        'handbellSource':None, 'rebelBellFileLocation':None, 'abelBellFileLocation':None,
@@ -113,10 +113,10 @@ class Config:
         else:
             self.config['octaveShift'] = int(self.config['octaveShift'])
 
-        if self.config['pitchShift'] == None:
-            self.config['pitchShift'] = 0
+        if self.config['semitoneShift'] == None:
+            self.config['semitoneShift'] = 0
         else:
-            self.config['pitchShift'] = int(self.config['pitchShift'])
+            self.config['semitoneShift'] = int(self.config['semitoneShift'])
 
         if self.config['testConnectionLatency'][0] == 'True':
             self.config['testConnectionLatency'][0] = True
