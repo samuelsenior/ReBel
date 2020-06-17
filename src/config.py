@@ -7,7 +7,7 @@ class Config:
         self.fileName = fileName
         self.config = {'numberOfBells':None, 'ringableBells':None, 'keys':None,
                        'bellStates':None,
-                       'scale':None, 'octaveShift':None, 'pitchShift':None,
+                       'tuningSource':None, 'scale':None, 'octaveShift':None, 'pitchShift':None,
                        'testConnectionLatency':[False, 0,100],
                        'regenerateBells':False,
                        'handbellSource':None, 'rebelBellFileLocation':None, 'abelBellFileLocation':None,
@@ -100,6 +100,10 @@ class Config:
         if len(self.config['bellStates']) > self.config['numberOfBells']:
             self.config['bellStates'] = self.config['bellStates'][:len(self.config['numberOfBells'])]
 
+        if self.config['tuningSource'] == None:
+            self.config['tuningSource'] = 'server'
+        elif (self.config['tuningSource'] != 'server') and (self.config['tuningSource'] != 'client'):
+            self.config['tuningSource'] = 'server'
         if self.config['scale'] == None:
             self.config['scale'] = "major"
         else:
