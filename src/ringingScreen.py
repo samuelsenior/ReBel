@@ -9,18 +9,17 @@ from audio import Audio
 from bell import Bell
 from button import Button
 from keyPress import KeyPress
-from log import Log
 
-class RingingScreen(KeyPress, Log):
-    def __init__(self, network, width, height, font, frameRate, logFile, config):
+class RingingScreen(KeyPress):
+    def __init__(self, network, width, height, font, frameRate, logger, config):
         if getattr(sys, 'frozen', False):
             # In a bundle
             self.exeDir = os.path.dirname(sys.executable)
         else:
             # In normal python
             self.exeDir = ""
-        self.logFile = logFile
-        Log.__init__(self, logFile=logFile)
+
+        self.logger = logger
 
         KeyPress.__init__(self)
 
@@ -46,6 +45,9 @@ class RingingScreen(KeyPress, Log):
         self.buttons = [self.button_reloadBells, self.button_options, self.button_help, self.button_about, self.button_back, self.button_quit, self.button_blankSpace]
 
         self.initialised = False
+
+    def log(self, *args):
+        self.logger.log(*args)
 
     def initialise(self):
 
@@ -141,7 +143,7 @@ class RingingScreen(KeyPress, Log):
             #            self.log("[WARNING] Could not set bell tuning scale from server.")
             #
             #        waitingForBellTuningSettings = False
-        self.audio = Audio(self.config.get('numberOfBells'), self.config, self.logFile)
+        self.audio = Audio(self.config.get('numberOfBells'), self.config, self.logger)
 
         self.updateBellStates()
 
@@ -238,7 +240,7 @@ class RingingScreen(KeyPress, Log):
             #
             #        waitingForBellTuningSettings = False
 
-        self.audio = Audio(self.config.get('numberOfBells'), self.config, self.logFile)
+        self.audio = Audio(self.config.get('numberOfBells'), self.config, self.logger)
 
     def display(self, display):
 

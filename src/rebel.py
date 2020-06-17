@@ -51,8 +51,9 @@ class Rebel(Log):
         self.font = Font(directory=os.path.join(self.exeDir, "..", "fonts"))
 
         self.logFile = os.path.join(self.exeDir, "..", "log", "log.txt")
-        Log.__init__(self, logFile=self.logFile)
-        self.clearLog()
+        #Log.__init__(self, logFile=self.logFile)
+        self.logger = Log(self.logFile)
+        self.logger.clearLog()
 
         self.reBelClientVersion = "v1.2.0"
         self.log("[INFO] Running ReBel client {}".format(self.reBelClientVersion))
@@ -71,17 +72,20 @@ class Rebel(Log):
         self.frameRate = self.config.get('frameRate')
         self.log("[INFO] FrameRate set to {}".format(self.frameRate))
 
-        self.network = Network(self.logFile, frameRate=self.frameRate)
+        self.network = Network(self.logger, self.logFile, frameRate=self.frameRate)
         self.aboutScreen = AboutScreen(self.display.win, font=self.font, frameRate=self.frameRate, version=self.reBelClientVersion)
         self.helpScreen = HelpScreen(self.display.win, font=self.font, frameRate=self.frameRate)
         self.menuScreen = MenuScreen(win=self.display.win, font=self.font, network=self.network, frameRate=self.frameRate,
-                                     logFile=self.logFile, config=self.config)
+                                     logger=self.logger, config=self.config)
         self.optionsScreen = OptionsScreen(win=self.display.win, font=self.font, config=self.config, frameRate=self.frameRate)
         self.ringingScreen = RingingScreen(network=self.network, width=self.mainWidth, height=self.mainHeight, font=self.font,
                                            frameRate=self.frameRate,
-                                           logFile=self.logFile, config=self.config)
+                                           logger=self.logger, config=self.config)
 
         self.screen = 'menuScreen'
+
+    def log(self, *args):
+        self.logger.log(*args)
 
     def quit(self):
         self.running = False

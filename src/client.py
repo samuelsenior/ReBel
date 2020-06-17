@@ -12,10 +12,10 @@ import select
 
 from log import Log
 
-class NetworkSubprocess(Log):
+class NetworkSubprocess:
     def __init__(self, logFile, incomingMessageQueue, outgoingMessageQueue, bellsRung, variables):
         self.logFile = logFile
-        Log.__init__(self, logFile=logFile)
+        self.logger = Log(logFile=self.logFile)
 
         self.incomingMessageQueue = incomingMessageQueue
         self.outgoingMessageQueue = outgoingMessageQueue
@@ -26,6 +26,9 @@ class NetworkSubprocess(Log):
 
         self.incomingMessagesThread = threading.Thread(target=self.incomingMessages, args=(), daemon=True)
         self.outgoingMessagesThread = threading.Thread(target=self.outgoingMessages, args=(), daemon=True)
+
+    def log(self, *args):
+        self.logger.log(*args)
 
     def send(self, message):
         try:
@@ -109,7 +112,6 @@ class NetworkSubprocess(Log):
 
     def start(self):
         self._lock = threading.Lock()
-        Log.__init__(self, logFile=self.logFile)
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -162,24 +164,26 @@ class NetworkSubprocess(Log):
         self.variables['connected'] = False
         self.variables['disconnecting'] = False
 
-class Network(Log):
-    def __init__(self, logFile, frameRate=30):
+class Network:
+    def __init__(self, logger, logFile, frameRate=30):
 
-        #multiprocessing.freeze_support()
-
+        self.logger = logger
         self.logFile = logFile
-        Log.__init__(self, logFile=logFile)
+        
         self.incomingMessageQueue = Queue()
         self.outgoingMessageQueue = Queue()
 
         self.bellsRung = Queue()
 
         manager = Manager()
-        self.variables = manager.dict({'frameRate':frameRate, 'disconnecting':False, 'dataSize':128, 'ringing':False,
+        self.variables = manager.dict({'frameRate':frameRate, 'disconnecting':False, 'dataSize':128*2, 'ringing':False,
                                        'messageEnd':bytes("/", "utf-8"), 'connected':None, 'gotNumberOfBells':False, 'numberOfBells':0,
                                        'gotBellStates':False, 'bellStates':'',
                                        'userName':"", 'serverIP':"", 'serverPort':-1, 'addr':None, 'serverVersion':'-1.-1.-1',
                                        'clientName':"", 'running':False, 'messagingThreadsClosed':False})
+
+    def log(self, *args):
+        self.logger.log(*args)
 
     def send(self, message):
         try:
@@ -193,10 +197,10 @@ class Network(Log):
 
     def connect(self, userName, serverIP, serverPort):
 
+        print('foo 4')
+
         while self.variables['disconnecting']:
             time.sleep(0.1)
-
-        self.__init__(logFile=self.logFile)
 
         self.variables['userName'] = userName
         self.variables['serverIP'] = serverIP

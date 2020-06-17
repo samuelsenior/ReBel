@@ -6,12 +6,11 @@ import csv
 import threading, queue
 import time
 
-from log import Log
 from error import Error
 
 import pygame
 
-class Audio(Log, Error):
+class Audio(Error):
     '''
     The Audio object takes the number of handbells and their tuning from the
     current ReBel configuration and compares them to the bell spec file of the
@@ -36,7 +35,7 @@ class Audio(Log, Error):
     logFile : string
         The name and location of the log file to write to.
     '''
-    def __init__(self, numberOfBells, config, logFile):
+    def __init__(self, numberOfBells, config, logger):
         # Set the working directory based on if ReBel is being run from an
         # executable or the Python source code.
         if getattr(sys, 'frozen', False):
@@ -45,8 +44,8 @@ class Audio(Log, Error):
         else:
             # In normal python
             self.exeDir = ""
-        # Initialise the inherited Log instance.
-        Log.__init__(self, logFile=logFile)
+        # Set the logger
+        self.logger = logger
         # Initialise the inherited Error instance.
         Error.__init__(self)
 
@@ -95,6 +94,17 @@ class Audio(Log, Error):
         self.playBellQueue = queue.Queue()
         self.playBellThread = threading.Thread(target=self.playBell, args=(), daemon=True)
         self.playBellThread.start()
+
+    def log(self, *args):
+        '''
+        Wrapper function to the logger.log function.
+
+        Parameters
+        ----------
+        args
+            The arguments to pass into the logger.log function.
+        '''
+        self.logger.log(*args)
 
     def checkGeneratedBells(self):
         '''
@@ -205,20 +215,20 @@ class Audio(Log, Error):
                 try:
                     sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
                 except:
-                    self.log("ReBel handbell source file not found, terminating program...", printMessage=False)
+                    self.log("ReBel handbell source file not found, terminating program...", False)
                     self.error("ReBel handbell source file not found, terminating program...", 1)
         elif self.config.get('handbellSource') == 'rebel':
             try:
                 sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
             except:
-                self.log("ReBel handbell source file not found, terminating program...", printMessage=False)
+                self.log("ReBel handbell source file not found, terminating program...", False)
                 self.error("ReBel handbell source file not found, terminating program...", 1)
         else:
             self.log("[WARNING] Handbell source not set, defaulting to ReBel handbell source file")
             try:
                 sound = AudioSegment.from_file(self.config.get('rebelBellFileLocation'), format="wav")
             except:
-                self.log("ReBel handbell source file not found, terminating program...", printMessage=False)
+                self.log("ReBel handbell source file not found, terminating program...", False)
                 self.error("ReBel handbell source file not found, terminating program...", 1)
 
         # Apply high and low spectral filters to the tenor handbell sound to

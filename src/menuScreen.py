@@ -6,11 +6,9 @@ import time
 from titledInputBox import TitledInputBox
 from button import Button
 
-from log import Log
 
-
-class MenuScreen(Log):
-    def __init__(self, win, network, frameRate, logFile, config, font):
+class MenuScreen:
+    def __init__(self, win, network, frameRate, logger, config, font):
         if getattr(sys, 'frozen', False):
             # In a bundle
             self.exeDir = os.path.dirname(sys.executable)
@@ -21,11 +19,10 @@ class MenuScreen(Log):
         self.win = win
         self.network = network
         self.frameRate = frameRate
-        self.logFile = logFile
         self.config = config
         self.font = font
 
-        Log.__init__(self, logFile=logFile)
+        self.logger = logger
 
         self.width = self.win.get_width()
         self.height = self.win.get_height()
@@ -73,6 +70,9 @@ class MenuScreen(Log):
         self.connectionRectWhite = pygame.Rect(self.button_serverConnect.width+25, self.button_serverConnect.rect.y+5, self.connectingMessage.get_width(), self.connectingMessage.get_height())
 
         self.connectionActive = False
+
+    def log(self, *args):
+        self.logger.log(*args)
 
     def connectionStatusMessage(self):
         if self.connection == "offline":

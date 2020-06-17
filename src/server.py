@@ -39,7 +39,7 @@ class Server(Log):
         self.connections = 0
         self.maxConnections = 12
 
-        self.dataSize = 128
+        self.dataSize = 128*2
 
         self.clients = {}
 
