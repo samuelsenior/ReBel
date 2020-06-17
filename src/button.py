@@ -4,7 +4,8 @@ import sys
 
 class Button:
     
-    def __init__(self, text, pos, font, active=True, border=False, fontSize='menu', buttonColour=(200, 200, 200), borderColour=(170, 170, 170)):
+    def __init__(self, text, pos, font, active=True, border=False, fontSize='menu', buttonColour=(200, 200, 200), borderColour=(170, 170, 170),
+                 activeHoveredTextColour=(150, 150, 150), activeNotHoveredTextColour=(175, 175, 175), textColour=(0, 0, 0)):
         if getattr(sys, 'frozen', False):
             # In a bundle
             self.exeDir = os.path.dirname(sys.executable)
@@ -38,6 +39,10 @@ class Button:
         self.buttonColour = buttonColour
         self.borderColour = borderColour
 
+        self.activeHoveredTextColour = activeHoveredTextColour
+        self.activeNotHoveredTextColour = activeNotHoveredTextColour
+        self.textColour = textColour
+
         self.set_rect()
         self.width = self.rect.width
         self.height = self.rect.height
@@ -67,11 +72,11 @@ class Button:
         
     def get_color(self):
         if self.hovered and self.active == True:
-            return (150, 150, 150)
+            return self.activeHoveredTextColour
         elif self.active == False:
-            return (175, 175, 175)
+            return self.activeNotHoveredTextColour
         else:
-            return (0, 0, 0)
+            return self.textColour
         
     def set_rect(self):
         self.set_rend()
