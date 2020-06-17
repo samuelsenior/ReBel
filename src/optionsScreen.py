@@ -13,7 +13,7 @@ class OptionsScreen:
         self.config = config
         self.frameRate = frameRate
 
-        self.bellKeysUpdated = False
+        self.configUpdated = False
 
         self.width = int(self.win.get_width() * 0.8)
         self.height = int(self.win.get_height() * 0.8)
@@ -32,8 +32,6 @@ class OptionsScreen:
         self.generateTuningMenu()
 
         self.generateOtherMenuText()
-
-        self.generateTuningInputBoxes()
 
     def generateMenuButtons(self):
         self.button_back = Button("Cancel", (self.x + 20, self.height + self.y - 20), font=self.font)
@@ -163,7 +161,7 @@ class OptionsScreen:
         self.tuningSubTitleText_2 = TextBox('Semitone Shift:',
                                             (self.x+20, self.tuningText_2.y+self.tuningText_2.h+15), width=self.width-40, font=self.font, fontSize='small')
         self.bellSemitoneShiftBox = InputBox(self.x+40, self.tuningSubTitleText_2.y+self.tuningSubTitleText_2.h+7, self.tuningClientButton.width, 30, font=self.font, fontSize='small',
-                                           resizable=False, text=str(self.config.get('octaveShift')), startActiveText=True, inputType='numeric')
+                                           resizable=False, text=str(self.config.get('semitoneShift')), startActiveText=True, inputType='numeric')
         self.tuningText_3 = TextBox("Number of semitones to shift the bells by (positive for higher pitches, negative for lower).",
                                      (self.bellOctaveShiftBox.x+self.bellOctaveShiftBox.width+10, self.tuningSubTitleText_2.y+self.tuningSubTitleText_2.h+12),
                                      width=self.width-40, font=self.font, fontSize='tiny')
@@ -173,22 +171,17 @@ class OptionsScreen:
         self.tuningText_4 = TextBox("The bells can be set to either the major scale or the natural, harmonic, or melodic minor scale.",
                                      (self.x+20, self.tuningSubTitleText_3.y+self.tuningSubTitleText_3.h+10), width=self.width-40, font=self.font, fontSize='tiny')
 
+        self.tuningMajorScaleButton = Button("Major", (self.x+40, self.tuningText_4.y+self.tuningText_4.h+10), font=self.font, fontSize='small')
+        self.tuningNaturalMinorScaleButton = Button("Natural Minor", (self.tuningMajorScaleButton.x+self.tuningMajorScaleButton.width+10, self.tuningText_4.y+self.tuningText_4.h+10), font=self.font, fontSize='small')
+        self.tuningHarmonicMinorScaleButton = Button("Harmonic Minor", (self.tuningNaturalMinorScaleButton.x+self.tuningNaturalMinorScaleButton.width+10, self.tuningText_4.y+self.tuningText_4.h+10), font=self.font, fontSize='small')
+        self.tuningMelodicMinorScaleButton = Button("Melodic Minor", (self.tuningHarmonicMinorScaleButton.x+self.tuningHarmonicMinorScaleButton.width+10, self.tuningText_4.y+self.tuningText_4.h+10), font=self.font, fontSize='small')
+
         self.tuningText = [self.tuningTitleText, self.tuningText_1, self.tuningServerButtonText, self.tuningClientButtonText,
                            self.tuningSubTitleText_1, self.tuningText_2, self.tuningSubTitleText_2, self.tuningText_3,
                            self.tuningSubTitleText_3, self.tuningText_4]
 
-        self.buttons_tuning = [self.tuningServerButton, self.tuningClientButton]
-
-    def generateTuningInputBoxes(self):
-        #self.tuningServerButton = None
-        #self.tuningServerButton = Button("  ", (self.x + 20, self.tuningText_1.y+self.tuningText_1.h+10), font=self.font, fontSize='small')
-        #self.tuningServerButtonText = None
-
-        self.tuningClientButton = None
-        self.tuningClientButtonText = None
-
-    def updateTuningTextPosition(self):
-        pass
+        self.buttons_tuning = [self.tuningServerButton, self.tuningClientButton,
+                               self.tuningMajorScaleButton, self.tuningNaturalMinorScaleButton, self.tuningHarmonicMinorScaleButton, self.tuningMelodicMinorScaleButton]
 
     def saveConfig(self):
         bellNumberList = []
@@ -219,6 +212,17 @@ class OptionsScreen:
         else:
             self.config.set('tuningSource', 'server')
 
+        if not self.tuningMajorScaleButton.active:
+            self.config.set('scale', 'major')
+        elif not self.tuningNaturalMinorScaleButton.active:
+            self.config.set('scale', 'naturalMinor')
+        elif not self.tuningHarmonicMinorScaleButton.active:
+            self.config.set('scale', 'harmonicMinor')
+        elif not self.tuningMelodicMinorScaleButton.active:
+            self.config.set('scale', 'melodicMinor')
+        else:
+            self.config.set('scale', 'major')
+
     def drawBackground(self, display):
         display.draw.rect((170, 170, 170), self.optionsBackground, 0)
         display.draw.rect((100, 100, 100), self.optionsBackground, 2)
@@ -233,7 +237,6 @@ class OptionsScreen:
         self.backgroundFade.fill((255, 255, 255, 156))
 
         self.optionsBackground = pygame.Rect(0 + (self.win.get_width() - self.width) / 2.0, 0 + (self.win.get_height() - self.height) / 2.0, self.width, self.height)
-
 
         self.x = (self.win.get_width() - self.width) / 2.0
         self.y = (self.win.get_height() - self.height) / 2.0
@@ -272,6 +275,27 @@ class OptionsScreen:
         else:
             self.tuningServerButton.active = True
             self.tuningClientButton.active = False
+
+        if self.config.get('scale') == 'major':
+            self.tuningMajorScaleButton.active = False
+            self.tuningNaturalMinorScaleButton.active = True
+            self.tuningHarmonicMinorScaleButton.active = True
+            self.tuningMelodicMinorScaleButton.active = True
+        elif self.config.get('scale') == 'naturalMinor':
+            self.tuningMajorScaleButton.active = True
+            self.tuningNaturalMinorScaleButton.active = False
+            self.tuningHarmonicMinorScaleButton.active = True
+            self.tuningMelodicMinorScaleButton.active = True
+        elif self.config.get('scale') == 'harmonicMinor':
+            self.tuningMajorScaleButton.active = True
+            self.tuningNaturalMinorScaleButton.active = True
+            self.tuningHarmonicMinorScaleButton.active = False
+            self.tuningMelodicMinorScaleButton.active = True
+        elif self.config.get('scale') == 'melodicMinor':
+            self.tuningMajorScaleButton.active = True
+            self.tuningNaturalMinorScaleButton.active = True
+            self.tuningHarmonicMinorScaleButton.active = True
+            self.tuningMelodicMinorScaleButton.active = False
 
         display.blit(self.backgroundFade, (0, 0))
 
@@ -325,12 +349,12 @@ class OptionsScreen:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.button_back.rect.collidepoint(event.pos):
                         run_options = False
-                        self.bellKeysUpdated = False
+                        self.configUpdated = False
                         return source
                     elif self.button_save.rect.collidepoint(event.pos):
                         run_options = False
                         self.saveConfig()
-                        self.bellKeysUpdated = True
+                        self.configUpdated = True
                         return source
 
                     elif self.button_keys.rect.collidepoint(event.pos) and self.button_keys.active == True:
@@ -362,8 +386,8 @@ class OptionsScreen:
                         self.button_tuning.draw(display)
                         self.button_back.draw(display)
                         self.button_save.draw(display)
-                        self.tuningServerButton.draw(display)
-                        self.tuningClientButton.draw(display)
+                        for button in self.buttons_tuning:
+                            button.draw(display)
                         self.bellOctaveShiftBox.draw(display)
                         self.bellSemitoneShiftBox.draw(display)
                         self.updated = True
@@ -393,6 +417,39 @@ class OptionsScreen:
                         self.tuningServerButton.active = True
                         self.tuningClientButton.draw(display)
                         self.tuningServerButton.draw(display)
+                        self.updated = True
+
+                    elif self.tuningMajorScaleButton.rect.collidepoint(event.pos) and self.tuningMajorScaleButton.active == True:
+                        self.tuningMajorScaleButton.active = False
+                        self.tuningNaturalMinorScaleButton.active = True
+                        self.tuningHarmonicMinorScaleButton.active = True
+                        self.tuningMelodicMinorScaleButton.active = True
+                        for button in self.buttons_tuning:
+                            button.draw(display)
+                        self.updated = True
+                    elif self.tuningNaturalMinorScaleButton.rect.collidepoint(event.pos) and self.tuningNaturalMinorScaleButton.active == True:
+                        self.tuningMajorScaleButton.active = True
+                        self.tuningNaturalMinorScaleButton.active = False
+                        self.tuningHarmonicMinorScaleButton.active = True
+                        self.tuningMelodicMinorScaleButton.active = True
+                        for button in self.buttons_tuning:
+                            button.draw(display)
+                        self.updated = True
+                    elif self.tuningHarmonicMinorScaleButton.rect.collidepoint(event.pos) and self.tuningHarmonicMinorScaleButton.active == True:
+                        self.tuningMajorScaleButton.active = True
+                        self.tuningNaturalMinorScaleButton.active = True
+                        self.tuningHarmonicMinorScaleButton.active = False
+                        self.tuningMelodicMinorScaleButton.active = True
+                        for button in self.buttons_tuning:
+                            button.draw(display)
+                        self.updated = True
+                    elif self.tuningMelodicMinorScaleButton.rect.collidepoint(event.pos) and self.tuningMelodicMinorScaleButton.active == True:
+                        self.tuningMajorScaleButton.active = True
+                        self.tuningNaturalMinorScaleButton.active = True
+                        self.tuningHarmonicMinorScaleButton.active = True
+                        self.tuningMelodicMinorScaleButton.active = False
+                        for button in self.buttons_tuning:
+                            button.draw(display)
                         self.updated = True
 
                     for box in self.bellNumberInputBoxes:
