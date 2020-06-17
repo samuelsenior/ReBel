@@ -6,7 +6,7 @@ numberOfBells:8
 ringableBells:1,2
 keys:j,f
 
-# Scales currently include 'major', 'naturalMinor', harmonicMinor', and 'melodicMinor'
+# Scales currently include 'major', 'naturalMinor', 'harmonicMinor', and 'melodicMinor'
 # octaveShift by an integer number of octaves (either positive, negative, or zero)
 # pitchShift the key of the scale by an integer number of semitones (positive, negative, or zero)
 [Sound Options]
